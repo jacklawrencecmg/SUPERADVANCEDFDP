@@ -489,7 +489,7 @@ export default function App(){
       p.scarcity=scarcityLabel(p.posRank,bl[p.pos]||teams);
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.88)):1;
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
-      p.tradeVal=Math.max(0,Math.round(p.vbd*10));
+      p.tradeVal=Math.max(0,Math.round(p.vbd*100));
     });
     return list;
   },[scoring,teams,budget,ffab,sKey,isDynasty,isSF]);
