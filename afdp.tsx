@@ -1135,7 +1135,7 @@ export default function App(){
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.88)):1;
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
       var tvMult=isDynasty?100:isSF?80:scoring==="PPR"?60:scoring==="Half"?55:50;
-      p.tradeVal=Math.max(0,Math.round(p.vbd*tvMult));
+      p.tradeVal=Math.max(1,Math.round(p.vbd*tvMult));
     });
     return list;
   },[scoring,teams,budget,ffab,sKey,isDynasty,isSF]);
@@ -1149,8 +1149,16 @@ export default function App(){
   },[rankedPlayers]);
 
   var powerRankingTeams=useMemo(function(){
-    return importedTeams||null;
-  },[importedTeams]);
+    if(!importedTeams) return null;
+    var byName={};
+    rankedPlayers.forEach(function(p){byName[p.name.toLowerCase()]=p;});
+    return importedTeams.map(function(team){
+      var fresh=(team.players||[]).map(function(p){return byName[p.name.toLowerCase()]||p;});
+      fresh.sort(function(a,b){return (b.tradeVal||0)-(a.tradeVal||0);});
+      var tv=fresh.reduce(function(s,p){return s+(p.tradeVal||0);},0);
+      return Object.assign({},team,{players:fresh,totalVal:tv});
+    });
+  },[importedTeams,rankedPlayers]);
 
   // Auto-refresh Sleeper rosters on page load if a league was previously connected
   useEffect(function(){
