@@ -573,7 +573,8 @@ export default function App(){
       p.scarcity=scarcityLabel(p.posRank,bl[p.pos]||teams);
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.88)):1;
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
-      p.tradeVal=Math.max(0,Math.round(p.vbd*100));
+      var tvMult=isDynasty?100:isSF?80:scoring==="PPR"?60:scoring==="Half"?55:50;
+      p.tradeVal=Math.max(0,Math.round(p.vbd*tvMult));
     });
     return list;
   },[scoring,teams,budget,ffab,sKey,isDynasty,isSF]);
@@ -587,23 +588,8 @@ export default function App(){
   },[rankedPlayers]);
 
   var powerRankingTeams=useMemo(function(){
-    if(importedTeams)return importedTeams;
-    if(!leagueRosters||!leagueUsers)return null;
-    var userMap={};
-    leagueUsers.forEach(function(u){userMap[u.user_id]=u;});
-    var teams=leagueRosters.map(function(r){
-      var u=userMap[r.owner_id]||{};
-      var teamName=(u.metadata&&u.metadata.team_name)||u.display_name||("Team "+r.roster_id);
-      var players=(r.players||[]).map(function(id){return sleeperIdToPlayer[id];}).filter(Boolean);
-      players.sort(function(a,b){return b.tradeVal-a.tradeVal;});
-      var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
-      var faabRemain=r.settings&&r.settings.waiver_budget_used!=null?(200-r.settings.waiver_budget_used):null;
-      var draftPicks=(r.draft_picks||[]).length+(r.future_draft_picks||[]).length;
-      return {name:teamName,owner:u.display_name||"",players:players,totalVal:totalVal,faab:faabRemain,picks:draftPicks,wins:(r.settings&&r.settings.wins)||0,losses:(r.settings&&r.settings.losses)||0};
-    });
-    teams.sort(function(a,b){return b.totalVal-a.totalVal;});
-    return teams;
-  },[importedTeams,leagueRosters,leagueUsers,sleeperIdToPlayer]);
+    return importedTeams||null;
+  },[importedTeams]);
 
   var ESPN_POS={1:"QB",2:"RB",3:"WR",4:"TE",5:"K",16:"DST"};
   function doEspnImport(){
@@ -662,11 +648,44 @@ export default function App(){
 
   function connectLeague(lg){
     setLeagueImportStatus("connecting");setLeagueImportErr("");
+    var playersPromise;
+    try{var c=localStorage.getItem('fdp_sp_v1');if(c)playersPromise=Promise.resolve(JSON.parse(c));}catch(e){}
+    if(!playersPromise){
+      playersPromise=fetch("https://api.sleeper.app/v1/players/nfl").then(function(r){return r.json();}).then(function(data){
+        var compact={};
+        Object.keys(data).forEach(function(id){
+          var p=data[id];
+          if(p.full_name&&(p.active||p.team)){compact[id]={name:p.full_name,pos:(p.fantasy_positions&&p.fantasy_positions[0])||p.position||"?",team:p.team||"?"};}
+        });
+        try{localStorage.setItem('fdp_sp_v1',JSON.stringify(compact));}catch(e){}
+        return compact;
+      });
+    }
     Promise.all([
       fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/rosters").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();}),
-      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/users").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();})
+      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/users").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();}),
+      playersPromise
     ]).then(function(results){
-      setImportedTeams(null);setLeagueRosters(results[0]);setLeagueUsers(results[1]);setActiveLeague(lg);
+      var rosters=results[0],users=results[1],sleeperDb=results[2]||{};
+      var rpByName={};rankedPlayers.forEach(function(p){rpByName[p.name.toLowerCase()]=p;});
+      var idMap={};
+      Object.keys(sleeperDb).forEach(function(id){
+        var sp=sleeperDb[id];
+        idMap[id]=rpByName[sp.name.toLowerCase()]||{name:sp.name,pos:sp.pos,team:sp.team,rank:"—",vbd:0,tradeVal:0,age:0,posRank:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
+      });
+      var userMap={};users.forEach(function(u){userMap[u.user_id]=u;});
+      var teams=rosters.map(function(r){
+        var u=userMap[r.owner_id]||{};
+        var teamName=(u.metadata&&u.metadata.team_name)||u.display_name||("Team "+r.roster_id);
+        var players=(r.players||[]).map(function(id){return idMap[id];}).filter(function(p){return p&&p.pos!=="DEF"&&p.pos!=="K";});
+        players.sort(function(a,b){return b.tradeVal-a.tradeVal;});
+        var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
+        var faabRemain=r.settings&&r.settings.waiver_budget_used!=null?(200-r.settings.waiver_budget_used):null;
+        var draftPicks=(r.draft_picks||[]).length+(r.future_draft_picks||[]).length;
+        return {name:teamName,owner:u.display_name||"",players:players,totalVal:totalVal,faab:faabRemain,picks:draftPicks,wins:(r.settings&&r.settings.wins)||0,losses:(r.settings&&r.settings.losses)||0};
+      });
+      teams.sort(function(a,b){return b.totalVal-a.totalVal;});
+      setImportedTeams(teams);setLeagueRosters(null);setLeagueUsers(null);setActiveLeague(lg);
       setLeagueImportStatus("connected");setLeagueSubTab("power");
     }).catch(function(e){setLeagueImportErr(e.message||"Failed to load league");setLeagueImportStatus("error");});
   }
