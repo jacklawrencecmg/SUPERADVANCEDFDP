@@ -429,6 +429,7 @@ export default function App(){
   var [simNotes,setSimNotes]=useState("");
   var [simSaved,setSimSaved]=useState(false);
   var [expandedTeam,setExpandedTeam]=useState(null);
+  var [rosterViewTeam,setRosterViewTeam]=useState(null);
   // Rankings
   var [rankSubTab,setRankSubTab]=useState("allrankings");
   var [rankPos,setRankPos]=useState("QB");
@@ -586,6 +587,39 @@ export default function App(){
   return React.createElement("div",{style:{background:T.bg,minHeight:"100vh",color:T.text,fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif",maxWidth:480,margin:"0 auto",paddingBottom:70}},
 
     showAuth&&React.createElement(AuthModal,{mode:authMode,onClose:function(){setShowAuth(false);},onAuth:function(u){setUser(u);setShowAuth(false);},T:T}),
+
+    // Roster modal
+    rosterViewTeam!==null&&(function(){
+      var team=LEAGUE_TEAMS[rosterViewTeam];
+      var off=rosterViewTeam*2;
+      var rosterPlayers=rankedPlayers.filter(function(p){return p.pos!=="DST"&&p.pos!=="K";}).slice(off*4,off*4+Math.min(team.players,22));
+      return React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:500,overflowY:"auto",padding:16}},
+        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:20,maxWidth:460,margin:"0 auto"}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:900,fontSize:18}},team.name),
+              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},rosterPlayers.length+" players · $"+team.faab+" FAAB · "+team.picks+" picks")
+            ),
+            React.createElement("button",{onClick:function(){setRosterViewTeam(null);},style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:22,lineHeight:1}},"×")
+          ),
+          rosterPlayers.map(function(p){
+            return React.createElement("div",{key:p.name,style:{display:"flex",alignItems:"center",gap:10,background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"10px 12px",marginBottom:6}},
+              React.createElement(Avatar,{name:p.name,pos:p.pos,size:36}),
+              React.createElement(PBadge,{pos:p.pos}),
+              React.createElement("div",{style:{flex:1}},
+                React.createElement("div",{style:{fontWeight:700,fontSize:13}},p.name),
+                React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team+" · Age "+p.age+" · "+p.tier.t&&("#"+p.posRank+" "+p.pos))
+              ),
+              React.createElement("div",{style:{textAlign:"right"}},
+                React.createElement("div",{style:{fontWeight:800,fontSize:13,color:T.purpleLight}},p.tradeVal.toLocaleString()),
+                React.createElement("div",{style:{fontSize:9,color:T.textSub}},"value")
+              )
+            );
+          }),
+          React.createElement("button",{onClick:function(){setRosterViewTeam(null);},style:{width:"100%",marginTop:12,padding:"11px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:13}},"Close")
+        )
+      );
+    })(),
 
     // Admin panel
     showAdmin&&user&&user.isAdmin&&React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:1000,overflowY:"auto",padding:16}},
@@ -821,7 +855,7 @@ export default function App(){
               React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:2}},"FAAB"),
               React.createElement("div",{style:{fontWeight:800,fontSize:18}},"$"+team.faab)
             ),
-            React.createElement("button",{style:{width:"100%",padding:"11px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.purple,fontWeight:700,fontSize:13,cursor:"pointer"}},"View Full Roster")
+            React.createElement("button",{onClick:function(){setRosterViewTeam(i);},style:{width:"100%",padding:"11px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.purple,fontWeight:700,fontSize:13,cursor:"pointer"}},"View Full Roster")
           );
         })
       ),
