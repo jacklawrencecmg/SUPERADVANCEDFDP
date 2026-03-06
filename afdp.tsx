@@ -1422,13 +1422,15 @@ export default function App(){
     ),
 
     // NAV
-    React.createElement("div",{style:{padding:"14px 16px 12px",position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,display:"flex",flexDirection:"column",alignItems:"center"}},
-      React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380,display:"block",margin:"0 auto"}}),
-      React.createElement("div",{style:{position:"absolute",top:"50%",right:16,transform:"translateY(-50%)",display:"flex",gap:6,alignItems:"center"}},
-        React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:13,lineHeight:1}},darkMode?"Sun":"Moon"),
-        !user?React.createElement("div",{style:{display:"flex",gap:6}},
-          React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"6px 12px",borderRadius:20,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11}},"Sign In"),
-          React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"6px 14px",borderRadius:20,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:11}},"Sign Up Free")
+    React.createElement("div",{style:{position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,paddingBottom:10}},
+      React.createElement("div",{style:{display:"flex",justifyContent:"center",paddingTop:12}},
+        React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380}})
+      ),
+      React.createElement("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:8}},
+        React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1}},darkMode?"☀ Light":"🌙 Dark"),
+        !user?React.createElement(React.Fragment,null,
+          React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"7px 16px",borderRadius:20,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:12}},"Sign In"),
+          React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"7px 18px",borderRadius:20,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:12}},"Sign Up Free")
         ):React.createElement(UserMenu,{user:user,T:T,onSignOut:function(){setUser(null);setShowAdmin(false);},onUpgrade:function(){setAuthMode("signup");setShowAuth(true);},onAdmin:function(){setShowAdmin(true);}})
       )
     ),
