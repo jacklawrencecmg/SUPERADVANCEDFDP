@@ -1441,7 +1441,7 @@ export default function App(){
         var active=tab===item[0];
         return React.createElement("button",{key:item[0],onClick:function(){
           if((item[0]==="league"||item[0]==="reports")&&!isPro){setAuthMode("signup");setShowAuth(true);return;}
-          if(item[0]==="admin"){setTab("admin");return;}
+          if(item[0]==="admin"){if(!user){setAuthMode("signin");setShowAuth(true);return;}setTab("admin");return;}
           setTab(item[0]);
         },style:{flex:1,padding:"10px 4px 6px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2}},
           React.createElement("span",{style:{fontSize:16}}," "),
@@ -3052,7 +3052,13 @@ export default function App(){
     ),
 
     // ════ ADMIN TAB ════
-    tab==="admin"&&React.createElement("div",{style:{paddingBottom:80}},
+    tab==="admin"&&!user&&React.createElement("div",{style:{padding:"60px 24px",textAlign:"center",paddingBottom:100}},
+      React.createElement("div",{style:{width:72,height:72,borderRadius:20,background:T.purpleDim,border:"1px solid "+T.borderPurple,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,margin:"0 auto 20px"}},"🔒"),
+      React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.text,marginBottom:10}},"Admin Access Required"),
+      React.createElement("div",{style:{fontSize:14,color:T.textSub,lineHeight:1.6,marginBottom:28,maxWidth:280,margin:"0 auto 28px"}},"You must be signed in to access the Admin panel."),
+      React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"14px 32px",borderRadius:14,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer"}},"Sign In")
+    ),
+    tab==="admin"&&user&&React.createElement("div",{style:{paddingBottom:80}},
       // sub-nav
       React.createElement("div",{style:{display:"flex",gap:6,padding:"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none",borderBottom:"1px solid "+T.border}},
         [["system","\u21BA","System"],["valuetuner","\u2AE5","Value Tuner"],["rbcontext","\u270E","RB Context"],["rbai","\u2728","RB AI"],["headshots","\uD83D\uDC64","Headshots"],["idpupload","\u2B06","IDP Upload"]].map(function(s){
