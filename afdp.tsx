@@ -295,12 +295,12 @@ function AuthModal(props){
       onAuth({name:admin?"Jack Lawrence":(mode==="signup"?name:"Dynasty Manager"),email:email,plan:admin?"elite":(mode==="signup"?plan:"pro"),isPro:true,isAdmin:admin});
     },800);
   }
-  var LogoSvg=React.createElement("svg",{width:24,height:28,viewBox:"0 0 54 62",fill:"none"},React.createElement("path",{d:"M27 2L4 11V33C4 46 27 60 27 60S50 46 50 33V11L27 2Z",fill:T.bg,stroke:T.purple,strokeWidth:"2.5"}),React.createElement("ellipse",{cx:"27",cy:"26",rx:"14",ry:"8",fill:"none",stroke:"#c4b5fd",strokeWidth:"1.5"}),React.createElement("circle",{cx:"27",cy:"26",r:"5",fill:T.bg,stroke:T.purple,strokeWidth:"1"}),React.createElement("rect",{x:"22.5",y:"24",width:"2",height:"4",rx:"0.5",fill:T.purple}),React.createElement("rect",{x:"25.5",y:"22",width:"2",height:"6",rx:"0.5",fill:"#c4b5fd"}),React.createElement("rect",{x:"28.5",y:"23",width:"2",height:"5",rx:"0.5",fill:T.purple}));
+  var LogoSvg=React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:48,width:"auto"}});
   return React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}},
     React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:28,width:"100%",maxWidth:400,position:"relative"}},
       React.createElement("button",{onClick:onClose,style:{position:"absolute",top:14,right:16,background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:20}},"x"),
       React.createElement("div",{style:{textAlign:"center",marginBottom:18}},
-        React.createElement("div",{style:{display:"inline-flex",alignItems:"center",gap:6}},LogoSvg,React.createElement("span",{style:{fontSize:16,fontWeight:300,color:T.textSub}},"fantasy"),React.createElement("span",{style:{fontSize:16,fontWeight:900,color:T.purple,marginLeft:-4}},"DraftPros"))
+        React.createElement("img",{src:"/logo-horizontal.png",alt:"Fantasy DraftPros",style:{height:40,width:"auto",maxWidth:220}})
       ),
       step===1&&React.createElement("div",null,
         React.createElement("div",{style:{textAlign:"center",marginBottom:18}},React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},mode==="signup"?"Create Account":"Welcome Back"),React.createElement("div",{style:{fontSize:13,color:T.textSub}},mode==="signup"?"Start your 7-day free trial":"Sign in to your account")),
@@ -578,7 +578,7 @@ export default function App(){
 
   var inpS={background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"12px 16px",fontSize:13,outline:"none",width:"100%",boxSizing:"border-box"};
 
-  var LogoSvg=React.createElement("svg",{width:22,height:26,viewBox:"0 0 54 62",fill:"none"},React.createElement("path",{d:"M27 2L4 11V33C4 46 27 60 27 60S50 46 50 33V11L27 2Z",fill:T.bgCard,stroke:T.purple,strokeWidth:"2.5"}),React.createElement("ellipse",{cx:"27",cy:"26",rx:"14",ry:"8",fill:"none",stroke:"#c4b5fd",strokeWidth:"1.5"}),React.createElement("circle",{cx:"27",cy:"26",r:"5",fill:T.bg,stroke:T.purple,strokeWidth:"1"}),React.createElement("rect",{x:"22.5",y:"24",width:"2",height:"4",rx:"0.5",fill:T.purple}),React.createElement("rect",{x:"25.5",y:"22",width:"2",height:"6",rx:"0.5",fill:"#c4b5fd"}),React.createElement("rect",{x:"28.5",y:"23",width:"2",height:"5",rx:"0.5",fill:T.purple}));
+  var LogoSvg=React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:28,width:"auto"}});
 
   // ── LEAGUE TEAMS mock data helper ──
   var leagueTeamNames=LEAGUE_TEAMS.map(function(t){return t.name;});
@@ -643,7 +643,7 @@ export default function App(){
 
     // NAV
     React.createElement("div",{style:{padding:"14px 16px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border}},
-      React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},LogoSvg,React.createElement("span",{style:{fontSize:14,fontWeight:300,color:T.textSub}},"fantasy"),React.createElement("span",{style:{fontSize:14,fontWeight:900,color:T.purple,marginLeft:-4}},"DraftPros")),
+      React.createElement("img",{src:"/logo-horizontal.png",alt:"Fantasy DraftPros",style:{height:38,width:"auto",maxWidth:200}}),
       React.createElement("div",{style:{display:"flex",gap:6,alignItems:"center"}},
         React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:13,lineHeight:1}},darkMode?"Sun":"Moon"),
         !user?React.createElement("div",{style:{display:"flex",gap:6}},
