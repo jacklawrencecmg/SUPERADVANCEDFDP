@@ -505,6 +505,9 @@ export default function App(){
   var [simSaved,setSimSaved]=useState(false);
   var [expandedTeam,setExpandedTeam]=useState(null);
   var [rosterViewTeam,setRosterViewTeam]=useState(null);
+  var [activeLeague,setActiveLeague]=useState(null);
+  var [leagueRosters,setLeagueRosters]=useState(null);
+  var [leagueUsers,setLeagueUsers]=useState(null);
   // Rankings
   var [rankSubTab,setRankSubTab]=useState("allrankings");
   var [rankPos,setRankPos]=useState("QB");
@@ -572,6 +575,41 @@ export default function App(){
 
   var tradePool=useMemo(function(){return rankedPlayers.concat(DRAFT_PICKS.map(makePick));},[rankedPlayers]);
 
+  var sleeperIdToPlayer=useMemo(function(){
+    var m={};
+    rankedPlayers.forEach(function(p){var id=SLEEPER_IDS[p.name];if(id)m[id]=p;});
+    return m;
+  },[rankedPlayers]);
+
+  var powerRankingTeams=useMemo(function(){
+    if(!leagueRosters||!leagueUsers)return null;
+    var userMap={};
+    leagueUsers.forEach(function(u){userMap[u.user_id]=u;});
+    var teams=leagueRosters.map(function(r){
+      var u=userMap[r.owner_id]||{};
+      var teamName=(u.metadata&&u.metadata.team_name)||u.display_name||("Team "+r.roster_id);
+      var players=(r.players||[]).map(function(id){return sleeperIdToPlayer[id];}).filter(Boolean);
+      players.sort(function(a,b){return b.tradeVal-a.tradeVal;});
+      var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
+      var faabRemain=r.settings&&r.settings.waiver_budget_used!=null?(200-r.settings.waiver_budget_used):null;
+      var draftPicks=(r.draft_picks||[]).length+(r.future_draft_picks||[]).length;
+      return {name:teamName,owner:u.display_name||"",players:players,totalVal:totalVal,faab:faabRemain,picks:draftPicks,wins:(r.settings&&r.settings.wins)||0,losses:(r.settings&&r.settings.losses)||0};
+    });
+    teams.sort(function(a,b){return b.totalVal-a.totalVal;});
+    return teams;
+  },[leagueRosters,leagueUsers,sleeperIdToPlayer]);
+
+  function connectLeague(lg){
+    setLeagueImportStatus("connecting");setLeagueImportErr("");
+    Promise.all([
+      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/rosters").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();}),
+      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/users").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();})
+    ]).then(function(results){
+      setLeagueRosters(results[0]);setLeagueUsers(results[1]);setActiveLeague(lg);
+      setLeagueImportStatus("connected");setLeagueSubTab("power");
+    }).catch(function(e){setLeagueImportErr(e.message||"Failed to load league");setLeagueImportStatus("error");});
+  }
+
   var LEAGUE_TEAMS=useMemo(function(){
     var names=["From tank to battle-ship","Gay Lord Fockers","Dog Water","The FORGE","TwoSticks","Old Men Rule","Armchair Warriors","Dynasty Kings","Red Zone Bandits","Waiver Wire Heroes","Stack Attack","The Sleeper Picks"];
     return names.map(function(name,i){
@@ -616,8 +654,12 @@ export default function App(){
     if(!leagueImportUser.trim())return;
     setLeagueImportStatus("loading");setLeagueImportErr("");setLeagueImportData(null);
     fetch("https://api.sleeper.app/v1/user/"+leagueImportUser.trim()).then(function(r){if(!r.ok)throw new Error("User not found");return r.json();}).then(function(u){
-      return fetch("https://api.sleeper.app/v1/user/"+u.user_id+"/leagues/nfl/2025").then(function(r){return r.json();}).then(function(leagues){
-        setLeagueImportData({username:u.display_name||u.username,leagues:leagues||[]});
+      var uid=u.user_id;
+      return Promise.all([
+        fetch("https://api.sleeper.app/v1/user/"+uid+"/leagues/nfl/2025").then(function(r){return r.json();}).catch(function(){return[];}),
+        fetch("https://api.sleeper.app/v1/user/"+uid+"/leagues/nfl/2026").then(function(r){return r.json();}).catch(function(){return[];})
+      ]).then(function(results){
+        setLeagueImportData({username:u.display_name||u.username,leagues2025:results[0]||[],leagues2026:results[1]||[]});
         setLeagueImportStatus("success");
       });
     }).catch(function(e){setLeagueImportErr(e.message||"User not found");setLeagueImportStatus("error");});
@@ -636,15 +678,15 @@ export default function App(){
 
     // Roster modal
     rosterViewTeam!==null&&(function(){
-      var team=LEAGUE_TEAMS[rosterViewTeam];
-      var off=rosterViewTeam*2;
-      var rosterPlayers=rankedPlayers.filter(function(p){return p.pos!=="DST"&&p.pos!=="K";}).slice(off*4,off*4+Math.min(team.players,22));
+      var prt=powerRankingTeams||LEAGUE_TEAMS.map(function(t,i){var off=i*2;var pls=rankedPlayers.filter(function(p){return p.pos!=="DST"&&p.pos!=="K";}).slice(off*4,off*4+Math.min(t.players,22));return Object.assign({},t,{players:pls});});
+      var team=prt[rosterViewTeam]||{name:"",players:[],faab:null,picks:0};
+      var rosterPlayers=team.players||[];
       return React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:500,overflowY:"auto",padding:16}},
         React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:20,maxWidth:460,margin:"0 auto"}},
           React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
             React.createElement("div",null,
               React.createElement("div",{style:{fontWeight:900,fontSize:18}},team.name),
-              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},rosterPlayers.length+" players · $"+team.faab+" FAAB · "+team.picks+" picks")
+              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},rosterPlayers.length+" players"+(team.faab!=null?" · $"+team.faab+" FAAB":"")+(team.picks?" · "+team.picks+" picks":""))
             ),
             React.createElement("button",{onClick:function(){setRosterViewTeam(null);},style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:22,lineHeight:1}},"×")
           ),
@@ -870,17 +912,23 @@ export default function App(){
               )
             ),
             React.createElement("div",{style:{display:"flex",gap:8}},
-              React.createElement("button",{style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.borderPurple,background:T.purpleDim,color:T.purple,fontWeight:700,fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:4}},React.createElement("span",null,"↻")," Sync FDP Values"),
-              React.createElement("button",{style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},"Refresh")
+              React.createElement("button",{onClick:function(){if(activeLeague)connectLeague(activeLeague);},style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.borderPurple,background:T.purpleDim,color:T.purple,fontWeight:700,fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:4}},React.createElement("span",null,"↻")," Sync FDP Values"),
+              React.createElement("button",{onClick:function(){if(activeLeague)connectLeague(activeLeague);},style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},"Refresh")
             )
           )
         ),
-        LEAGUE_TEAMS.map(function(team,i){
+        !powerRankingTeams&&React.createElement("div",{style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:12,padding:"14px 16px",marginBottom:16,textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:8}},"Import your Sleeper league to see real power rankings"),
+          React.createElement("button",{onClick:function(){setLeagueSubTab("leagimport");},style:{padding:"8px 20px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}},"Import League")
+        ),
+        (powerRankingTeams||LEAGUE_TEAMS).map(function(team,i){
           var ords=["1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"];
           var ord=ords[i]||(i+1)+"th";
           var badgeBg=i===0?"#f59e0b":i===1?"#9ca3af":i===2?"#b45309":T.bgInput;
           var badgeText=i<3?"#000":T.textSub;
-          return React.createElement("div",{key:team.name,style:{background:T.bgCard,border:"1px solid "+(i===0?T.borderPurple:T.border),borderRadius:14,padding:16,marginBottom:10}},
+          var record=powerRankingTeams?(team.wins||0)+"-"+(team.losses||0):(team.record||"0-0");
+          var playerCount=powerRankingTeams?(team.players||[]).length:(team.players||0);
+          return React.createElement("div",{key:team.name+i,style:{background:T.bgCard,border:"1px solid "+(i===0?T.borderPurple:T.border),borderRadius:14,padding:16,marginBottom:10}},
             React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:12,marginBottom:12}},
               React.createElement("div",{style:{background:badgeBg,borderRadius:20,padding:"5px 12px",display:"inline-flex",alignItems:"center",gap:4,flexShrink:0}},
                 React.createElement("span",{style:{fontSize:12}},"\uD83C\uDFC6"),
@@ -888,20 +936,21 @@ export default function App(){
               ),
               React.createElement("div",{style:{flex:1}},
                 React.createElement("div",{style:{fontWeight:800,fontSize:15,marginBottom:4}},team.name),
+                powerRankingTeams&&team.owner&&React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:2}},team.owner),
                 React.createElement("div",{style:{fontSize:11,color:T.textSub,display:"flex",gap:8,alignItems:"center"}},
-                  React.createElement("span",null,"\uD83D\uDC65 "+team.record),
-                  React.createElement("span",null,"  0.0 pts")
+                  React.createElement("span",null,"\uD83D\uDC65 "+record),
+                  powerRankingTeams&&React.createElement("span",{style:{color:T.purpleLight,fontWeight:700}},"Value: "+(team.totalVal||0).toLocaleString())
                 )
               )
             ),
             React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}},
-              [["Players",team.players],["Draft Picks",team.picks]].map(function(s){return React.createElement("div",{key:s[0],style:{background:T.bgInput,borderRadius:8,padding:"10px 12px"}},React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:2}},s[0]),React.createElement("div",{style:{fontWeight:800,fontSize:18}},s[1]));})
+              [["Players",playerCount],["Draft Picks",team.picks]].map(function(s){return React.createElement("div",{key:s[0],style:{background:T.bgInput,borderRadius:8,padding:"10px 12px"}},React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:2}},s[0]),React.createElement("div",{style:{fontWeight:800,fontSize:18}},s[1]));})
             ),
-            React.createElement("div",{style:{background:T.bgInput,borderRadius:8,padding:"10px 12px",marginBottom:12}},
-              React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:2}},"FAAB"),
+            team.faab!=null&&React.createElement("div",{style:{background:T.bgInput,borderRadius:8,padding:"10px 12px",marginBottom:12}},
+              React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:2}},"FAAB Remaining"),
               React.createElement("div",{style:{fontWeight:800,fontSize:18}},"$"+team.faab)
             ),
-            React.createElement("button",{onClick:function(){setRosterViewTeam(i);},style:{width:"100%",padding:"11px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.purple,fontWeight:700,fontSize:13,cursor:"pointer"}},"View Full Roster")
+            React.createElement("button",{onClick:function(){setRosterViewTeam(i);},style:{width:"100%",padding:"11px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.purple,fontWeight:700,fontSize:13,cursor:"pointer",marginTop:team.faab!=null?0:12}},"View Full Roster")
           );
         })
       ),
@@ -1433,14 +1482,39 @@ export default function App(){
           ),
           leagueImportStatus==="loading"&&React.createElement("div",{style:{textAlign:"center",padding:"20px",color:T.textSub}},"Loading..."),
           leagueImportStatus==="error"&&React.createElement("div",{style:{padding:"10px 14px",background:T.red+"15",borderRadius:10,color:T.red,fontSize:12}},leagueImportErr),
-          leagueImportStatus==="success"&&leagueImportData&&React.createElement("div",null,
+          (leagueImportStatus==="success"||leagueImportStatus==="connected"||leagueImportStatus==="connecting")&&leagueImportData&&React.createElement("div",null,
             React.createElement("div",{style:{fontWeight:700,fontSize:15,marginBottom:8}},leagueImportData.username+"'s Leagues"),
-            leagueImportData.leagues.slice(0,5).map(function(lg){
-              return React.createElement("div",{key:lg.league_id,style:{background:T.bgInput,borderRadius:10,padding:"12px 14px",marginBottom:8}},
-                React.createElement("div",{style:{fontWeight:700,fontSize:13}},lg.name),
-                React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},lg.total_rosters+" teams")
-              );
-            })
+            activeLeague&&React.createElement("div",{style:{background:T.green+"18",border:"1px solid "+T.green+"44",borderRadius:10,padding:"10px 14px",marginBottom:10,fontSize:12,color:T.green,fontWeight:700}},
+              "Connected: "+activeLeague.name
+            ),
+            leagueImportStatus==="connecting"&&React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:8}},"Loading rosters..."),
+            (function(){
+              function renderLeagues(leagues){
+                return leagues.map(function(lg){
+                  var isActive=activeLeague&&activeLeague.league_id===lg.league_id;
+                  return React.createElement("div",{key:lg.league_id,style:{background:T.bgInput,borderRadius:10,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}},
+                    React.createElement("div",null,
+                      React.createElement("div",{style:{fontWeight:700,fontSize:13}},lg.name),
+                      React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},lg.total_rosters+" teams")
+                    ),
+                    React.createElement("button",{
+                      onClick:function(){if(!isActive)connectLeague(lg);},
+                      style:{padding:"7px 14px",borderRadius:8,border:"none",background:isActive?T.green:T.purple,color:"#fff",fontWeight:700,fontSize:11,cursor:isActive?"default":"pointer",flexShrink:0}
+                    },isActive?"Connected":"Connect")
+                  );
+                });
+              }
+              var els=[];
+              if(leagueImportData.leagues2026&&leagueImportData.leagues2026.length){
+                els.push(React.createElement("div",{key:"h26",style:{fontSize:11,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:6,marginTop:4}},"2026 SEASON"));
+                renderLeagues(leagueImportData.leagues2026).forEach(function(el){els.push(el);});
+              }
+              if(leagueImportData.leagues2025&&leagueImportData.leagues2025.length){
+                els.push(React.createElement("div",{key:"h25",style:{fontSize:11,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:6,marginTop:leagueImportData.leagues2026&&leagueImportData.leagues2026.length?12:4}},"2025 SEASON"));
+                renderLeagues(leagueImportData.leagues2025).forEach(function(el){els.push(el);});
+              }
+              return els;
+            })()
           )
         )
       )
