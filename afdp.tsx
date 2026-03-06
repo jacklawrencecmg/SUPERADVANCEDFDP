@@ -900,12 +900,13 @@ function AuthModal(props){
       onAuth({name:admin?"Jack Lawrence":(mode==="signup"?name:"Dynasty Manager"),email:email,plan:admin?"elite":(mode==="signup"?plan:"pro"),isPro:true,isAdmin:admin});
     },800);
   }
-  var LogoSvg=React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:48,width:"auto"}});
+  var logoSrc=T.bgCard==="#ffffff"?"/logo-shield-light.png":"/logo-shield.png";
+  var LogoSvg=React.createElement("img",{src:logoSrc,alt:"Fantasy DraftPros",style:{height:48,width:"auto"}});
   return React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}},
     React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:28,width:"100%",maxWidth:400,position:"relative"}},
       React.createElement("button",{onClick:onClose,style:{position:"absolute",top:14,right:16,background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:20}},"x"),
       React.createElement("div",{style:{textAlign:"center",marginBottom:18}},
-        React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:56,width:"auto",maxWidth:240}})
+        React.createElement("img",{src:logoSrc,alt:"Fantasy DraftPros",style:{height:56,width:"auto",maxWidth:240}})
       ),
       step===1&&React.createElement("div",null,
         React.createElement("div",{style:{textAlign:"center",marginBottom:18}},React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},mode==="signup"?"Create Account":"Welcome Back"),React.createElement("div",{style:{fontSize:13,color:T.textSub}},mode==="signup"?"Start your 7-day free trial":"Sign in to your account")),
@@ -1356,7 +1357,8 @@ export default function App(){
 
   var inpS={background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"12px 16px",fontSize:13,outline:"none",width:"100%",boxSizing:"border-box"};
 
-  var LogoSvg=React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:28,width:"auto"}});
+  var appLogoSrc=darkMode?"/logo-shield.png":"/logo-shield-light.png";
+  var LogoSvg=React.createElement("img",{src:appLogoSrc,alt:"Fantasy DraftPros",style:{height:28,width:"auto"}});
 
   // ── LEAGUE TEAMS mock data helper ──
   var activeTeams=powerRankingTeams||LEAGUE_TEAMS;
@@ -1424,7 +1426,7 @@ export default function App(){
     // NAV
     React.createElement("div",{style:{position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,paddingBottom:10}},
       React.createElement("div",{style:{display:"flex",justifyContent:"center",paddingTop:12}},
-        React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380}})
+        React.createElement("img",{src:appLogoSrc,alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380}})
       ),
       React.createElement("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:8}},
         React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1}},darkMode?"☀ Light":"🌙 Dark"),
