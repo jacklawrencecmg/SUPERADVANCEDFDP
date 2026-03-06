@@ -905,7 +905,7 @@ function AuthModal(props){
     React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:28,width:"100%",maxWidth:400,position:"relative"}},
       React.createElement("button",{onClick:onClose,style:{position:"absolute",top:14,right:16,background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:20}},"x"),
       React.createElement("div",{style:{textAlign:"center",marginBottom:18}},
-        React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:40,width:"auto",maxWidth:220}})
+        React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:56,width:"auto",maxWidth:240}})
       ),
       step===1&&React.createElement("div",null,
         React.createElement("div",{style:{textAlign:"center",marginBottom:18}},React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},mode==="signup"?"Create Account":"Welcome Back"),React.createElement("div",{style:{fontSize:13,color:T.textSub}},mode==="signup"?"Start your 7-day free trial":"Sign in to your account")),
@@ -1423,7 +1423,7 @@ export default function App(){
 
     // NAV
     React.createElement("div",{style:{padding:"14px 16px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border}},
-      React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:38,width:"auto",maxWidth:200}}),
+      React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:54,width:"auto",maxWidth:220}}),
       React.createElement("div",{style:{display:"flex",gap:6,alignItems:"center"}},
         React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:13,lineHeight:1}},darkMode?"Sun":"Moon"),
         !user?React.createElement("div",{style:{display:"flex",gap:6}},
