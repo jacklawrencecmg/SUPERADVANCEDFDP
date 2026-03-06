@@ -758,7 +758,8 @@ export default function App(){
 
     // Roster modal
     rosterViewTeam!==null&&(function(){
-      var prt=powerRankingTeams||LEAGUE_TEAMS.map(function(t,i){var off=i*2;var pls=rankedPlayers.filter(function(p){return p.pos!=="DST"&&p.pos!=="K";}).slice(off*4,off*4+Math.min(t.players,22));return Object.assign({},t,{players:pls});});
+      var _filtered=rankedPlayers.filter(function(p){return p.pos!=="DST"&&p.pos!=="K";});
+      var prt=powerRankingTeams||LEAGUE_TEAMS.map(function(t,i){var pls=_filtered.slice(i*22,i*22+22);return Object.assign({},t,{players:pls});});
       var team=prt[rosterViewTeam]||{name:"",players:[],faab:null,picks:0};
       var rosterPlayers=team.players||[];
       return React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:500,overflowY:"auto",padding:16}},
