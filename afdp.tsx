@@ -1127,7 +1127,7 @@ export default function App(){
             React.createElement("div",null,
               React.createElement("div",{style:{fontWeight:900,fontSize:22,lineHeight:1.1}},"Playoff Odds"),
               React.createElement("div",{style:{fontWeight:900,fontSize:22,lineHeight:1.1,marginBottom:6}},"Simulator"),
-              React.createElement("div",{style:{fontSize:11,color:T.textSub}},"Armchair Football League · 2026")
+              React.createElement("div",{style:{fontSize:11,color:T.textSub}},(activeLeague&&activeLeague.name)||"Fantasy League · 2026")
             ),
             React.createElement("button",{style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.textSub,fontWeight:700,fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:4}},
               React.createElement("span",null,"↓")," Export"
@@ -1150,56 +1150,64 @@ export default function App(){
             )
           )
         ),
-        simRan&&React.createElement("div",null,
-          React.createElement("div",{style:{background:"linear-gradient(135deg,#1a1400,#1e1a00)",border:"1px solid "+T.gold+"44",borderRadius:14,padding:16,marginBottom:16}},
-            React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:8}},
-              React.createElement("span",{style:{fontSize:20,color:T.gold}},"★"),
-              React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.gold}},"Championship Favorite")
-            ),
-            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4}},"Most Likely Champion"),
-            React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.gold,marginBottom:4}},activeTeams[0]&&activeTeams[0].name),
-            React.createElement("div",{style:{fontSize:12,color:T.textSub}},(LEAGUE_TEAMS[0]&&LEAGUE_TEAMS[0].makePlayoffs!=null?"0-0 · "+LEAGUE_TEAMS[0].makePlayoffs+"% playoff odds":""))
-          ),
-          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
-            React.createElement("div",{style:{fontWeight:800,fontSize:16}},"Simulation Results"),
-            React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center"}},
-              React.createElement("select",{style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"5px 10px",fontSize:11,outline:"none"}},React.createElement("option",null,"All Teams")),
-              React.createElement("div",{style:{fontSize:10,color:T.textSub}},activeTeams.length+" of "+activeTeams.length+" · "+simCount.split(" ")[0]+" sims")
-            )
-          ),
-          LEAGUE_TEAMS.map(function(team,i){
-            var collapsed=expandedTeam===team.name;
-            return React.createElement("div",{key:team.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:16,marginBottom:10}},
-              React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:12}},
-                React.createElement("div",{style:{width:40,height:40,borderRadius:"50%",background:i===0?T.purple:T.bgInput,border:"2px solid "+(i===0?T.purple:T.border),display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},
-                  React.createElement("span",{style:{fontWeight:900,fontSize:12,color:i===0?"#fff":T.textSub}},"#"+(i+1))
-                ),
-                React.createElement("div",{style:{flex:1}},
-                  React.createElement("div",{style:{fontWeight:800,fontSize:14}},team.name),
-                  React.createElement("div",{style:{fontSize:10,color:T.textSub,display:"flex",gap:8}},
-                    React.createElement("span",null,"Record: "+team.record),
-                    React.createElement("span",null,"Proj: "+team.projW+" W"),
-                    React.createElement("span",null,"0.0 PF")
-                  )
-                ),
-                React.createElement("button",{onClick:function(){setExpandedTeam(collapsed?null:team.name);},style:{background:"none",border:"none",color:T.textSub,cursor:"pointer",fontSize:12,paddingTop:4}},collapsed?"▲":"▼")
+        simRan&&(function(){
+          var n=activeTeams.length;
+          var simTeams=activeTeams.map(function(team,i){
+            var mp=team.makePlayoffs!=null?team.makePlayoffs:Math.max(8,Math.round(82-i*5.5));
+            var frb=team.firstRoundBye!=null?team.firstRoundBye:Math.max(2,Math.round(28-i*2.2));
+            var wc=team.winChamp!=null?team.winChamp:Math.max(1,Math.round(36-i*2.8));
+            var rec=team.record||(powerRankingTeams?(team.wins||0)+"-"+(team.losses||0):"0-0");
+            var projW=team.projW!=null?team.projW:+(Math.max(2,8.5-i*0.55)).toFixed(1);
+            return Object.assign({},team,{makePlayoffs:mp,firstRoundBye:frb,winChamp:wc,record:rec,projW:projW});
+          });
+          var leader=simTeams[0];
+          return React.createElement("div",null,
+            React.createElement("div",{style:{background:"linear-gradient(135deg,#1a1400,#1e1a00)",border:"1px solid "+T.gold+"44",borderRadius:14,padding:16,marginBottom:16}},
+              React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:8}},
+                React.createElement("span",{style:{fontSize:20,color:T.gold}},"★"),
+                React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.gold}},"Championship Favorite")
               ),
-              !collapsed&&React.createElement("div",{style:{marginTop:12}},
-                [["Make Playoffs",team.makePlayoffs,T.gold,"linear-gradient(90deg,#d97706,#f59e0b)"],["First Round Bye",team.firstRoundBye,"#f87171","#dc2626"],["Win Championship",team.winChamp,"#f87171","#b91c1c"]].map(function(row){
-                  return React.createElement("div",{key:row[0],style:{marginBottom:10}},
-                    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
-                      React.createElement("span",{style:{fontSize:12,color:T.textSub}},row[0]),
-                      React.createElement("span",{style:{fontWeight:800,fontSize:14,color:row[2]}},row[1]+"%")
-                    ),
-                    React.createElement("div",{style:{background:T.border,borderRadius:99,height:7,overflow:"hidden"}},
-                      React.createElement("div",{style:{width:row[1]+"%",height:"100%",background:row[3],borderRadius:99}})
+              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4}},"Most Likely Champion"),
+              React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.gold,marginBottom:4}},leader.name),
+              React.createElement("div",{style:{fontSize:12,color:T.textSub}},leader.record+" · "+leader.makePlayoffs+"% playoff odds")
+            ),
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
+              React.createElement("div",{style:{fontWeight:800,fontSize:16}},"Simulation Results"),
+              React.createElement("div",{style:{fontSize:10,color:T.textSub}},n+" teams · "+simCount.split(" ")[0]+" sims")
+            ),
+            simTeams.map(function(team,i){
+              var collapsed=expandedTeam===team.name;
+              return React.createElement("div",{key:team.name+i,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:16,marginBottom:10}},
+                React.createElement("div",{style:{display:"flex",alignItems:"flex-start",gap:12}},
+                  React.createElement("div",{style:{width:40,height:40,borderRadius:"50%",background:i===0?T.purple:T.bgInput,border:"2px solid "+(i===0?T.purple:T.border),display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},
+                    React.createElement("span",{style:{fontWeight:900,fontSize:12,color:i===0?"#fff":T.textSub}},"#"+(i+1))
+                  ),
+                  React.createElement("div",{style:{flex:1}},
+                    React.createElement("div",{style:{fontWeight:800,fontSize:14}},team.name),
+                    React.createElement("div",{style:{fontSize:10,color:T.textSub,display:"flex",gap:8}},
+                      React.createElement("span",null,"Record: "+team.record),
+                      React.createElement("span",null,"Proj: "+team.projW+" W")
                     )
-                  );
-                })
-              )
-            );
-          })
-        )
+                  ),
+                  React.createElement("button",{onClick:function(){setExpandedTeam(collapsed?null:team.name);},style:{background:"none",border:"none",color:T.textSub,cursor:"pointer",fontSize:12,paddingTop:4}},collapsed?"▲":"▼")
+                ),
+                !collapsed&&React.createElement("div",{style:{marginTop:12}},
+                  [["Make Playoffs",team.makePlayoffs,T.gold,"linear-gradient(90deg,#d97706,#f59e0b)"],["First Round Bye",team.firstRoundBye,"#f87171","#dc2626"],["Win Championship",team.winChamp,"#f87171","#b91c1c"]].map(function(row){
+                    return React.createElement("div",{key:row[0],style:{marginBottom:10}},
+                      React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
+                        React.createElement("span",{style:{fontSize:12,color:T.textSub}},row[0]),
+                        React.createElement("span",{style:{fontWeight:800,fontSize:14,color:row[2]}},row[1]+"%")
+                      ),
+                      React.createElement("div",{style:{background:T.border,borderRadius:99,height:7,overflow:"hidden"}},
+                        React.createElement("div",{style:{width:row[1]+"%",height:"100%",background:row[3],borderRadius:99}})
+                      )
+                    );
+                  })
+                )
+              );
+            })
+          );
+        })()
       ),
 
       // CHAMPIONSHIP
