@@ -76,6 +76,7 @@ const PLAYERS=[
   {name:"Anthony Richardson",pos:"QB",age:24,team:"IND",proj:{PPR:338,Half:338,Std:338},adp:9.5,note:"2026: 3,600 yds 27 TD 600 rush"},
   {name:"Kyler Murray",pos:"QB",age:28,team:"ARI",proj:{PPR:335,Half:335,Std:335},adp:11.2,note:"2026: 3,800 yds 28 TD 500 rush"},
   {name:"Justin Fields",pos:"QB",age:27,team:"PIT",proj:{PPR:328,Half:328,Std:328},adp:11.8,note:"2026: 3,500 yds 24 TD 700 rush"},
+  {name:"Jared Goff",pos:"QB",age:32,team:"DET",proj:{PPR:345,Half:345,Std:345},adp:10.5,note:"2026: 4,300 yds 33 TD elite system"},
   {name:"Baker Mayfield",pos:"QB",age:32,team:"TB",proj:{PPR:322,Half:322,Std:322},adp:12.5,note:"2026: 3,800 yds 29 TD"},
   {name:"Cam Ward",pos:"QB",age:23,team:"TEN",proj:{PPR:335,Half:335,Std:335},adp:11.0,note:"2026 Year 2 breakout: 3,800 yds 29 TD"},
   {name:"Shedeur Sanders",pos:"QB",age:23,team:"CLE",proj:{PPR:318,Half:318,Std:318},adp:13.5,note:"2026 Year 2: 3,500 yds 25 TD"},
@@ -1136,7 +1137,13 @@ export default function App(){
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.88)):1;
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
       var tvMult=isDynasty?100:isSF?80:scoring==="PPR"?60:scoring==="Half"?55:50;
-      p.tradeVal=Math.max(1,Math.round(p.vbd*tvMult));
+      var baseTV=Math.round(p.vbd*tvMult);
+      if(isDynasty){
+        var dyFloor=Math.max(5,Math.round(4000/Math.max(1,p.posRank)*dynastyBonus(p.pos,p.age)));
+        p.tradeVal=Math.max(dyFloor,baseTV);
+      } else {
+        p.tradeVal=Math.max(1,baseTV);
+      }
     });
     return list;
   },[scoring,teams,budget,ffab,sKey,isDynasty,isSF]);
