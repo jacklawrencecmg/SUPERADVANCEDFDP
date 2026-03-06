@@ -666,7 +666,7 @@ export default function App(){
       fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/rosters").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();}),
       fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/users").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();})
     ]).then(function(results){
-      setLeagueRosters(results[0]);setLeagueUsers(results[1]);setActiveLeague(lg);
+      setImportedTeams(null);setLeagueRosters(results[0]);setLeagueUsers(results[1]);setActiveLeague(lg);
       setLeagueImportStatus("connected");setLeagueSubTab("power");
     }).catch(function(e){setLeagueImportErr(e.message||"Failed to load league");setLeagueImportStatus("error");});
   }
