@@ -1034,7 +1034,7 @@ export default function App(){
   var [showAuth,setShowAuth]=useState(false);
   var [authMode,setAuthMode]=useState("signup");
   var [showAdmin,setShowAdmin]=useState(false);
-  var [darkMode,setDarkMode]=useState(true);
+  var [darkMode,setDarkMode]=useState(false);
   // League
   var [leagueSubTab,setLeagueSubTab]=useState("power");
   var [byeWeek,setByeWeek]=useState(1);
