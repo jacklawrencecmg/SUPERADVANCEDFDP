@@ -905,7 +905,7 @@ function AuthModal(props){
     React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:28,width:"100%",maxWidth:400,position:"relative"}},
       React.createElement("button",{onClick:onClose,style:{position:"absolute",top:14,right:16,background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:20}},"x"),
       React.createElement("div",{style:{textAlign:"center",marginBottom:18}},
-        React.createElement("img",{src:"/logo-horizontal.png",alt:"Fantasy DraftPros",style:{height:40,width:"auto",maxWidth:220}})
+        React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:40,width:"auto",maxWidth:220}})
       ),
       step===1&&React.createElement("div",null,
         React.createElement("div",{style:{textAlign:"center",marginBottom:18}},React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},mode==="signup"?"Create Account":"Welcome Back"),React.createElement("div",{style:{fontSize:13,color:T.textSub}},mode==="signup"?"Start your 7-day free trial":"Sign in to your account")),
@@ -1223,6 +1223,8 @@ export default function App(){
 
   function connectLeague(lg){
     setLeagueImportStatus("connecting");setLeagueImportErr("");
+    // Normalize name for fuzzy matching (strips Jr./Sr./II/III, apostrophes, dots)
+    function normName(n){return (n||"").toLowerCase().replace(/[''`]/g,"'").replace(/\./g,"").replace(/\s+(jr|sr|ii|iii|iv)$/,"").trim();}
     var playersPromise;
     try{var c=localStorage.getItem('fdp_sp_v1');if(c)playersPromise=Promise.resolve(JSON.parse(c));}catch(e){}
     if(!playersPromise){
@@ -1230,34 +1232,51 @@ export default function App(){
         var compact={};
         Object.keys(data).forEach(function(id){
           var p=data[id];
-          if(p.full_name&&(p.active||p.team)){compact[id]={name:p.full_name,pos:(p.fantasy_positions&&p.fantasy_positions[0])||p.position||"?",team:p.team||"?"};}
+          if(p.full_name&&(p.active||p.team)){compact[id]={name:p.full_name,pos:(p.fantasy_positions&&p.fantasy_positions[0])||p.position||"?",team:p.team||"FA",age:p.age||0};}
         });
         try{localStorage.setItem('fdp_sp_v1',JSON.stringify(compact));}catch(e){}
         return compact;
       });
     }
     Promise.all([
-      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/rosters").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();}),
-      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/users").then(function(r){if(!r.ok)throw new Error("Failed");return r.json();}),
+      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/rosters").then(function(r){if(!r.ok)throw new Error("Failed to load rosters");return r.json();}),
+      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/users").then(function(r){if(!r.ok)throw new Error("Failed to load users");return r.json();}),
+      fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/traded_picks").then(function(r){return r.ok?r.json():[];}).catch(function(){return[];}),
       playersPromise
     ]).then(function(results){
-      var rosters=results[0],users=results[1],sleeperDb=results[2]||{};
-      var rpByName={};rankedPlayers.forEach(function(p){rpByName[p.name.toLowerCase()]=p;});
+      var rosters=results[0],users=results[1],tradedPicks=results[2]||[],sleeperDb=results[3]||{};
+      // Build lookup maps from rankedPlayers — exact name and normalized name
+      var rpByName={},rpByNorm={};
+      rankedPlayers.forEach(function(p){rpByName[p.name.toLowerCase()]=p;rpByNorm[normName(p.name)]=p;});
+      // Map every Sleeper player ID to our player object (or a stub)
       var idMap={};
       Object.keys(sleeperDb).forEach(function(id){
         var sp=sleeperDb[id];
-        idMap[id]=rpByName[sp.name.toLowerCase()]||{name:sp.name,pos:sp.pos,team:sp.team,rank:"—",vbd:0,tradeVal:0,age:0,posRank:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
+        var nm=sp.name||"";
+        var match=rpByName[nm.toLowerCase()]||rpByNorm[normName(nm)]||null;
+        idMap[id]=match||{name:nm,pos:sp.pos||"?",team:sp.team||"FA",age:sp.age||0,rank:"—",vbd:0,tradeVal:1,posRank:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
       });
       var userMap={};users.forEach(function(u){userMap[u.user_id]=u;});
+      // FAAB: use actual league budget from lg.settings
+      var faabBudget=(lg.settings&&lg.settings.waiver_budget!=null)?lg.settings.waiver_budget:200;
+      // Count traded draft picks per roster (owner_id = current owner)
+      var curSeason=parseInt(lg.season)||new Date().getFullYear();
+      var picksByRoster={};
+      tradedPicks.forEach(function(pk){
+        if(pk.owner_id&&parseInt(pk.season)>=curSeason){
+          picksByRoster[pk.owner_id]=(picksByRoster[pk.owner_id]||0)+1;
+        }
+      });
       var teams=rosters.map(function(r){
         var u=userMap[r.owner_id]||{};
         var teamName=(u.metadata&&u.metadata.team_name)||u.display_name||("Team "+r.roster_id);
-        var players=(r.players||[]).map(function(id){return idMap[id];}).filter(function(p){return p&&p.pos!=="DEF"&&p.pos!=="K";});
-        players.sort(function(a,b){return b.tradeVal-a.tradeVal;});
-        var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
-        var faabRemain=r.settings&&r.settings.waiver_budget_used!=null?(200-r.settings.waiver_budget_used):null;
-        var draftPicks=(r.draft_picks||[]).length+(r.future_draft_picks||[]).length;
-        return {name:teamName,owner:u.display_name||"",players:players,totalVal:totalVal,faab:faabRemain,picks:draftPicks,wins:(r.settings&&r.settings.wins)||0,losses:(r.settings&&r.settings.losses)||0};
+        var players=(r.players||[]).map(function(id){return idMap[id];}).filter(function(p){return p&&p.pos!=="DEF"&&p.pos!=="K"&&p.pos!=="?"||false;});
+        players=players.filter(function(p){return p.pos!=="DEF"&&p.pos!=="K";});
+        players.sort(function(a,b){return (b.tradeVal||0)-(a.tradeVal||0);});
+        var totalVal=players.reduce(function(s,p){return s+(p.tradeVal||0);},0);
+        var faabUsed=(r.settings&&r.settings.waiver_budget_used)||0;
+        var draftPicks=picksByRoster[r.roster_id]||0;
+        return {name:teamName,owner:u.display_name||"",players:players,totalVal:totalVal,faab:faabBudget-faabUsed,picks:draftPicks,wins:(r.settings&&r.settings.wins)||0,losses:(r.settings&&r.settings.losses)||0,ties:(r.settings&&r.settings.ties)||0};
       });
       teams.sort(function(a,b){return b.totalVal-a.totalVal;});
       saveAndSetImportedTeams(teams);setLeagueRosters(null);setLeagueUsers(null);saveAndSetActiveLeague(lg);
@@ -1289,16 +1308,31 @@ export default function App(){
   function importSleeper(){
     if(!slUser.trim())return;
     setImpStatus("loading");setImpData(null);setImpErr("");
+    function normName(n){return (n||"").toLowerCase().replace(/[''`]/g,"'").replace(/\./g,"").replace(/\s+(jr|sr|ii|iii|iv)$/,"").trim();}
+    var rpByName={},rpByNorm={};
+    rankedPlayers.forEach(function(p){rpByName[p.name.toLowerCase()]=p;rpByNorm[normName(p.name)]=p;});
     fetch("https://api.sleeper.app/v1/user/"+slUser.trim()).then(function(r){if(!r.ok)throw new Error("User not found");return r.json();}).then(function(u){
-      return fetch("https://api.sleeper.app/v1/user/"+u.user_id+"/leagues/nfl/2025").then(function(r){return r.json();}).then(function(leagues){
-        if(!leagues||leagues.length===0)throw new Error("No NFL leagues found");
+      // Try 2026 first (dynasty offseason), fall back to 2025
+      return fetch("https://api.sleeper.app/v1/user/"+u.user_id+"/leagues/nfl/2026").then(function(r){return r.json();}).then(function(leagues2026){
+        var yr="2026",leagues=leagues2026;
+        if(!leagues||leagues.length===0){
+          return fetch("https://api.sleeper.app/v1/user/"+u.user_id+"/leagues/nfl/2025").then(function(r){return r.json();}).then(function(l){yr="2025";leagues=l;return{leagues:leagues,yr:yr};});
+        }
+        return {leagues:leagues,yr:yr};
+      }).then(function(res){
+        var leagues=res.leagues,yr=res.yr;
+        if(!leagues||leagues.length===0)throw new Error("No NFL leagues found for 2025 or 2026");
         var lg=leagues[0];
         return fetch("https://api.sleeper.app/v1/league/"+lg.league_id+"/rosters").then(function(r){return r.json();}).then(function(rosters){
           var my=rosters.find(function(r){return r.owner_id===u.user_id;});
           var rec=lg.scoring_settings?lg.scoring_settings.rec:0;
           var pls=my&&my.players?my.players:[];
-          setImpData({username:u.display_name||u.username,leagueName:lg.name,totalTeams:rosters.length,scoringFormat:rec===1?"PPR":rec===0.5?"Half-PPR":"Standard"});
-          setImpRoster(pls.map(function(pid){var f=sleeperIdToPlayer[pid]||rankedPlayers.find(function(p){return p.name.toLowerCase()===pid.toLowerCase();});return f||{name:"ID:"+pid,pos:"?",team:"?",rank:"—",vbd:0,tradeVal:0,ag:{g:"?",c:"#888"},tier:{t:"?",c:"#888"}};}));
+          setImpData({username:u.display_name||u.username,leagueName:lg.name,totalTeams:rosters.length,scoringFormat:rec===1?"PPR":rec===0.5?"Half-PPR":"Standard",season:yr});
+          setImpRoster(pls.map(function(pid){
+            var f=sleeperIdToPlayer[pid]||rpByName[(sleeperIdToPlayer[pid]&&sleeperIdToPlayer[pid].name||"").toLowerCase()]||null;
+            if(!f){var sp=sleeperIdToPlayer[pid];if(sp)f=rpByName[sp.name.toLowerCase()]||rpByNorm[normName(sp.name||"")];}
+            return f||{name:"Unknown ("+pid+")",pos:"?",team:"?",rank:"—",vbd:0,tradeVal:1,ag:{g:"?",c:"#888"},tier:{t:"?",c:"#888"}};
+          }));
           setImpStatus("success");
         });
       });
@@ -1389,7 +1423,7 @@ export default function App(){
 
     // NAV
     React.createElement("div",{style:{padding:"14px 16px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border}},
-      React.createElement("img",{src:"/logo-horizontal.png",alt:"Fantasy DraftPros",style:{height:38,width:"auto",maxWidth:200}}),
+      React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:38,width:"auto",maxWidth:200}}),
       React.createElement("div",{style:{display:"flex",gap:6,alignItems:"center"}},
         React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:13,lineHeight:1}},darkMode?"Sun":"Moon"),
         !user?React.createElement("div",{style:{display:"flex",gap:6}},
