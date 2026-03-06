@@ -1422,9 +1422,9 @@ export default function App(){
     ),
 
     // NAV
-    React.createElement("div",{style:{padding:"14px 16px 12px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border}},
-      React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380}}),
-      React.createElement("div",{style:{display:"flex",gap:6,alignItems:"center"}},
+    React.createElement("div",{style:{padding:"14px 16px 12px",position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,display:"flex",flexDirection:"column",alignItems:"center"}},
+      React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380,display:"block",margin:"0 auto"}}),
+      React.createElement("div",{style:{position:"absolute",top:"50%",right:16,transform:"translateY(-50%)",display:"flex",gap:6,alignItems:"center"}},
         React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:13,lineHeight:1}},darkMode?"Sun":"Moon"),
         !user?React.createElement("div",{style:{display:"flex",gap:6}},
           React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"6px 12px",borderRadius:20,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11}},"Sign In"),
