@@ -357,6 +357,34 @@ function UserMenu(props){
   );
 }
 
+function SrchDrop(props){
+  var T=props.T,q=props.value,setQ=props.onChange,excl=props.exclude,onSel=props.onSelect,ph=props.placeholder,pool=props.pool;
+  var res=q?pool.filter(function(p){return p.name.toLowerCase().includes(q.toLowerCase())&&!excl.find(function(x){return x.name===p.name;});}).slice(0,8):[];
+  var inpS={background:T.bgInput,color:T.text,border:"1px solid "+(q?T.borderPurple:T.border),borderRadius:10,padding:"12px 16px",fontSize:13,outline:"none",width:"100%",boxSizing:"border-box"};
+  return React.createElement("div",{style:{position:"relative",flex:1}},
+    React.createElement("input",{value:q,onChange:function(e){setQ(e.target.value);},placeholder:ph||"Search players or picks...",autoComplete:"off",style:inpS}),
+    q&&res.length>0&&React.createElement("div",{style:{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,zIndex:200,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:12,overflow:"hidden",boxShadow:"0 12px 40px #0009"}},
+      res.map(function(p,ri){
+        var bg=ri%2===0?T.bgCard:T.bg;
+        return React.createElement("button",{key:p.name,onClick:function(){onSel(p);setQ("");},style:{display:"flex",alignItems:"center",gap:10,width:"100%",background:bg,border:"none",borderBottom:"1px solid "+T.border,padding:"10px 14px",cursor:"pointer",textAlign:"left"},onMouseEnter:function(e){e.currentTarget.style.background=T.purple+"22";},onMouseLeave:function(e){e.currentTarget.style.background=bg;}},
+          React.createElement(Avatar,{name:p.name,pos:p.pos,size:30}),
+          React.createElement("div",{style:{flex:1}},React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text}},p.name),React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team||"",p.age?" Age "+p.age:"",p.rank&&p.rank<999?" #"+p.rank:"")),
+          React.createElement("div",{style:{textAlign:"right"}},React.createElement(PBadge,{pos:p.pos}),React.createElement("div",{style:{fontSize:10,color:T.purpleLight,fontWeight:700,marginTop:2}},p.pos==="PICK"?"$"+p.est:p.tradeVal+" val"))
+        );
+      })
+    )
+  );
+}
+function TradeItem(props){
+  var T=props.T,item=props.item,onRemove=props.onRemove;
+  return React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"8px 12px",marginBottom:6}},
+    React.createElement(Avatar,{name:item.name,pos:item.pos,size:28}),
+    React.createElement(PBadge,{pos:item.pos}),
+    React.createElement("div",{style:{flex:1,minWidth:0}},React.createElement("div",{style:{fontWeight:700,fontSize:12,color:T.text,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},item.name)),
+    React.createElement("span",{style:{fontWeight:700,fontSize:12,color:T.purpleLight,flexShrink:0}},item.pos==="PICK"?"$"+item.est:item.tradeVal),
+    React.createElement("button",{onClick:onRemove,style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:14,padding:"0 2px"}},"x")
+  );
+}
 export default function App(){
   var [tab,setTab]=useState("trade");
   var [scoring,setScoring]=useState("Dynasty");
@@ -550,35 +578,6 @@ export default function App(){
 
   var inpS={background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"12px 16px",fontSize:13,outline:"none",width:"100%",boxSizing:"border-box"};
 
-  function SrchDrop(props){
-    var q=props.value,setQ=props.onChange,excl=props.exclude,onSel=props.onSelect,ph=props.placeholder;
-    var res=srchRes(q,excl);
-    return React.createElement("div",{style:{position:"relative",flex:1}},
-      React.createElement("input",{value:q,onChange:function(e){setQ(e.target.value);},placeholder:ph||"Search players or picks...",autoComplete:"off",style:Object.assign({},inpS,{border:"1px solid "+(q?T.borderPurple:T.border)})}),
-      q&&res.length>0&&React.createElement("div",{style:{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,zIndex:200,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:12,overflow:"hidden",boxShadow:"0 12px 40px #0009"}},
-        res.map(function(p,ri){
-          var bg=ri%2===0?T.bgCard:T.bg;
-          return React.createElement("button",{key:p.name,onClick:function(){onSel(p);setQ("");},style:{display:"flex",alignItems:"center",gap:10,width:"100%",background:bg,border:"none",borderBottom:"1px solid "+T.border,padding:"10px 14px",cursor:"pointer",textAlign:"left"},onMouseEnter:function(e){e.currentTarget.style.background=T.purple+"22";},onMouseLeave:function(e){e.currentTarget.style.background=bg;}},
-            React.createElement(Avatar,{name:p.name,pos:p.pos,size:30}),
-            React.createElement("div",{style:{flex:1}},React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text}},p.name),React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team||"",p.age?" Age "+p.age:"",p.rank&&p.rank<999?" #"+p.rank:"")),
-            React.createElement("div",{style:{textAlign:"right"}},React.createElement(PBadge,{pos:p.pos}),React.createElement("div",{style:{fontSize:10,color:T.purpleLight,fontWeight:700,marginTop:2}},p.pos==="PICK"?"$"+p.est:p.tradeVal+" val"))
-          );
-        })
-      )
-    );
-  }
-
-  function TradeItem(props){
-    var item=props.item,onRemove=props.onRemove;
-    return React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"8px 12px",marginBottom:6}},
-      React.createElement(Avatar,{name:item.name,pos:item.pos,size:28}),
-      React.createElement(PBadge,{pos:item.pos}),
-      React.createElement("div",{style:{flex:1,minWidth:0}},React.createElement("div",{style:{fontWeight:700,fontSize:12,color:T.text,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},item.name)),
-      React.createElement("span",{style:{fontWeight:700,fontSize:12,color:T.purpleLight,flexShrink:0}},item.pos==="PICK"?"$"+item.est:item.tradeVal),
-      React.createElement("button",{onClick:onRemove,style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:14,padding:"0 2px"}},"x")
-    );
-  }
-
   var LogoSvg=React.createElement("svg",{width:22,height:26,viewBox:"0 0 54 62",fill:"none"},React.createElement("path",{d:"M27 2L4 11V33C4 46 27 60 27 60S50 46 50 33V11L27 2Z",fill:T.bgCard,stroke:T.purple,strokeWidth:"2.5"}),React.createElement("ellipse",{cx:"27",cy:"26",rx:"14",ry:"8",fill:"none",stroke:"#c4b5fd",strokeWidth:"1.5"}),React.createElement("circle",{cx:"27",cy:"26",r:"5",fill:T.bg,stroke:T.purple,strokeWidth:"1"}),React.createElement("rect",{x:"22.5",y:"24",width:"2",height:"4",rx:"0.5",fill:T.purple}),React.createElement("rect",{x:"25.5",y:"22",width:"2",height:"6",rx:"0.5",fill:"#c4b5fd"}),React.createElement("rect",{x:"28.5",y:"23",width:"2",height:"5",rx:"0.5",fill:T.purple}));
 
   // ── LEAGUE TEAMS mock data helper ──
@@ -691,10 +690,10 @@ export default function App(){
         React.createElement("div",{style:{marginBottom:12}},
           React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Your Team Gives"),
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
-            React.createElement(SrchDrop,{value:tSrchA,onChange:setTSrchA,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeA(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
+            React.createElement(SrchDrop,{T:T,pool:tradePool,value:tSrchA,onChange:setTSrchA,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeA(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
             React.createElement("button",{onClick:function(){var pk=DRAFT_PICKS[0];if(!tradeA.find(function(x){return x.name===pk.name;}))setTradeA(function(prev){return prev.concat([makePick(pk)]);});},style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"0 12px",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Pick")
           ),
-          tradeA.map(function(item){return React.createElement(TradeItem,{key:item.name,item:item,onRemove:function(){setTradeA(function(p){return p.filter(function(x){return x.name!==item.name;});});setAnalyzed(false);}});}),
+          tradeA.map(function(item){return React.createElement(TradeItem,{T:T,key:item.name,item:item,onRemove:function(){setTradeA(function(p){return p.filter(function(x){return x.name!==item.name;});});setAnalyzed(false);}});}),
           React.createElement("div",{style:{marginTop:8}},
             React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4,fontWeight:600}},"FAAB Money"),
             React.createElement("div",{style:{position:"relative"}},React.createElement("span",{style:{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",color:T.textSub,fontWeight:700}},"$"),React.createElement("input",{type:"number",value:faabA,onChange:function(e){setFaabA(+e.target.value||0);setAnalyzed(false);},min:0,style:Object.assign({},inpS,{paddingLeft:30}),placeholder:"0"}))
@@ -704,10 +703,10 @@ export default function App(){
         React.createElement("div",{style:{marginBottom:16}},
           React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Your Team Gets"),
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
-            React.createElement(SrchDrop,{value:tSrchB,onChange:setTSrchB,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeB(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
+            React.createElement(SrchDrop,{T:T,pool:tradePool,value:tSrchB,onChange:setTSrchB,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeB(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
             React.createElement("button",{onClick:function(){var pk=DRAFT_PICKS[1];if(!tradeB.find(function(x){return x.name===pk.name;}))setTradeB(function(prev){return prev.concat([makePick(pk)]);});},style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"0 12px",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Pick")
           ),
-          tradeB.map(function(item){return React.createElement(TradeItem,{key:item.name,item:item,onRemove:function(){setTradeB(function(p){return p.filter(function(x){return x.name!==item.name;});});setAnalyzed(false);}});}),
+          tradeB.map(function(item){return React.createElement(TradeItem,{T:T,key:item.name,item:item,onRemove:function(){setTradeB(function(p){return p.filter(function(x){return x.name!==item.name;});});setAnalyzed(false);}});}),
           React.createElement("div",{style:{marginTop:8}},
             React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4,fontWeight:600}},"FAAB Money"),
             React.createElement("div",{style:{position:"relative"}},React.createElement("span",{style:{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",color:T.textSub,fontWeight:700}},"$"),React.createElement("input",{type:"number",value:faabB,onChange:function(e){setFaabB(+e.target.value||0);setAnalyzed(false);},min:0,style:Object.assign({},inpS,{paddingLeft:30}),placeholder:"0"}))
