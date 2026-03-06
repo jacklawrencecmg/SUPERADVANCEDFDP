@@ -511,6 +511,7 @@ export default function App(){
   var [simSaved,setSimSaved]=useState(false);
   var [expandedTeam,setExpandedTeam]=useState(null);
   var [rosterViewTeam,setRosterViewTeam]=useState(null);
+  var [strengthTeam,setStrengthTeam]=useState(null);
   var [activeLeague,setActiveLeague]=useState(function(){try{var s=localStorage.getItem('fdp_league_v1');return s?JSON.parse(s):null;}catch(e){return null;}});
   function saveAndSetActiveLeague(lg){try{if(lg)localStorage.setItem('fdp_league_v1',JSON.stringify(lg));else localStorage.removeItem('fdp_league_v1');}catch(e){}setActiveLeague(lg);}
   var [leagueRosters,setLeagueRosters]=useState(null);
@@ -1133,35 +1134,66 @@ export default function App(){
           React.createElement("span",{style:{fontSize:28,color:T.gold}},"★"),
           React.createElement("div",{style:{fontWeight:900,fontSize:26,lineHeight:1.1}},"Championship Probability")
         ),
-        LEAGUE_TEAMS.map(function(team,i){
-          return React.createElement("div",{key:team.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:16,marginBottom:10}},
+        activeTeams.map(function(team,i){
+          var po=team.playoffOdds!=null?team.playoffOdds:Math.max(10,Math.round(82-i*5.5));
+          var co=team.champOdds!=null?team.champOdds:Math.max(1,Math.round(36-i*2.8));
+          var ww=team.weeklyWin!=null?team.weeklyWin:Math.max(20,Math.round(68-i*3.5));
+          var showStr=strengthTeam===i;
+          var players=Array.isArray(team.players)?team.players:[];
+          var posGroups=["QB","RB","WR","TE"].map(function(pos){
+            var grp=players.filter(function(p){return p.pos===pos;});
+            var val=grp.reduce(function(s,p){return s+(p.tradeVal||0);},0);
+            var maxVal=activeTeams.reduce(function(mx,t){
+              var tv=(Array.isArray(t.players)?t.players:[]).filter(function(p){return p.pos===pos;}).reduce(function(s,p){return s+(p.tradeVal||0);},0);
+              return Math.max(mx,tv);
+            },1);
+            return {pos:pos,val:val,pct:Math.min(100,Math.round(val/maxVal*100)),top:(grp[0]&&grp[0].name)||"—"};
+          });
+          return React.createElement("div",{key:team.name+i,style:{background:T.bgCard,border:"1px solid "+(i===0?T.gold+"66":T.border),borderRadius:14,padding:16,marginBottom:10}},
             React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:14}},
-              React.createElement("span",{style:{fontWeight:900,fontSize:16,color:T.textDim}},"#"+team.rank),
+              React.createElement("span",{style:{fontWeight:900,fontSize:16,color:T.textDim}},"#"+(i+1)),
               React.createElement("div",{style:{flex:1}},
                 React.createElement("div",{style:{fontWeight:800,fontSize:15}},team.name),
-                React.createElement("div",{style:{fontSize:11,color:T.textSub}},"Total Value: "+team.totalVal.toLocaleString())
+                React.createElement("div",{style:{fontSize:11,color:T.textSub}},"Total Value: "+(team.totalVal||0).toLocaleString())
               ),
               i===0&&React.createElement("span",{style:{fontSize:20,color:T.gold}},"★")
             ),
             React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:14}},
               React.createElement("div",null,
                 React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4}},"Playoff Odds"),
-                React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.green,marginBottom:6}},team.playoffOdds+"%"),
-                React.createElement("div",{style:{background:T.border,borderRadius:99,height:5,overflow:"hidden"}},React.createElement("div",{style:{width:team.playoffOdds+"%",height:"100%",background:"#2563eb",borderRadius:99}}))
+                React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.green,marginBottom:6}},po+"%"),
+                React.createElement("div",{style:{background:T.border,borderRadius:99,height:5,overflow:"hidden"}},React.createElement("div",{style:{width:po+"%",height:"100%",background:"#2563eb",borderRadius:99}}))
               ),
               React.createElement("div",null,
                 React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4}},"Championship Odds"),
-                React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.cyan,marginBottom:6}},team.champOdds+"%"),
-                React.createElement("div",{style:{background:T.border,borderRadius:99,height:5,overflow:"hidden"}},React.createElement("div",{style:{width:team.champOdds+"%",height:"100%",background:T.gold,borderRadius:99}}))
+                React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.cyan,marginBottom:6}},co+"%"),
+                React.createElement("div",{style:{background:T.border,borderRadius:99,height:5,overflow:"hidden"}},React.createElement("div",{style:{width:co+"%",height:"100%",background:T.gold,borderRadius:99}}))
               )
             ),
             React.createElement("div",{style:{marginBottom:14}},
               React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4}},"Weekly Win Probability"),
-              React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.green,marginBottom:6}},team.weeklyWin+"%"),
-              React.createElement("div",{style:{background:T.border,borderRadius:99,height:5,overflow:"hidden"}},React.createElement("div",{style:{width:team.weeklyWin+"%",height:"100%",background:T.green,borderRadius:99}}))
+              React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.green,marginBottom:6}},ww+"%"),
+              React.createElement("div",{style:{background:T.border,borderRadius:99,height:5,overflow:"hidden"}},React.createElement("div",{style:{width:ww+"%",height:"100%",background:T.green,borderRadius:99}}))
             ),
-            React.createElement("button",{style:{width:"100%",padding:"11px",borderRadius:10,border:"none",background:"#2563eb",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
-              React.createElement("span",null,"◷")," View Team Strengths"
+            React.createElement("button",{onClick:function(){setStrengthTeam(showStr?null:i);},style:{width:"100%",padding:"11px",borderRadius:10,border:"none",background:showStr?T.purpleDim:"#2563eb",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+              React.createElement("span",null,showStr?"▲":"◷"),showStr?" Hide Strengths":" View Team Strengths"
+            ),
+            showStr&&React.createElement("div",{style:{marginTop:14,borderTop:"1px solid "+T.border,paddingTop:14}},
+              React.createElement("div",{style:{fontWeight:700,fontSize:13,marginBottom:10,color:T.purple}},"Position Group Strength"),
+              posGroups.map(function(g){
+                var barColor=g.pos==="QB"?POS_COLORS.QB:g.pos==="RB"?POS_COLORS.RB:g.pos==="WR"?POS_COLORS.WR:POS_COLORS.TE;
+                return React.createElement("div",{key:g.pos,style:{marginBottom:10}},
+                  React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}},
+                    React.createElement("span",{style:{fontWeight:700,fontSize:12,color:barColor}},g.pos),
+                    React.createElement("span",{style:{fontSize:11,color:T.textSub}},g.top),
+                    React.createElement("span",{style:{fontWeight:700,fontSize:12,color:T.text}},g.pct+"%")
+                  ),
+                  React.createElement("div",{style:{background:T.border,borderRadius:99,height:7,overflow:"hidden"}},
+                    React.createElement("div",{style:{width:g.pct+"%",height:"100%",background:barColor,borderRadius:99,transition:"width 0.4s ease"}})
+                  )
+                );
+              }),
+              players.length===0&&React.createElement("div",{style:{fontSize:12,color:T.textSub,textAlign:"center",padding:"8px 0"}},"Import your league to see position breakdown")
             )
           );
         })
