@@ -498,6 +498,11 @@ export default function App(){
   var [leagueImportStatus,setLeagueImportStatus]=useState(null);
   var [leagueImportData,setLeagueImportData]=useState(null);
   var [leagueImportErr,setLeagueImportErr]=useState("");
+  var [importPlatform,setImportPlatform]=useState("sleeper");
+  var [espnLeagueId,setEspnLeagueId]=useState("");
+  var [espnYear,setEspnYear]=useState("2025");
+  var [manualRosterText,setManualRosterText]=useState("");
+  var [importedTeams,setImportedTeams]=useState(null);
   var [simCount,setSimCount]=useState("1,000 (Recommended)");
   var [simRan,setSimRan]=useState(false);
   var [simRunning,setSimRunning]=useState(false);
@@ -582,6 +587,7 @@ export default function App(){
   },[rankedPlayers]);
 
   var powerRankingTeams=useMemo(function(){
+    if(importedTeams)return importedTeams;
     if(!leagueRosters||!leagueUsers)return null;
     var userMap={};
     leagueUsers.forEach(function(u){userMap[u.user_id]=u;});
@@ -597,7 +603,62 @@ export default function App(){
     });
     teams.sort(function(a,b){return b.totalVal-a.totalVal;});
     return teams;
-  },[leagueRosters,leagueUsers,sleeperIdToPlayer]);
+  },[importedTeams,leagueRosters,leagueUsers,sleeperIdToPlayer]);
+
+  var ESPN_POS={1:"QB",2:"RB",3:"WR",4:"TE",5:"K",16:"DST"};
+  function doEspnImport(){
+    if(!espnLeagueId.trim())return;
+    setLeagueImportStatus("loading");setLeagueImportErr("");
+    var yr=espnYear||"2025";
+    fetch("https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+yr+"/segments/0/leagues/"+espnLeagueId.trim()+"?view=mRoster&view=mTeam",{credentials:"omit"})
+      .then(function(r){if(!r.ok)throw new Error("League not found or private ("+r.status+"). Private leagues require ESPN cookie auth.");return r.json();})
+      .then(function(data){
+        var teams=(data.teams||[]).map(function(t){
+          var name=((t.location||"")+" "+(t.nickname||"")).trim()||("Team "+t.id);
+          var players=(t.roster&&t.roster.entries||[])
+            .filter(function(e){var pid=e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.defaultPositionId;return pid!==5&&pid!==16;})
+            .map(function(e){
+              var fn=(e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.fullName)||"";
+              return rankedPlayers.find(function(p){return p.name.toLowerCase()===fn.toLowerCase();})
+                ||rankedPlayers.find(function(p){var parts=fn.toLowerCase().split(" ");return parts.length>1&&p.name.toLowerCase().includes(parts[parts.length-1]);});
+            }).filter(Boolean);
+          players.sort(function(a,b){return b.tradeVal-a.tradeVal;});
+          var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
+          var w=t.record&&t.record.overall&&t.record.overall.wins||0;
+          var l=t.record&&t.record.overall&&t.record.overall.losses||0;
+          return {name:name,owner:"",players:players,totalVal:totalVal,faab:null,picks:0,wins:w,losses:l};
+        });
+        teams.sort(function(a,b){return b.totalVal-a.totalVal;});
+        setImportedTeams(teams);setLeagueRosters(null);setLeagueUsers(null);
+        setActiveLeague({league_id:"espn_"+espnLeagueId,name:(data.settings&&data.settings.name)||"ESPN League"});
+        setLeagueImportStatus("connected");setLeagueSubTab("power");
+      })
+      .catch(function(e){setLeagueImportErr(e.message||"Import failed. This may be a private league or CORS restriction.");setLeagueImportStatus("error");});
+  }
+
+  function doManualImport(leagueName,teamsText){
+    var lines=teamsText.split("\n").filter(function(l){return l.trim();});
+    var teams=[];
+    var cur=null;
+    lines.forEach(function(line){
+      if(line.startsWith("Team:")||line.startsWith("##")){
+        if(cur)teams.push(cur);
+        cur={name:line.replace(/^(Team:|##)\s*/,"").trim(),players:[],totalVal:0,faab:null,picks:0,wins:0,losses:0,owner:""};
+      } else {
+        if(!cur)cur={name:"My Team",players:[],totalVal:0,faab:null,picks:0,wins:0,losses:0,owner:""};
+        var pName=line.trim().replace(/^\d+\.\s*/,"");
+        var found=rankedPlayers.find(function(p){return p.name.toLowerCase()===pName.toLowerCase();})
+          ||rankedPlayers.find(function(p){return p.name.toLowerCase().includes(pName.toLowerCase());});
+        if(found&&!cur.players.find(function(p){return p.name===found.name;}))cur.players.push(found);
+      }
+    });
+    if(cur)teams.push(cur);
+    teams.forEach(function(t){t.players.sort(function(a,b){return b.tradeVal-a.tradeVal;});t.totalVal=t.players.reduce(function(s,p){return s+p.tradeVal;},0);});
+    teams.sort(function(a,b){return b.totalVal-a.totalVal;});
+    setImportedTeams(teams);setLeagueRosters(null);setLeagueUsers(null);
+    setActiveLeague({league_id:"manual",name:leagueName||"My League"});
+    setLeagueImportStatus("connected");setLeagueSubTab("power");
+  }
 
   function connectLeague(lg){
     setLeagueImportStatus("connecting");setLeagueImportErr("");
@@ -1474,20 +1535,29 @@ export default function App(){
       // LEAGUE IMPORT (sub-tab)
       leagueSubTab==="leagimport"&&React.createElement("div",{style:{padding:"16px"}},
         React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},"Import League"),
-        React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Connect your Sleeper league for live data"),
-        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:16,padding:20}},
+        React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Connect your fantasy league for live power rankings"),
+        activeLeague&&React.createElement("div",{style:{background:T.green+"18",border:"1px solid "+T.green+"44",borderRadius:10,padding:"10px 14px",marginBottom:14,fontSize:12,color:T.green,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"space-between"}},
+          React.createElement("span",null,"Connected: "+activeLeague.name),
+          React.createElement("button",{onClick:function(){setActiveLeague(null);setLeagueRosters(null);setLeagueUsers(null);setImportedTeams(null);setLeagueImportStatus(null);},style:{background:"none",border:"none",color:T.green,cursor:"pointer",fontSize:16,padding:0}},"×")
+        ),
+        // Platform selector
+        React.createElement("div",{style:{display:"flex",gap:6,overflowX:"auto",marginBottom:16,paddingBottom:2,scrollbarWidth:"none"}},
+          [["sleeper","Sleeper"],["espn","ESPN"],["yahoo","Yahoo"],["nfl","NFL.com"],["fleaflicker","Fleaflicker"],["mfl","MFL"],["manual","Manual"]].map(function(p){
+            var active=importPlatform===p[0];
+            return React.createElement("button",{key:p[0],onClick:function(){setImportPlatform(p[0]);setLeagueImportStatus(null);setLeagueImportErr("");},style:{padding:"8px 14px",borderRadius:20,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},p[1]);
+          })
+        ),
+        // SLEEPER
+        importPlatform==="sleeper"&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:16,padding:20}},
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:12}},
             React.createElement("input",{value:leagueImportUser,onChange:function(e){setLeagueImportUser(e.target.value);},placeholder:"Sleeper username",style:Object.assign({},inpS,{flex:1})}),
-            React.createElement("button",{onClick:doLeagueImport,style:{padding:"10px 18px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}},"Import")
+            React.createElement("button",{onClick:doLeagueImport,style:{padding:"10px 18px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}},"Search")
           ),
           leagueImportStatus==="loading"&&React.createElement("div",{style:{textAlign:"center",padding:"20px",color:T.textSub}},"Loading..."),
+          leagueImportStatus==="connecting"&&React.createElement("div",{style:{textAlign:"center",padding:"12px",color:T.textSub}},"Loading rosters..."),
           leagueImportStatus==="error"&&React.createElement("div",{style:{padding:"10px 14px",background:T.red+"15",borderRadius:10,color:T.red,fontSize:12}},leagueImportErr),
-          (leagueImportStatus==="success"||leagueImportStatus==="connected"||leagueImportStatus==="connecting")&&leagueImportData&&React.createElement("div",null,
-            React.createElement("div",{style:{fontWeight:700,fontSize:15,marginBottom:8}},leagueImportData.username+"'s Leagues"),
-            activeLeague&&React.createElement("div",{style:{background:T.green+"18",border:"1px solid "+T.green+"44",borderRadius:10,padding:"10px 14px",marginBottom:10,fontSize:12,color:T.green,fontWeight:700}},
-              "Connected: "+activeLeague.name
-            ),
-            leagueImportStatus==="connecting"&&React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:8}},"Loading rosters..."),
+          (leagueImportStatus==="success"||leagueImportStatus==="connected")&&leagueImportData&&React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:10}},leagueImportData.username+"'s Leagues"),
             (function(){
               function renderLeagues(leagues){
                 return leagues.map(function(lg){
@@ -1497,25 +1567,44 @@ export default function App(){
                       React.createElement("div",{style:{fontWeight:700,fontSize:13}},lg.name),
                       React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},lg.total_rosters+" teams")
                     ),
-                    React.createElement("button",{
-                      onClick:function(){if(!isActive)connectLeague(lg);},
-                      style:{padding:"7px 14px",borderRadius:8,border:"none",background:isActive?T.green:T.purple,color:"#fff",fontWeight:700,fontSize:11,cursor:isActive?"default":"pointer",flexShrink:0}
-                    },isActive?"Connected":"Connect")
+                    React.createElement("button",{onClick:function(){if(!isActive)connectLeague(lg);},style:{padding:"7px 14px",borderRadius:8,border:"none",background:isActive?T.green:T.purple,color:"#fff",fontWeight:700,fontSize:11,cursor:isActive?"default":"pointer",flexShrink:0}},isActive?"Connected":"Connect")
                   );
                 });
               }
               var els=[];
-              if(leagueImportData.leagues2026&&leagueImportData.leagues2026.length){
-                els.push(React.createElement("div",{key:"h26",style:{fontSize:11,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:6,marginTop:4}},"2026 SEASON"));
-                renderLeagues(leagueImportData.leagues2026).forEach(function(el){els.push(el);});
-              }
-              if(leagueImportData.leagues2025&&leagueImportData.leagues2025.length){
-                els.push(React.createElement("div",{key:"h25",style:{fontSize:11,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:6,marginTop:leagueImportData.leagues2026&&leagueImportData.leagues2026.length?12:4}},"2025 SEASON"));
-                renderLeagues(leagueImportData.leagues2025).forEach(function(el){els.push(el);});
-              }
+              if(leagueImportData.leagues2026&&leagueImportData.leagues2026.length){els.push(React.createElement("div",{key:"h26",style:{fontSize:11,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:6}},"2026 SEASON"));renderLeagues(leagueImportData.leagues2026).forEach(function(el){els.push(el);});}
+              if(leagueImportData.leagues2025&&leagueImportData.leagues2025.length){els.push(React.createElement("div",{key:"h25",style:{fontSize:11,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:6,marginTop:leagueImportData.leagues2026&&leagueImportData.leagues2026.length?12:0}},"2025 SEASON"));renderLeagues(leagueImportData.leagues2025).forEach(function(el){els.push(el);});}
               return els;
             })()
           )
+        ),
+        // ESPN
+        importPlatform==="espn"&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:16,padding:20}},
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12}},"Enter your ESPN Fantasy league ID (found in the URL: /leagues/{id})"),
+          React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
+            React.createElement("input",{value:espnLeagueId,onChange:function(e){setEspnLeagueId(e.target.value);},placeholder:"League ID",style:Object.assign({},inpS,{flex:1})}),
+            React.createElement("select",{value:espnYear,onChange:function(e){setEspnYear(e.target.value);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 12px",fontSize:13,outline:"none"}},
+              ["2025","2024","2023"].map(function(y){return React.createElement("option",{key:y},y);})
+            )
+          ),
+          React.createElement("button",{onClick:doEspnImport,style:{width:"100%",padding:"11px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginBottom:12}},"Import ESPN League"),
+          leagueImportStatus==="loading"&&React.createElement("div",{style:{textAlign:"center",padding:"12px",color:T.textSub}},"Loading..."),
+          leagueImportStatus==="error"&&React.createElement("div",{style:{padding:"10px 14px",background:T.red+"15",borderRadius:10,color:T.red,fontSize:12,lineHeight:1.5}},leagueImportErr,React.createElement("div",{style:{marginTop:8,color:T.textSub}},"Private leagues are not supported without ESPN authentication. Try Manual import instead."))
+        ),
+        // Yahoo / NFL.com / Fleaflicker / MFL — Coming Soon
+        (importPlatform==="yahoo"||importPlatform==="nfl"||importPlatform==="fleaflicker"||importPlatform==="mfl")&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:24,textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:28,marginBottom:8}},"🔜"),
+          React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:6}}),
+          React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:6}},{yahoo:"Yahoo Fantasy",nfl:"NFL.com Fantasy",fleaflicker:"Fleaflicker",mfl:"MyFantasyLeague"}[importPlatform]+" — Coming Soon"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:14,lineHeight:1.6}},"This platform requires OAuth authentication. Full integration is in development."),
+          React.createElement("button",{onClick:function(){setImportPlatform("manual");},style:{padding:"10px 20px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Use Manual Import Instead")
+        ),
+        // Manual
+        importPlatform==="manual"&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:16,padding:20}},
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12,lineHeight:1.6}},"Paste your roster below. Use '## Team Name' to separate multiple teams, then one player per line."),
+          React.createElement("div",{style:{background:T.bgInput,borderRadius:10,padding:"10px 12px",marginBottom:8,fontSize:11,color:T.textSub,fontFamily:"monospace",lineHeight:1.7}},"## My Team",React.createElement("br",null),"Patrick Mahomes",React.createElement("br",null),"Ja'Marr Chase",React.createElement("br",null),"## Opponent",React.createElement("br",null),"Josh Allen"),
+          React.createElement("textarea",{value:manualRosterText,onChange:function(e){setManualRosterText(e.target.value);},placeholder:"## Team Name\nPlayer Name\nPlayer Name\n\n## Team 2\nPlayer Name",rows:10,style:Object.assign({},inpS,{fontFamily:"monospace",fontSize:12,lineHeight:1.6,resize:"vertical",marginBottom:8})}),
+          React.createElement("button",{onClick:function(){doManualImport("My League",manualRosterText);},style:{width:"100%",padding:"11px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Import Roster")
         )
       )
     ),
