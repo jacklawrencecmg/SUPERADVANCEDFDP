@@ -257,7 +257,7 @@ const PLAYERS=[
   {name:"Darius Slay",pos:"DB",age:34,team:"PHI",proj:{PPR:102,Half:102,Std:102},adp:19.8,note:"Veteran CB: 55 tackles 4 INT"},
   {name:"Emmanuel Forbes",pos:"DB",age:24,team:"WAS",proj:{PPR:100,Half:100,Std:100},adp:20.8,note:"Year 3 CB: 70 tackles 4 INT"},
   {name:"Deommodore Lenoir",pos:"DB",age:26,team:"SF",proj:{PPR:108,Half:108,Std:108},adp:17.8,note:"CB: 72 tackles 4 INT"},
-  {name:"Sterling Shepard",pos:"DB",age:32,team:"NYG",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"Depth"},
+  {name:"Sterling Shepard",pos:"WR",age:32,team:"NYG",proj:{PPR:95,Half:88,Std:81},adp:22.5,note:"Veteran depth"},
 ];
 
 const DRAFT_PICKS=[
@@ -591,7 +591,6 @@ export default function App(){
     return importedTeams||null;
   },[importedTeams]);
 
-  var ESPN_POS={1:"QB",2:"RB",3:"WR",4:"TE",5:"K",16:"DST"};
   function doEspnImport(){
     if(!espnLeagueId.trim())return;
     setLeagueImportStatus("loading");setLeagueImportErr("");
@@ -701,7 +700,7 @@ export default function App(){
     });
   },[]);
 
-  function tVal(side,fa){return side.reduce(function(s,x){return s+(x.pos==="PICK"?x.est:Math.max(0,x.vbd));},0)+(fa||0);}
+  function tVal(side,fa){return side.reduce(function(s,x){return s+(x.pos==="PICK"?x.est:Math.max(0,x.tradeVal));},0)+(fa||0);}
   var tvA=tVal(tradeA,faabA),tvB=tVal(tradeB,faabB);
   function verdict(){
     var diff=tvA-tvB,pct=tvB>0?Math.abs(diff/tvB)*100:0;
@@ -723,7 +722,7 @@ export default function App(){
           var rec=lg.scoring_settings?lg.scoring_settings.rec:0;
           var pls=my&&my.players?my.players:[];
           setImpData({username:u.display_name||u.username,leagueName:lg.name,totalTeams:rosters.length,scoringFormat:rec===1?"PPR":rec===0.5?"Half-PPR":"Standard"});
-          setImpRoster(pls.map(function(pid){var f=rankedPlayers.find(function(p){return p.name.toLowerCase().includes(pid.toLowerCase());});return f||{name:"ID:"+pid,pos:"?",team:"?",rank:"—",vbd:0,tradeVal:0,ag:{g:"?",c:"#888"},tier:{t:"?",c:"#888"}};}));
+          setImpRoster(pls.map(function(pid){var f=sleeperIdToPlayer[pid]||rankedPlayers.find(function(p){return p.name.toLowerCase()===pid.toLowerCase();});return f||{name:"ID:"+pid,pos:"?",team:"?",rank:"—",vbd:0,tradeVal:0,ag:{g:"?",c:"#888"},tier:{t:"?",c:"#888"}};}));
           setImpStatus("success");
         });
       });
@@ -750,7 +749,8 @@ export default function App(){
   var LogoSvg=React.createElement("img",{src:"/logo-shield.png",alt:"Fantasy DraftPros",style:{height:28,width:"auto"}});
 
   // ── LEAGUE TEAMS mock data helper ──
-  var leagueTeamNames=LEAGUE_TEAMS.map(function(t){return t.name;});
+  var activeTeams=powerRankingTeams||LEAGUE_TEAMS;
+  var leagueTeamNames=activeTeams.map(function(t){return t.name;});
 
   return React.createElement("div",{style:{background:T.bg,minHeight:"100vh",color:T.text,fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif",maxWidth:480,margin:"0 auto",paddingBottom:70}},
 
@@ -776,7 +776,7 @@ export default function App(){
               React.createElement(PBadge,{pos:p.pos}),
               React.createElement("div",{style:{flex:1}},
                 React.createElement("div",{style:{fontWeight:700,fontSize:13}},p.name),
-                React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team+" · Age "+p.age+" · "+p.tier.t&&("#"+p.posRank+" "+p.pos))
+                React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team+" · Age "+p.age+" · "+(p.tier&&p.tier.t?p.tier.t+" · ":"")+("#"+p.posRank+" "+p.pos))
               ),
               React.createElement("div",{style:{textAlign:"right"}},
                 React.createElement("div",{style:{fontWeight:800,fontSize:13,color:T.purpleLight}},p.tradeVal.toLocaleString()),
@@ -1072,14 +1072,14 @@ export default function App(){
               React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.gold}},"Championship Favorite")
             ),
             React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:4}},"Most Likely Champion"),
-            React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.gold,marginBottom:4}},LEAGUE_TEAMS[0].name),
-            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"0-0 · "+LEAGUE_TEAMS[0].makePlayoffs+"% playoff odds")
+            React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.gold,marginBottom:4}},activeTeams[0]&&activeTeams[0].name),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},(LEAGUE_TEAMS[0]&&LEAGUE_TEAMS[0].makePlayoffs!=null?"0-0 · "+LEAGUE_TEAMS[0].makePlayoffs+"% playoff odds":""))
           ),
           React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
             React.createElement("div",{style:{fontWeight:800,fontSize:16}},"Simulation Results"),
             React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center"}},
               React.createElement("select",{style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"5px 10px",fontSize:11,outline:"none"}},React.createElement("option",null,"All Teams")),
-              React.createElement("div",{style:{fontSize:10,color:T.textSub}},LEAGUE_TEAMS.length+" of "+LEAGUE_TEAMS.length+" · "+simCount.split(" ")[0]+" sims")
+              React.createElement("div",{style:{fontSize:10,color:T.textSub}},activeTeams.length+" of "+activeTeams.length+" · "+simCount.split(" ")[0]+" sims")
             )
           ),
           LEAGUE_TEAMS.map(function(team,i){
@@ -1161,18 +1161,18 @@ export default function App(){
       leagueSubTab==="advice"&&React.createElement("div",{style:{padding:"16px"}},
         React.createElement("div",{style:{marginBottom:16}},
           React.createElement("select",{value:adviceTeam,onChange:function(e){setAdviceTeam(Number(e.target.value));},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",fontSize:13,outline:"none",width:"100%"}},
-            LEAGUE_TEAMS.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})
+            activeTeams.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})
           )
         ),
         (function(){
-          var team=LEAGUE_TEAMS[adviceTeam];
+          var team=activeTeams[adviceTeam]||activeTeams[0];
           var mode=adviceTeam<2?"COMPETE":adviceTeam<4?"NEUTRAL":"REBUILD";
           var modeColor=mode==="COMPETE"?T.green:mode==="NEUTRAL"?T.gold:T.red;
           var modeBg=mode==="COMPETE"?"linear-gradient(135deg,#052e16,#064e3b)":mode==="NEUTRAL"?"linear-gradient(135deg,#1c1400,#261c00)":"linear-gradient(135deg,#2d0707,#3b0f0f)";
           var modeIcon=mode==="COMPETE"?"↗":mode==="NEUTRAL"?"→":"↘";
           var modeDesc=mode==="COMPETE"?"Win now. Your team is built to compete for a championship this season.":mode==="NEUTRAL"?"Balance youth and veterans. Trades should go either direction.":"Focus on the future. Acquire picks and young talent for sustained success.";
           var confidence=mode==="REBUILD"?95:mode==="COMPETE"?89:72;
-          var leaguePercentile=Math.round(((LEAGUE_TEAMS.length-1-adviceTeam)/Math.max(1,LEAGUE_TEAMS.length-1))*100);
+          var leaguePercentile=Math.round(((activeTeams.length-1-adviceTeam)/Math.max(1,activeTeams.length-1))*100);
           var starterVal=Math.round(team.totalVal*0.65/1000)*1000;
           var futureVal=team.picks*8500;
           var agingRisk=Math.max(0,Math.round(adviceTeam*3.5));
@@ -1317,7 +1317,7 @@ export default function App(){
               React.createElement("div",{style:{fontSize:11,color:T.textSub}},p.pos+" - "+p.team+" | Age "+p.age)
             ),
             React.createElement("div",{style:{textAlign:"right"}},
-              React.createElement("div",{style:{fontSize:12,color:T.purple,fontWeight:700}},"Value: "+Math.max(0,Math.round(p.vbd)).toLocaleString()),
+              React.createElement("div",{style:{fontSize:12,color:T.purple,fontWeight:700}},"Value: "+(p.tradeVal||0).toLocaleString()),
               React.createElement("div",{style:{fontSize:11,color:T.green}},"Proj: "+p.pts.toFixed(1)+" pts")
             )
           );
@@ -1334,7 +1334,7 @@ export default function App(){
           React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:8,fontWeight:600}},"Select Team"),
           React.createElement("div",{style:{display:"flex",gap:8}},
             React.createElement("select",{value:lineupTeam,onChange:function(e){setLineupTeam(Number(e.target.value));setLineupOptimized(false);},style:{flex:1,background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",fontSize:13,outline:"none"}},
-              LEAGUE_TEAMS.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})
+              activeTeams.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})
             ),
             React.createElement("button",{onClick:function(){setLineupOptimized(true);},style:{padding:"10px 18px",borderRadius:10,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:6}},React.createElement("span",null,"↻")," Optimize")
           )
@@ -1454,13 +1454,13 @@ export default function App(){
           )
         ),
         (rivalryTeam1!=="All Teams"&&rivalryTeam2!=="All Teams"&&rivalryTeam1!==rivalryTeam2)&&(function(){
-          var t1=LEAGUE_TEAMS.find(function(t){return t.name===rivalryTeam1;})||LEAGUE_TEAMS[0];
-          var t2=LEAGUE_TEAMS.find(function(t){return t.name===rivalryTeam2;})||LEAGUE_TEAMS[1];
+          var t1=activeTeams.find(function(t){return t.name===rivalryTeam1;})||activeTeams[0];
+          var t2=activeTeams.find(function(t){return t.name===rivalryTeam2;})||activeTeams[1];
           var winner=t1.totalVal>t2.totalVal?t1:t2;
           return React.createElement("div",null,
             React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:14,padding:16}},
               React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.purple,marginBottom:10}},"Matchup Analysis"),
-              [["Total Value",t1.totalVal.toLocaleString(),t2.totalVal.toLocaleString()],["Playoff Odds",t1.playoffOdds+"%",t2.playoffOdds+"%"],["Champ Odds",t1.champOdds+"%",t2.champOdds+"%"],["Players",t1.players,t2.players]].map(function(row){
+              [["Total Value",(t1.totalVal||0).toLocaleString(),(t2.totalVal||0).toLocaleString()],["Playoff Odds",(t1.playoffOdds!=null?t1.playoffOdds+"%":"—"),(t2.playoffOdds!=null?t2.playoffOdds+"%":"—")],["Champ Odds",(t1.champOdds!=null?t1.champOdds+"%":"—"),(t2.champOdds!=null?t2.champOdds+"%":"—")],["Roster Size",(Array.isArray(t1.players)?t1.players.length:t1.players||0),(Array.isArray(t2.players)?t2.players.length:t2.players||0)]].map(function(row){
                 return React.createElement("div",{key:row[0],style:{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center",marginBottom:8}},
                   React.createElement("div",{style:{fontWeight:800,fontSize:14,color:T.text,textAlign:"right"}},row[1]),
                   React.createElement("div",{style:{fontSize:10,color:T.textSub,textAlign:"center",fontWeight:600}},row[0]),
@@ -1490,7 +1490,7 @@ export default function App(){
         recapGenerated&&React.createElement("div",null,
           React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:14,padding:16,marginBottom:12}},
             React.createElement("div",{style:{fontWeight:900,fontSize:16,color:T.purple,marginBottom:10}},"Week "+recapWeek+" Recap"),
-            React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.7,marginBottom:12}},"Week "+recapWeek+" saw "+LEAGUE_TEAMS[0].name+" extend their lead atop the standings with a dominant performance. "+LEAGUE_TEAMS[1].name+" stayed within striking distance, while "+LEAGUE_TEAMS[LEAGUE_TEAMS.length-1].name+" continue to struggle."),
+            React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.7,marginBottom:12}},"Week "+recapWeek+" saw "+(activeTeams[0]&&activeTeams[0].name)+" extend their lead atop the standings with a dominant performance. "+(activeTeams[1]&&activeTeams[1].name)+" stayed within striking distance, while "+(activeTeams[activeTeams.length-1]&&activeTeams[activeTeams.length-1].name)+" continue to struggle."),
             React.createElement("div",{style:{fontWeight:700,fontSize:13,marginBottom:8}},"Top Performers"),
             rankedPlayers.slice(0,3).map(function(p){
               return React.createElement("div",{key:p.name,style:{display:"flex",alignItems:"center",gap:10,marginBottom:8}},
@@ -2010,7 +2010,7 @@ export default function App(){
         React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:16,marginBottom:14}},
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:12}},
             React.createElement("select",{value:keeperTeam,onChange:function(e){setKeeperTeam(Number(e.target.value));setKeeperCalced(false);},style:{flex:1,background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",fontSize:13,outline:"none"}},
-              LEAGUE_TEAMS.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})
+              activeTeams.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})
             ),
             React.createElement("button",{onClick:function(){setKeeperCalced(true);},style:{padding:"10px 20px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",flexShrink:0}},"Calculate")
           ),
