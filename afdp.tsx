@@ -785,6 +785,30 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 21 — 2025 IDP class + deeper DB/WR depth
+  // 2025 IDP class additions
+  {name:"Laiatu Latu",pos:"DL",age:25,team:"LAC",proj:{PPR:95,Half:95,Std:95},adp:22.0,note:"2024 1st round EDGE: 9 sacks Year 2 leap"},
+  {name:"Shemar Turner",pos:"DL",age:23,team:"NO",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"2025 EDGE: 7 sacks ascending"},
+  {name:"Darius Robinson",pos:"DL",age:24,team:"KC",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"Versatile DL: 7 sacks 40 tackles"},
+  {name:"Maason Smith",pos:"DL",age:24,team:"JAX",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"IDL: 35 tackles 4 sacks developing"},
+  {name:"Tyleik Williams",pos:"DL",age:24,team:"WAS",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"IDL: 32 tackles 3 sacks Year 3"},
+  {name:"Jeremiah Trotter Jr.",pos:"LB",age:23,team:"PHI",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"Year 2 ILB: 85 tackles 2 sacks namesake"},
+  {name:"Olumide Fashanu",pos:"DL",age:23,team:"NYJ",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"OT convert: developmental DL"},
+  {name:"Josh Simmons",pos:"DL",age:23,team:"CLE",proj:{PPR:65,Half:65,Std:65},adp:44.0,note:"OL/DL developmental"},
+  // IDP DB depth Wave 21
+  {name:"Tarvarius Moore",pos:"DB",age:29,team:"SF",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"FS: 60 tackles 2 INT versatile"},
+  {name:"Jaquiski Tartt",pos:"DB",age:33,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:54.5,note:"Veteran S depth"},
+  {name:"Johnathan Abram",pos:"DB",age:29,team:"FA",proj:{PPR:62,Half:62,Std:62},adp:46.5,note:"Physical SS: 68 tackles 1 INT"},
+  {name:"Josh Jones",pos:"DB",age:28,team:"HOU",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"CB: 55 tackles 2 INT versatile"},
+  {name:"Dane Jackson",pos:"DB",age:29,team:"BUF",proj:{PPR:65,Half:65,Std:65},adp:44.5,note:"CB depth: 50 tackles 2 INT"},
+  {name:"Andrew Adams",pos:"DB",age:33,team:"FA",proj:{PPR:52,Half:52,Std:52},adp:57.0,note:"Veteran S depth"},
+  {name:"Sheldrick Redwine",pos:"DB",age:29,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:50.5,note:"S depth: 55 tackles 1 INT"},
+  // WR dynasty sleepers Wave 21
+  {name:"Cody Latimer",pos:"WR",age:33,team:"FA",proj:{PPR:52,Half:48,Std:44},adp:58.5,note:"Veteran depth WR"},
+  {name:"R.J. Moore",pos:"WR",age:27,team:"CAR",proj:{PPR:68,Half:62,Std:56},adp:51.5,note:"Slot depth: 26 rec 295 yds"},
+  {name:"Jalen Camp",pos:"WR",age:26,team:"JAX",proj:{PPR:72,Half:66,Std:60},adp:49.0,note:"Big WR: 28 rec 320 yds 3 TD"},
+  {name:"Kendric Pryor",pos:"WR",age:27,team:"CIN",proj:{PPR:65,Half:60,Std:55},adp:53.0,note:"Slot depth: 24 rec 270 yds"},
+  {name:"Greg Ward",pos:"WR",age:31,team:"FA",proj:{PPR:60,Half:55,Std:50},adp:56.5,note:"Veteran slot depth"},
   // Wave 20 — veteran IDP EDGE/DL/LB + 2025 RB Devin Neal
   // RB Wave 20
   {name:"Devin Neal",pos:"RB",age:23,team:"JAX",proj:{PPR:158,Half:145,Std:132},adp:22.0,note:"2025 draft: 650 rush 48 rec explosive"},
