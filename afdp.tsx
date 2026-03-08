@@ -1406,7 +1406,7 @@ function PBadge(props){
   return React.createElement("span",{style:{background:pc+"18",color:pc,border:"1px solid "+pc+"33",borderRadius:5,padding:"2px 7px",fontWeight:700,fontSize:9,flexShrink:0}},props.pos+(props.rank||""));
 }
 function Chip(props){
-  return React.createElement("button",{onClick:props.onClick,style:{padding:"6px 14px",borderRadius:8,border:"1px solid "+(props.active?(props.color||"#7c4dff"):"#2e2a4a"),background:props.active?(props.color||"#7c4dff"):"transparent",color:props.active?"#fff":"#9b96b8",fontWeight:700,fontSize:12,cursor:"pointer"}},props.label);
+  return React.createElement("button",{onClick:props.onClick,style:{padding:"8px 14px",minHeight:36,borderRadius:8,border:"1px solid "+(props.active?(props.color||"#7c4dff"):"#2e2a4a"),background:props.active?(props.color||"#7c4dff"):"transparent",color:props.active?"#fff":"#9b96b8",fontWeight:700,fontSize:12,cursor:"pointer",WebkitTapHighlightColor:"transparent"}},props.label);
 }
 
 var PLANS=[{id:"free",label:"Free",priceStr:"$0",sub:"forever"},{id:"pro",label:"Pro",priceStr:"$2.99",sub:"/mo"},{id:"elite",label:"Elite",priceStr:"$6.99",sub:"/mo"}];
@@ -1518,7 +1518,7 @@ function TradeItem(props){
     React.createElement(PBadge,{pos:item.pos}),
     React.createElement("div",{style:{flex:1,minWidth:0}},React.createElement("div",{style:{fontWeight:700,fontSize:12,color:T.text,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},item.name)),
     React.createElement("span",{style:{fontWeight:700,fontSize:12,color:T.purpleLight,flexShrink:0}},item.pos==="PICK"?item.est+" val":item.tradeVal+" val"),
-    React.createElement("button",{onClick:onRemove,style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:14,padding:"0 2px"}},"x")
+    React.createElement("button",{onClick:onRemove,style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:18,padding:"4px 6px",minWidth:36,minHeight:36,display:"flex",alignItems:"center",justifyContent:"center",WebkitTapHighlightColor:"transparent"}},"×")
   );
 }
 export default function App(){
@@ -1655,6 +1655,8 @@ export default function App(){
   var [sleeperStats,setSleeperStats]=useState(null);
   var [sleeperStatsLoading,setSleeperStatsLoading]=useState(false);
   var [watchlistSearch,setWatchlistSearch]=useState("");
+  var [liveProj,setLiveProj]=useState(function(){try{var s=localStorage.getItem('fdp_lp_v1');if(s){var d=JSON.parse(s);if(Date.now()-d.ts<86400000)return d;}return null;}catch(e){return null;}});
+  var [liveProjLoading,setLiveProjLoading]=useState(false);
 
   var T=darkMode?DARK:LIGHT;
   var isPro=user&&user.isPro;
@@ -1673,6 +1675,15 @@ export default function App(){
     });
     var list=UNQ.map(function(p){
       var pts=p.proj[sKey]||p.proj["PPR"]||0;
+      // Blend live weekly projection into season projection (remaining weeks scale)
+      if(liveProj&&liveProj.map){
+        var pid=SLEEPER_IDS[p.name];
+        if(pid&&liveProj.map[pid]){
+          var wkPts=sKey==="PPR"?liveProj.map[pid].ppr:sKey==="Half"?liveProj.map[pid].half:liveProj.map[pid].std;
+          // Replace base pts with live weekly projection scaled to season (17 weeks) plus position rank blend
+          if(wkPts>0) pts=Math.round(wkPts*17*0.72+pts*0.28);
+        }
+      }
       if(p.pos==="TE"&&tePremium>0){var estRec=p.proj["PPR"]&&p.proj["Std"]?Math.round((p.proj["PPR"]-p.proj["Std"])*0.7):p.posRank<=5?80:p.posRank<=12?55:35;pts+=tePremium*estRec;}
       if(isDynasty) pts=pts*dynastyBonus(p.pos,p.age);
       var raw=pts-(baseVal[p.pos]||0);
@@ -1699,7 +1710,7 @@ export default function App(){
       }
     });
     return list;
-  },[scoring,teams,budget,ffab,sKey,isDynasty,isSF,tePremium]);
+  },[scoring,teams,budget,ffab,sKey,isDynasty,isSF,tePremium,liveProj]);
 
   var tradePool=useMemo(function(){return rankedPlayers.concat(DRAFT_PICKS.map(makePick));},[rankedPlayers]);
 
@@ -1924,6 +1935,29 @@ export default function App(){
     }).catch(function(){setLeagueTradesLoading(false);});
   }
 
+  function loadLiveProj(){
+    setLiveProjLoading(true);
+    fetch("https://api.sleeper.app/v1/state/nfl").then(function(r){return r.json();}).then(function(state){
+      var season=state.season||"2025";
+      var week=Math.max(1,state.display_week||state.week||1);
+      return fetch("https://api.sleeper.app/v1/projections/nfl/"+season+"/"+week+"?season_type=regular").then(function(r){return r.ok?r.json():null;}).then(function(data){
+        if(data){
+          var pm={};
+          Object.keys(data).forEach(function(pid){
+            var s=data[pid]||{};
+            if(s.pts_ppr||s.pts_half_ppr||s.pts_std){
+              pm[pid]={ppr:+(s.pts_ppr||0).toFixed(1),half:+(s.pts_half_ppr||0).toFixed(1),std:+(s.pts_std||0).toFixed(1)};
+            }
+          });
+          var payload={map:pm,week:week,season:season,ts:Date.now()};
+          try{localStorage.setItem('fdp_lp_v1',JSON.stringify(payload));}catch(e){}
+          setLiveProj(payload);
+        }
+        setLiveProjLoading(false);
+      });
+    }).catch(function(){setLiveProjLoading(false);});
+  }
+
   function loadSleeperStats(){
     setSleeperStatsLoading(true);
     // Get current NFL state to find the latest week
@@ -2107,30 +2141,29 @@ export default function App(){
     // NAV
     React.createElement("div",{style:{position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,paddingBottom:10}},
       React.createElement("div",{style:{display:"flex",justifyContent:"center",paddingTop:12}},
-        React.createElement("img",{src:appLogoSrc,alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380}})
+        React.createElement("img",{src:appLogoSrc,alt:"Fantasy DraftPros",style:{height:72,width:"auto",maxWidth:280}})
       ),
       React.createElement("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:8}},
-        React.createElement("button",{onClick:toggleDarkMode,style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1}},darkMode?"☀ Light":"🌙 Dark"),
-        React.createElement("button",{onClick:function(){setShowSettings(true);},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1,display:"flex",alignItems:"center",gap:4}},"⚙ Settings"),
+        React.createElement("button",{onClick:toggleDarkMode,style:{padding:"8px 12px",minHeight:40,borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1,WebkitTapHighlightColor:"transparent"}},darkMode?"☀ Light":"🌙 Dark"),
+        React.createElement("button",{onClick:function(){setShowSettings(true);},style:{padding:"8px 12px",minHeight:40,borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1,display:"flex",alignItems:"center",gap:4,WebkitTapHighlightColor:"transparent"}},"⚙ Settings"),
         !user?React.createElement(React.Fragment,null,
-          React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"7px 16px",borderRadius:20,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:12}},"Sign In"),
-          React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"7px 18px",borderRadius:20,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:12}},"Sign Up Free")
+          React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"8px 16px",minHeight:40,borderRadius:20,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:12,WebkitTapHighlightColor:"transparent"}},"Sign In"),
+          React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"8px 18px",minHeight:40,borderRadius:20,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:12,WebkitTapHighlightColor:"transparent"}},"Sign Up Free")
         ):React.createElement(UserMenu,{user:user,T:T,onSignOut:function(){saveAndSetUser(null);setShowAdmin(false);},onUpgrade:function(){setAuthMode("signup");setShowAuth(true);},onAdmin:function(){setShowAdmin(true);}})
       )
     ),
 
     // BOTTOM TABS
     React.createElement("div",{style:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:T.bgCard,borderTop:"1px solid "+T.border,display:"flex",zIndex:100}},
-      [["trade","Trade"],["league","My League"],["rankings","Rankings"],["reports","Reports"],["admin","Admin"]].map(function(item){
+      [["trade","Trade","⚖️"],["league","League","🏈"],["rankings","Ranks","📊"],["reports","Reports","📈"],["admin","Admin","🔐"]].map(function(item){
         var active=tab===item[0];
         return React.createElement("button",{key:item[0],onClick:function(){
           if((item[0]==="league"||item[0]==="reports")&&!isPro){setAuthMode("signup");setShowAuth(true);return;}
           if(item[0]==="admin"){if(!user){setAuthMode("signin");setShowAuth(true);return;}setTab("admin");return;}
           setTab(item[0]);
-        },style:{flex:1,padding:"10px 4px 6px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2}},
-          React.createElement("span",{style:{fontSize:16}}," "),
-          React.createElement("span",{style:{fontSize:10,fontWeight:700,color:active?T.purple:T.textDim}},item[1]),
-          active&&React.createElement("div",{style:{width:20,height:2,background:T.purple,borderRadius:2}}),
+        },style:{flex:1,padding:"8px 4px 8px",minHeight:56,background:active?T.purple+"12":"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,WebkitTapHighlightColor:"transparent"}},
+          React.createElement("span",{style:{fontSize:18,lineHeight:1}},item[2]),
+          React.createElement("span",{style:{fontSize:9,fontWeight:700,color:active?T.purple:T.textDim,marginTop:2}},item[1]),
           (item[0]==="league"||item[0]==="reports")&&!isPro&&React.createElement("span",{style:{fontSize:7,color:T.gold,fontWeight:700}},"PRO")
         );
       })
@@ -2148,8 +2181,11 @@ export default function App(){
         )
       ),
       React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:18,marginBottom:20}},
-        React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:2}},"Free Dynasty Trade Analyzer - 2026"),
-        React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:14}},"No account required - Offensive + IDP + FAAB + Draft Picks"),
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:2}},
+          React.createElement("div",{style:{fontWeight:800,fontSize:16}},"Free Dynasty Trade Analyzer - 2026"),
+          React.createElement("button",{onClick:loadLiveProj,style:{padding:"5px 10px",borderRadius:8,border:"1px solid "+(liveProj?T.green:T.border),background:liveProj?T.green+"18":"transparent",color:liveProj?T.green:T.textSub,fontWeight:700,fontSize:10,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},liveProjLoading?"Loading...":(liveProj?"Live Wk"+liveProj.week+" ✓":"Load Live Proj"))
+        ),
+        React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:14}},liveProj?"Live Week "+liveProj.week+" projections active — values reflect real-time data":"No account required - Offensive + IDP + FAAB + Draft Picks"),
         React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:12,marginBottom:14}},
           React.createElement("div",{style:{display:"flex",gap:6,flexWrap:"wrap"}},SCORING_FORMATS.map(function(f){return React.createElement(Chip,{key:f,label:f,active:scoring===f,onClick:function(){setScoring(f);setAnalyzed(false);}});}))
         ),
