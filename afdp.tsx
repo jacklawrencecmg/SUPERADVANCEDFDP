@@ -1557,7 +1557,7 @@ export default function App(){
   var [rebuildConfirmed,setRebuildConfirmed]=useState(false);
   var [rebuildDone,setRebuildDone]=useState(false);
   var [valueTunerLayer,setValueTunerLayer]=useState("format");
-  var [adminTvMults,setAdminTvMults]=useState(function(){try{var s=localStorage.getItem('fdp_tvm_v1');return s?JSON.parse(s):{SF:8000,PPR:6000,Half:5500,Std:5000};}catch(e){return {SF:8000,PPR:6000,Half:5500,Std:5000};}});
+  var [adminTvMult,setAdminTvMult]=useState(function(){try{var s=localStorage.getItem('fdp_tvm_v2');return s?+s:80;}catch(e){return 80;}});
   var [adminTvDraft,setAdminTvDraft]=useState(null);
   var [adminSyncStatus,setAdminSyncStatus]=useState({syncing:false,lastSync:null,type:null});
   var [adminHsQuery,setAdminHsQuery]=useState("");
@@ -1705,17 +1705,17 @@ export default function App(){
       p.scarcity=scarcityLabel(p.posRank,bl[p.pos]||teams);
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.88)):1;
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
-      var tvMult=isDynasty?1000:isSF?adminTvMults.SF:scoring==="PPR"?adminTvMults.PPR:scoring==="Half"?adminTvMults.Half:adminTvMults.Std;
+      var tvMult=adminTvMult;
       var baseTV=Math.round(p.vbd*tvMult);
       if(isDynasty){
-        var dyFloor=Math.max(50,Math.round(40000/Math.max(1,p.posRank)*dynastyBonus(p.pos,p.age)));
+        var dyFloor=Math.max(50,Math.round(4000/Math.max(1,p.posRank)*dynastyBonus(p.pos,p.age)));
         p.tradeVal=Math.max(dyFloor,baseTV);
       } else {
         p.tradeVal=Math.max(10,baseTV);
       }
     });
     return list;
-  },[scoring,teams,budget,ffab,sKey,isDynasty,isSF,tePremium,liveProj,adminTvMults]);
+  },[scoring,teams,budget,ffab,sKey,isDynasty,isSF,tePremium,liveProj,adminTvMult]);
 
   var tradePool=useMemo(function(){return rankedPlayers.concat(DRAFT_PICKS.map(makePick));},[rankedPlayers]);
 
@@ -4408,7 +4408,7 @@ export default function App(){
             React.createElement("input",{type:"checkbox",checked:rebuildConfirmed,readOnly:true,style:{width:18,height:18,flexShrink:0,marginTop:2,accentColor:T.purple}}),
             React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.6}},"I understand this will replace all current player values with production-based calculations using 2025 season data. Players like Jaxon Smith-Njigba will be properly ranked based on their breakout performance.")
           ),
-          React.createElement("button",{disabled:!rebuildConfirmed,onClick:function(){if(!rebuildConfirmed)return;setRebuildDone(false);setAdminTvMults(function(m){return Object.assign({},m);});setTimeout(function(){setRebuildDone(true);setRebuildConfirmed(false);},1200);},style:{width:"100%",padding:"14px",borderRadius:12,border:"none",background:rebuildDone?"#22c55e":rebuildConfirmed?T.purple:"#374151",color:rebuildConfirmed||rebuildDone?"#fff":"#6b7280",fontWeight:800,fontSize:15,cursor:rebuildConfirmed?"pointer":"not-allowed",display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+          React.createElement("button",{disabled:!rebuildConfirmed,onClick:function(){if(!rebuildConfirmed)return;setRebuildDone(false);setAdminTvMult(function(m){return m;});setTimeout(function(){setRebuildDone(true);setRebuildConfirmed(false);},1200);},style:{width:"100%",padding:"14px",borderRadius:12,border:"none",background:rebuildDone?"#22c55e":rebuildConfirmed?T.purple:"#374151",color:rebuildConfirmed||rebuildDone?"#fff":"#6b7280",fontWeight:800,fontSize:15,cursor:rebuildConfirmed?"pointer":"not-allowed",display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
             React.createElement("span",null,rebuildDone?"\u2713":"\u2197"),rebuildDone?"Rebuild Complete!":"Rebuild All Player Values"
           )
         ),
@@ -4460,31 +4460,39 @@ export default function App(){
           })
         ),
         React.createElement("div",{style:{fontSize:13,color:T.textSub,marginBottom:12,padding:"10px 14px",background:T.bgCard,border:"1px solid "+T.border,borderRadius:10}},
-          React.createElement("b",{style:{color:T.text}},"Trade Value Multipliers")," — These numbers directly control how high trade values are calculated per scoring format. Changes apply live."
+          React.createElement("b",{style:{color:T.text}},"Universal Trade Value Multiplier")," — One number controls all player trade values across every scoring format. Default is 80."
         ),
         React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"16px",marginBottom:16}},
           React.createElement("div",{style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:8,marginBottom:16}},
             React.createElement("div",null,
-              React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.text}},"Format Multipliers"),
-              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:4,lineHeight:1.5}},"Editing these changes all player trade values instantly. Dynasty is fixed at 1,000.")
+              React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.text}},"Trade Value Multiplier"),
+              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:4,lineHeight:1.5}},"Applied to VBD for every format. Higher = larger numbers across the board.")
             ),
             React.createElement("div",{style:{display:"flex",gap:6,flexShrink:0}},
-              React.createElement("button",{onClick:function(){var def={SF:8000,PPR:6000,Half:5500,Std:5000};setAdminTvDraft(null);setAdminTvMults(def);try{localStorage.setItem('fdp_tvm_v1',JSON.stringify(def));}catch(e){}},style:{display:"flex",alignItems:"center",gap:4,padding:"7px 10px",borderRadius:8,border:"1px solid "+T.border,background:"transparent",color:T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},"\u21BA Defaults"),
-              React.createElement("button",{onClick:function(){if(adminTvDraft){var n=Object.assign({},adminTvDraft);setAdminTvMults(n);try{localStorage.setItem('fdp_tvm_v1',JSON.stringify(n));}catch(e){}setAdminTvDraft(null);}},style:{display:"flex",alignItems:"center",gap:4,padding:"7px 10px",borderRadius:8,border:"none",background:adminTvDraft?"#f97316":"#374151",color:adminTvDraft?"#fff":"#6b7280",fontWeight:700,fontSize:11,cursor:adminTvDraft?"pointer":"not-allowed"}},"\uD83D\uDCBE Save Changes")
+              React.createElement("button",{onClick:function(){setAdminTvDraft(null);setAdminTvMult(80);try{localStorage.setItem('fdp_tvm_v2',"80");}catch(e){}},style:{display:"flex",alignItems:"center",gap:4,padding:"7px 10px",borderRadius:8,border:"1px solid "+T.border,background:"transparent",color:T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},"\u21BA Reset to 80"),
+              React.createElement("button",{onClick:function(){if(adminTvDraft!==null){setAdminTvMult(adminTvDraft);try{localStorage.setItem('fdp_tvm_v2',String(adminTvDraft));}catch(e){}setAdminTvDraft(null);}},style:{display:"flex",alignItems:"center",gap:4,padding:"7px 10px",borderRadius:8,border:"none",background:adminTvDraft!==null?"#f97316":"#374151",color:adminTvDraft!==null?"#fff":"#6b7280",fontWeight:700,fontSize:11,cursor:adminTvDraft!==null?"pointer":"not-allowed"}},"\uD83D\uDCBE Save Changes")
             )
           ),
-          [["Superflex","SF",T.purple],["PPR","PPR","#22c55e"],["Half PPR","Half","#f59e0b"],["Standard","Std","#60a5fa"]].map(function(row){
-            var key=row[1];
-            var cur=(adminTvDraft&&adminTvDraft[key]!==undefined)?adminTvDraft[key]:adminTvMults[key];
-            return React.createElement("div",{key:key,style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,alignItems:"center",marginBottom:16,background:T.bgInput,borderRadius:10,padding:"12px 14px"}},
-              React.createElement("div",null,
-                React.createElement("div",{style:{fontWeight:700,fontSize:14,color:row[2]}},row[0]),
-                React.createElement("div",{style:{fontSize:10,color:T.textSub,marginTop:2}},"Current: "+adminTvMults[key].toLocaleString())
-              ),
-              React.createElement("input",{type:"number",step:"100",value:cur,onChange:function(e){var v=parseInt(e.target.value)||0;setAdminTvDraft(function(d){var base=d||Object.assign({},adminTvMults);return Object.assign({},base,Object.fromEntries([[key,v]]));});},style:{background:T.bg,color:T.text,border:"1px solid "+(adminTvDraft&&adminTvDraft[key]!==adminTvMults[key]?"#f97316":T.border),borderRadius:8,padding:"10px 8px",fontSize:15,fontWeight:700,textAlign:"center",outline:"none",width:"100%",boxSizing:"border-box"}})
-            );
-          }),
-          adminTvDraft&&React.createElement("div",{style:{background:"#f97316"+"18",border:"1px solid #f97316",borderRadius:8,padding:"10px 12px",fontSize:12,color:"#f97316",fontWeight:600}},"Unsaved changes — hit Save Changes to apply")
+          React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,alignItems:"center",background:T.bgInput,borderRadius:10,padding:"16px",marginBottom:12}},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:700,fontSize:20,color:T.purple}},adminTvMult),
+              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:4}},"All formats · Dynasty · SF · PPR · Half · Std")
+            ),
+            React.createElement("input",{type:"number",step:"10",value:adminTvDraft!==null?adminTvDraft:adminTvMult,onChange:function(e){var v=parseInt(e.target.value)||0;setAdminTvDraft(v);},style:{background:T.bg,color:T.text,border:"1px solid "+(adminTvDraft!==null?"#f97316":T.border),borderRadius:8,padding:"12px 8px",fontSize:18,fontWeight:800,textAlign:"center",outline:"none",width:"100%",boxSizing:"border-box"}})
+          ),
+          React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:12}},
+            [["Top Player","~"+(Math.round((100*(adminTvDraft!==null?adminTvDraft:adminTvMult))/100)*100).toLocaleString(),"#22c55e"],["2026 1.01","7,500","#f59e0b"],["3rd Rd Pick","100-400","#9ca3af"]].map(function(ex){
+              return React.createElement("div",{key:ex[0],style:{background:T.bgInput,borderRadius:8,padding:"10px",textAlign:"center"}},
+                React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:4}},ex[0]),
+                React.createElement("div",{style:{fontWeight:800,fontSize:14,color:ex[2]}},ex[1])
+              );
+            })
+          ),
+          adminTvDraft!==null&&React.createElement("div",{style:{background:"#f97316"+"18",border:"1px solid #f97316",borderRadius:8,padding:"10px 12px",fontSize:12,color:"#f97316",fontWeight:600}},"Unsaved — hit Save Changes to apply"),
+          React.createElement("div",{style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:8,padding:"10px 12px",display:"flex",gap:8}},
+            React.createElement("span",{style:{color:T.textSub,flexShrink:0}},"\u24D8"),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub,lineHeight:1.6}},"Recommended: 80 puts top players at ~8,000-10,000, matching the pick scale (1.01=7,500, 3rd round=100-400). Increase if you want larger numbers.")
+          )
         ),
         React.createElement("div",{style:{padding:"24px 0 8px",borderTop:"1px solid "+T.border,textAlign:"center"}},
           React.createElement("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginBottom:8}},
