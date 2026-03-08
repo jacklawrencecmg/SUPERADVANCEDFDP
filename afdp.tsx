@@ -728,8 +728,6 @@ const PLAYERS=[
   // IDP Wave 7 — more LB depth
   {name:"Leighton Vander Esch",pos:"LB",age:29,team:"DAL",proj:{PPR:100,Half:100,Std:100},adp:20.0,note:"ILB: 105 tackles 2 INT when healthy"},
   {name:"Jack Campbell",pos:"LB",age:24,team:"DET",proj:{PPR:108,Half:108,Std:108},adp:17.5,note:"Year 3 ILB: 115 tackles 3 sacks"},
-  {name:"Troy Andersen",pos:"LB",age:26,team:"ATL",proj:{PPR:102,Half:102,Std:102},adp:19.5,note:"ILB: 108 tackles 2 INT speed"},
-  {name:"Josey Jewell",pos:"LB",age:31,team:"DEN",proj:{PPR:90,Half:90,Std:90},adp:26.5,note:"Veteran ILB: 88 tackles 2 INT"},
   {name:"Ivan Pace Jr.",pos:"LB",age:24,team:"MIN",proj:{PPR:98,Half:98,Std:98},adp:21.5,note:"Thumper: 100 tackles 3 sacks"},
   {name:"Mykal Walker",pos:"LB",age:29,team:"ATL",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"Coverage: 72 tackles 2 INT"},
   // QB Wave 7
@@ -739,40 +737,23 @@ const PLAYERS=[
   // WR Wave 7
   {name:"Robbie Anderson",pos:"WR",age:31,team:"FA",proj:{PPR:88,Half:81,Std:74},adp:44.5,note:"Veteran deep threat"},
   {name:"Brandin Cooks",pos:"WR",age:32,team:"DAL",proj:{PPR:102,Half:94,Std:86},adp:38.5,note:"Speed receiver: 44 rec 520 yds"},
-  {name:"Josh Palmer",pos:"WR",age:26,team:"LAC",proj:{PPR:118,Half:108,Std:98},adp:32.5,note:"Slot: 50 rec 560 yds 4 TD"},
   {name:"Marquise Brown",pos:"WR",age:28,team:"KC",proj:{PPR:112,Half:103,Std:94},adp:35.5,note:"Speed slot: 45 rec 540 yds"},
   {name:"Mecole Hardman Jr.",pos:"WR",age:28,team:"KC",proj:{PPR:95,Half:87,Std:79},adp:42.0,note:"Speed: 38 rec 450 yds 4 TD"},
   // TE Wave 7
   {name:"Kyle Pitts",pos:"TE",age:25,team:"ATL",proj:{PPR:188,Half:172,Std:156},adp:12.5,note:"Athletic TE: 72 rec 780 yds 6 TD bounce-back"},
   {name:"Mike Gesicki",pos:"TE",age:30,team:"NE",proj:{PPR:115,Half:105,Std:95},adp:24.5,note:"Receiving TE: 46 rec 490 yds 4 TD"},
-  {name:"Juwan Johnson",pos:"TE",age:29,team:"NO",proj:{PPR:102,Half:93,Std:84},adp:30.0,note:"Receiving threat: 38 rec 400 yds 5 TD"},
   // Wave 10 — 2025 NFL Draft rookies: skill + IDP
   // 2025 RB Rookies
-  {name:"Ashton Jeanty",pos:"RB",age:22,team:"LV",proj:{PPR:285,Half:262,Std:239},adp:3.2,note:"2025 #1 pick: Boise St legend 1,800 rush proj"},
-  {name:"Omarion Hampton",pos:"RB",age:22,team:"LAC",proj:{PPR:232,Half:213,Std:194},adp:7.5,note:"2025 1st rounder: 1,200 rush powerful runner"},
-  {name:"Quinshon Judkins",pos:"RB",age:22,team:"CLE",proj:{PPR:218,Half:200,Std:182},adp:9.5,note:"2025 draft: dual-threat 1,100 rush 55 rec"},
-  {name:"TreVeyon Henderson",pos:"RB",age:22,team:"NE",proj:{PPR:195,Half:179,Std:163},adp:12.5,note:"Explosive back: 900 rush 50 rec"},
   {name:"Trevor Etienne",pos:"RB",age:22,team:"JAX",proj:{PPR:182,Half:167,Std:152},adp:15.0,note:"2025 draft: pass-catching 800 rush 55 rec"},
   {name:"Nicholas Singleton",pos:"RB",age:22,team:"PHI",proj:{PPR:168,Half:154,Std:140},adp:18.5,note:"Power speed combo: 700 rush depth"},
   {name:"Ollie Gordon II",pos:"RB",age:22,team:"PIT",proj:{PPR:175,Half:161,Std:147},adp:17.0,note:"Big back: 800 rush 40 rec"},
-  {name:"Dylan Sampson",pos:"RB",age:22,team:"TEN",proj:{PPR:162,Half:149,Std:136},adp:20.0,note:"2025 depth: explosive short-yardage"},
-  {name:"Tahj Brooks",pos:"RB",age:23,team:"KC",proj:{PPR:155,Half:142,Std:129},adp:22.5,note:"Power back: 650 rush handcuff"},
   // 2025 QB Rookies
-  {name:"Shedeur Sanders",pos:"QB",age:23,team:"CLE",proj:{PPR:312,Half:312,Std:312},adp:12.5,note:"2025 1st round: 3,600 yds 27 TD Year 1"},
-  {name:"Cam Ward",pos:"QB",age:23,team:"TEN",proj:{PPR:318,Half:318,Std:318},adp:11.8,note:"2025 #1 overall: 3,700 yds 28 TD"},
   {name:"Jaxson Dart",pos:"QB",age:23,team:"NYG",proj:{PPR:288,Half:288,Std:288},adp:16.5,note:"2025 1st round: 3,200 yds 24 TD"},
   {name:"Will Howard",pos:"QB",age:23,team:"PIT",proj:{PPR:272,Half:272,Std:272},adp:19.5,note:"2025 mid-round: 3,000 yds 22 TD"},
   {name:"Tyler Shough",pos:"QB",age:26,team:"NO",proj:{PPR:255,Half:255,Std:255},adp:22.5,note:"2025 draft: veteran passer 2,800 yds"},
   // 2025 WR Rookies
-  {name:"Travis Hunter",pos:"WR",age:22,team:"DAL",proj:{PPR:245,Half:226,Std:207},adp:9.8,note:"2025 #2 pick: elite two-way 90 rec 1,000 yds"},
-  {name:"Luther Burden III",pos:"WR",age:22,team:"CHI",proj:{PPR:215,Half:198,Std:181},adp:13.5,note:"2025 1st round: YAC monster 80 rec 920 yds"},
-  {name:"Emeka Egbuka",pos:"WR",age:22,team:"TB",proj:{PPR:198,Half:183,Std:168},adp:17.2,note:"2025 1st round: route runner 75 rec 860 yds"},
   {name:"Elic Ayomanor",pos:"WR",age:22,team:"TEN",proj:{PPR:168,Half:155,Std:142},adp:23.5,note:"2025 2nd round: 62 rec 740 yds 6 TD"},
-  {name:"Jack Bech",pos:"WR",age:22,team:"LV",proj:{PPR:155,Half:143,Std:131},adp:27.0,note:"2025 draft: reliable receiver 58 rec 680 yds"},
   {name:"Dont'e Thornton Jr.",pos:"WR",age:23,team:"NE",proj:{PPR:138,Half:127,Std:116},adp:32.5,note:"Deep threat: 48 rec 620 yds"},
-  {name:"Jayden Higgins",pos:"WR",age:22,team:"HOU",proj:{PPR:145,Half:133,Std:121},adp:29.5,note:"2025 pick: 55 rec 650 yds 5 TD"},
-  {name:"Savion Williams",pos:"WR",age:22,team:"GB",proj:{PPR:125,Half:115,Std:105},adp:34.5,note:"Big WR prospect: 48 rec 550 yds"},
-  {name:"Chimere Dike",pos:"WR",age:24,team:"GB",proj:{PPR:112,Half:103,Std:94},adp:37.5,note:"Speed slot: 42 rec 480 yds"},
   // 2025 TE Rookies
   {name:"Elijah Arroyo",pos:"TE",age:22,team:"SEA",proj:{PPR:125,Half:114,Std:103},adp:21.5,note:"2025 2nd round: 48 rec 520 yds 5 TD"},
   {name:"Landen King",pos:"TE",age:22,team:"LV",proj:{PPR:108,Half:98,Std:88},adp:27.5,note:"2025 pick: 42 rec 460 yds 4 TD"},
@@ -781,10 +762,33 @@ const PLAYERS=[
   {name:"Abdul Carter",pos:"DL",age:22,team:"NYG",proj:{PPR:115,Half:115,Std:115},adp:10.5,note:"2025 top-5 pick: elite EDGE 12 sacks upside"},
   {name:"Mason Graham",pos:"DL",age:22,team:"CLE",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"2025 1st round IDL: 40 tackles 5 sacks"},
   {name:"James Pearce Jr.",pos:"DL",age:22,team:"KC",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"2025 1st round EDGE: 9 sacks explosive"},
-  {name:"Mykel Williams",pos:"DL",age:22,team:"SF",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"2025 1st round EDGE: 8 sacks Year 1"},
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 23 — elite IDL, QB prospects, IDP 2025 additions
+  // IDL elite tier Wave 23
+  {name:"DeForest Buckner",pos:"DL",age:32,team:"IND",proj:{PPR:95,Half:95,Std:95},adp:22.0,note:"Elite IDL: 9 sacks 52 tackles anchor"},
+  {name:"Vita Vea",pos:"DL",age:30,team:"TB",proj:{PPR:85,Half:85,Std:85},adp:29.0,note:"Elite NT: 7 sacks 50 tackles run stopper"},
+  {name:"Arik Armstead",pos:"DL",age:32,team:"JAX",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"Versatile IDL: 7 sacks 42 tackles"},
+  {name:"Justin Madubuike",pos:"DL",age:28,team:"BAL",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"IDL: 8.5 sacks 48 tackles ascending"},
+  {name:"Javon Kinlaw",pos:"DL",age:28,team:"NYJ",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"IDL: 7 sacks when healthy"},
+  {name:"Quinton Jefferson",pos:"DL",age:32,team:"SEA",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"IDL veteran: 6 sacks 38 tackles"},
+  {name:"Kris Jenkins Jr.",pos:"DL",age:24,team:"BUF",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"Year 2 IDL: 7 sacks ascending"},
+  {name:"Brandon Jordan",pos:"DL",age:26,team:"GB",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"EDGE: 6 sacks ascending"},
+  // IDP 2025 additions
+  {name:"Mike Green",pos:"DL",age:23,team:"SEA",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"2024 EDGE breakout: 11 sacks elite production"},
+  {name:"Dani Dennis-Sutton",pos:"DL",age:22,team:"KC",proj:{PPR:82,Half:82,Std:82},adp:30.5,note:"2025 EDGE: 8 sacks Year 1 upside"},
+  // QB prospects Wave 23
+  {name:"Jalen Milroe",pos:"QB",age:23,team:"SEA",proj:{PPR:278,Half:278,Std:278},adp:18.5,note:"2025 pick: mobile 3,100 yds 24 TD 450 rush"},
+  {name:"Will Rogers",pos:"QB",age:24,team:"WAS",proj:{PPR:242,Half:242,Std:242},adp:24.5,note:"2025 pick: accurate 2,800 yds 20 TD"},
+  {name:"Preston Stone",pos:"QB",age:24,team:"ARI",proj:{PPR:235,Half:235,Std:235},adp:26.5,note:"2025: 2,700 yds 20 TD backup"},
+  {name:"Michael Pratt",pos:"QB",age:24,team:"GB",proj:{PPR:228,Half:228,Std:228},adp:27.5,note:"2025 pick: 2,600 yds 19 TD backup"},
+  {name:"Kevin Jennings",pos:"QB",age:23,team:"CHI",proj:{PPR:222,Half:222,Std:222},adp:28.5,note:"2025: mobile backup 2,500 yds"},
+  {name:"Brendan Sorsby",pos:"QB",age:25,team:"CLE",proj:{PPR:198,Half:198,Std:198},adp:34.5,note:"Deep backup: 2,200 yds"},
+  // More notable current WRs Wave 23
+  // More RB depth Wave 23
+  {name:"Ryquell Armstead",pos:"RB",age:28,team:"FA",proj:{PPR:58,Half:53,Std:48},adp:57.0,note:"Power back veteran depth"},
+  {name:"Elijah Holyfield",pos:"RB",age:28,team:"FA",proj:{PPR:52,Half:47,Std:42},adp:59.0,note:"Power back depth"},
   // Wave 22 — veteran IDL depth + CB/DB/LB fill-ins
   // IDL/DL veteran depth Wave 22
   {name:"Cameron Heyward",pos:"DL",age:36,team:"PIT",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"Veteran IDL: 7 sacks 44 tackles if active"},
@@ -795,8 +799,6 @@ const PLAYERS=[
   {name:"Tyus Bowser",pos:"LB",age:30,team:"BAL",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"EDGE/LB: 6 sacks 55 tackles"},
   {name:"Micah Kiser",pos:"LB",age:30,team:"LAR",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"ILB: 70 tackles 1 sack"},
   {name:"Brandon Copeland",pos:"LB",age:34,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:51.0,note:"Veteran LB/EDGE depth"},
-  {name:"Oren Burks",pos:"LB",age:30,team:"GB",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"Coverage LB: 68 tackles 2 INT"},
-  {name:"Eric Wilson",pos:"LB",age:31,team:"HOU",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"ILB: 72 tackles 2 sacks"},
   // CB/DB depth Wave 22
   {name:"Jamel Dean",pos:"DB",age:29,team:"TB",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"CB: 58 tackles 3 INT press cover"},
   {name:"Bryce Hall",pos:"DB",age:28,team:"FA",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"CB: 52 tackles 2 INT physical"},
@@ -804,7 +806,6 @@ const PLAYERS=[
   {name:"Nate Hairston",pos:"DB",age:31,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:54.5,note:"Veteran CB depth"},
   {name:"Jalen Thompson",pos:"DB",age:28,team:"ARI",proj:{PPR:75,Half:75,Std:75},adp:36.5,note:"S: 68 tackles 2 INT"},
   {name:"Chris Banjo",pos:"DB",age:34,team:"CAR",proj:{PPR:52,Half:52,Std:52},adp:57.0,note:"Veteran ST/S depth"},
-  {name:"Jordan Fuller",pos:"DB",age:28,team:"LAR",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"FS: 65 tackles 2 INT"},
   // RB veteran depth Wave 22
   {name:"Trey Sermon",pos:"RB",age:26,team:"FA",proj:{PPR:68,Half:62,Std:56},adp:51.5,note:"Powerful back: 280 rush depth"},
   {name:"Wayne Gallman",pos:"RB",age:31,team:"FA",proj:{PPR:58,Half:53,Std:48},adp:56.5,note:"Veteran depth power"},
@@ -813,7 +814,6 @@ const PLAYERS=[
   {name:"Mekale McKay",pos:"WR",age:32,team:"FA",proj:{PPR:52,Half:48,Std:44},adp:58.0,note:"Big WR veteran depth"},
   // Wave 21 — 2025 IDP class + deeper DB/WR depth
   // 2025 IDP class additions
-  {name:"Laiatu Latu",pos:"DL",age:25,team:"LAC",proj:{PPR:95,Half:95,Std:95},adp:22.0,note:"2024 1st round EDGE: 9 sacks Year 2 leap"},
   {name:"Shemar Turner",pos:"DL",age:23,team:"NO",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"2025 EDGE: 7 sacks ascending"},
   {name:"Darius Robinson",pos:"DL",age:24,team:"KC",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"Versatile DL: 7 sacks 40 tackles"},
   {name:"Maason Smith",pos:"DL",age:24,team:"JAX",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"IDL: 35 tackles 4 sacks developing"},
@@ -854,7 +854,6 @@ const PLAYERS=[
   {name:"Jacob Phillips",pos:"LB",age:27,team:"CLE",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"ILB: 75 tackles 2 sacks"},
   {name:"Divine Deablo",pos:"DB",age:27,team:"LV",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"S/LB hybrid: 75 tackles 2 sacks"},
   {name:"Alec Ogletree",pos:"LB",age:34,team:"FA",proj:{PPR:62,Half:62,Std:62},adp:46.5,note:"Veteran ILB depth if active"},
-  {name:"Pete Werner",pos:"LB",age:27,team:"NO",proj:{PPR:85,Half:85,Std:85},adp:29.0,note:"ILB: 80 tackles 2 INT ascending"},
   {name:"Curtis Bolton",pos:"LB",age:28,team:"GB",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"ST/LB: 65 tackles 2 sacks"},
   {name:"Azur Kamara",pos:"LB",age:27,team:"CIN",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"LB depth: 60 tackles 1 sack"},
   {name:"Shaquem Griffin",pos:"LB",age:30,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:50.0,note:"Veteran LB depth if active"},
@@ -862,20 +861,9 @@ const PLAYERS=[
   {name:"Reshad Jones",pos:"DB",age:36,team:"FA",proj:{PPR:48,Half:48,Std:48},adp:60.5,note:"Retired veteran reference"},
   {name:"Malcolm Jenkins",pos:"DB",age:37,team:"FA",proj:{PPR:45,Half:45,Std:45},adp:62.0,note:"Retired veteran reference"},
   {name:"Patrick Chung",pos:"DB",age:37,team:"FA",proj:{PPR:42,Half:42,Std:42},adp:63.0,note:"Retired veteran reference"},
-  {name:"Tyrann Mathieu",pos:"DB",age:33,team:"KC",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"Veteran S: 65 tackles 3 INT"},
   // More WR sleepers/dynasty Wave 20
-  {name:"Andrei Iosivas",pos:"WR",age:25,team:"CIN",proj:{PPR:105,Half:96,Std:87},adp:37.0,note:"Speed: 42 rec 510 yds 4 TD upside"},
-  {name:"David Bell",pos:"WR",age:25,team:"CLE",proj:{PPR:112,Half:103,Std:94},adp:35.0,note:"YAC machine: 46 rec 540 yds 4 TD"},
-  {name:"Laquon Treadwell",pos:"WR",age:30,team:"FA",proj:{PPR:72,Half:66,Std:60},adp:49.0,note:"Veteran jump-ball: 28 rec 310 yds"},
-  {name:"KJ Hamler",pos:"WR",age:26,team:"DEN",proj:{PPR:88,Half:81,Std:74},adp:44.0,note:"Speed: 34 rec 420 yds when healthy"},
   {name:"Kalif Raymond",pos:"WR",age:30,team:"DET",proj:{PPR:78,Half:72,Std:66},adp:47.5,note:"Slot/returner: 32 rec 360 yds"},
-  {name:"Ihmir Smith-Marsette",pos:"WR",age:26,team:"FA",proj:{PPR:65,Half:60,Std:55},adp:53.5,note:"Speed depth: 24 rec 290 yds"},
-  {name:"Kadarius Toney",pos:"WR",age:27,team:"KC",proj:{PPR:72,Half:66,Std:60},adp:49.5,note:"Gadget: 28 rec 310 yds when healthy"},
-  {name:"Velus Jones Jr.",pos:"WR",age:28,team:"CHI",proj:{PPR:75,Half:69,Std:63},adp:48.5,note:"Return/speed: 30 rec 340 yds"},
-  {name:"Jaelon Darden",pos:"WR",age:27,team:"NYJ",proj:{PPR:68,Half:62,Std:56},adp:51.5,note:"Slot/returner: 26 rec 295 yds"},
   {name:"DeAndre Carter",pos:"WR",age:31,team:"LAC",proj:{PPR:72,Half:66,Std:60},adp:49.5,note:"Slot depth: 28 rec 310 yds"},
-  {name:"Nsimba Webster",pos:"WR",age:29,team:"ATL",proj:{PPR:60,Half:55,Std:50},adp:56.0,note:"Veteran returner depth"},
-  {name:"Ty Fryfogle",pos:"WR",age:27,team:"TEN",proj:{PPR:65,Half:60,Std:55},adp:53.5,note:"Physical: 26 rec 300 yds"},
   // Wave 19 — backup QBs, returners, dynasty sleepers
   // QB depth Wave 19
   {name:"Jake Browning",pos:"QB",age:29,team:"CIN",proj:{PPR:248,Half:248,Std:248},adp:23.5,note:"CIN backup: 2,900 yds 21 TD handcuff"},
@@ -890,7 +878,6 @@ const PLAYERS=[
   {name:"Jamal Agnew",pos:"WR",age:30,team:"JAX",proj:{PPR:82,Half:75,Std:68},adp:46.5,note:"Return specialist: 32 rec 360 yds ST value"},
   {name:"Kevontae Turpin",pos:"WR",age:27,team:"DAL",proj:{PPR:78,Half:72,Std:66},adp:48.0,note:"Return/gadget: 28 rec 340 yds speed"},
   {name:"Jakeem Grant Jr.",pos:"WR",age:31,team:"CHI",proj:{PPR:75,Half:69,Std:63},adp:49.0,note:"Elite returner: 30 rec 340 yds"},
-  {name:"Braxton Berrios",pos:"WR",age:30,team:"MIA",proj:{PPR:72,Half:66,Std:60},adp:49.5,note:"Return/slot: 28 rec 310 yds"},
   {name:"Daurice Fountain",pos:"WR",age:29,team:"KC",proj:{PPR:65,Half:60,Std:55},adp:53.5,note:"Big WR depth: 24 rec 280 yds"},
   {name:"Dennis Houston",pos:"WR",age:28,team:"JAX",proj:{PPR:68,Half:62,Std:56},adp:51.5,note:"Physical slot: 26 rec 295 yds"},
   {name:"Trishton Jackson",pos:"WR",age:26,team:"CHI",proj:{PPR:62,Half:57,Std:52},adp:55.0,note:"Developmental WR depth"},
@@ -899,13 +886,8 @@ const PLAYERS=[
   // RB returner/depth Wave 19
   {name:"Derrick Gore",pos:"RB",age:30,team:"KC",proj:{PPR:65,Half:60,Std:55},adp:53.0,note:"ST/power: 220 rush depth"},
   {name:"Godwin Igwebuike",pos:"RB",age:29,team:"DET",proj:{PPR:62,Half:57,Std:52},adp:55.0,note:"ST/RB: 180 rush depth"},
-  {name:"Mike Boone",pos:"RB",age:29,team:"DEN",proj:{PPR:68,Half:62,Std:56},adp:51.0,note:"Backup: 240 rush 32 rec"},
   {name:"Patrick Taylor Jr.",pos:"RB",age:27,team:"MIA",proj:{PPR:72,Half:66,Std:60},adp:49.0,note:"Power back depth: 280 rush"},
   // TE depth Wave 19
-  {name:"Charlie Kolar",pos:"TE",age:26,team:"BAL",proj:{PPR:88,Half:80,Std:72},adp:43.0,note:"BAL TE2: 34 rec 360 yds 4 TD"},
-  {name:"Foster Moreau",pos:"TE",age:29,team:"NO",proj:{PPR:82,Half:75,Std:68},adp:45.5,note:"TE2: 32 rec 330 yds"},
-  {name:"Daniel Bellinger",pos:"TE",age:26,team:"NYG",proj:{PPR:85,Half:78,Std:71},adp:44.0,note:"NYG TE: 34 rec 350 yds 4 TD"},
-  {name:"Geoff Swaim",pos:"TE",age:32,team:"TEN",proj:{PPR:58,Half:53,Std:48},adp:56.0,note:"Blocking TE veteran"},
   {name:"Matt Bushman",pos:"TE",age:29,team:"FA",proj:{PPR:52,Half:47,Std:42},adp:58.0,note:"Blocking TE veteran depth"},
   {name:"Princeton Fant",pos:"TE",age:29,team:"NYJ",proj:{PPR:65,Half:59,Std:53},adp:52.5,note:"TE2: 24 rec 250 yds"},
   {name:"Jordan Franks",pos:"TE",age:30,team:"FA",proj:{PPR:48,Half:43,Std:38},adp:60.0,note:"Blocking TE depth"},
@@ -920,14 +902,12 @@ const PLAYERS=[
   {name:"Michael Woods II",pos:"WR",age:25,team:"MIA",proj:{PPR:72,Half:66,Std:60},adp:48.0,note:"Physical: 28 rec 320 yds"},
   {name:"Jalen Nailor",pos:"WR",age:25,team:"MIN",proj:{PPR:85,Half:78,Std:71},adp:44.0,note:"Deep threat: 34 rec 420 yds 4 TD"},
   {name:"Tylan Wallace",pos:"WR",age:27,team:"BAL",proj:{PPR:68,Half:62,Std:56},adp:51.0,note:"Slot: 26 rec 290 yds ST value"},
-  {name:"Equanimeous St. Brown",pos:"WR",age:28,team:"CHI",proj:{PPR:72,Half:66,Std:60},adp:48.5,note:"Big slot: 28 rec 320 yds"},
   {name:"Dazz Newsome",pos:"WR",age:26,team:"CHI",proj:{PPR:65,Half:60,Std:55},adp:53.0,note:"Slot depth: 25 rec 270 yds"},
   {name:"Jaquarii Roberson",pos:"WR",age:26,team:"CAR",proj:{PPR:68,Half:62,Std:56},adp:50.5,note:"Physical: 26 rec 300 yds"},
   {name:"Tre Nixon",pos:"WR",age:26,team:"NE",proj:{PPR:62,Half:57,Std:52},adp:54.5,note:"Speed receiver depth"},
   {name:"Taywan Taylor",pos:"WR",age:31,team:"FA",proj:{PPR:55,Half:50,Std:45},adp:57.0,note:"Veteran speed depth"},
   // 2025 WR rookies Wave 18
   {name:"Tre Harris",pos:"WR",age:23,team:"LAC",proj:{PPR:128,Half:117,Std:106},adp:31.5,note:"2025 1st round: 50 rec 620 yds 5 TD"},
-  {name:"Kyle Williams",pos:"WR",age:22,team:"WAS",proj:{PPR:118,Half:108,Std:98},adp:33.5,note:"2025 pick: 46 rec 560 yds 5 TD"},
   {name:"Pat Bryant",pos:"WR",age:23,team:"DEN",proj:{PPR:108,Half:99,Std:90},adp:36.5,note:"2025 pick: 42 rec 510 yds 4 TD"},
   {name:"Malachi Fields",pos:"WR",age:23,team:"CIN",proj:{PPR:95,Half:87,Std:79},adp:41.0,note:"2025: big WR 38 rec 460 yds"},
   {name:"Tai Felton",pos:"WR",age:23,team:"MIN",proj:{PPR:102,Half:94,Std:86},adp:38.5,note:"2025 speed: 40 rec 490 yds 4 TD"},
@@ -938,20 +918,11 @@ const PLAYERS=[
   {name:"Darrynton Evans",pos:"RB",age:28,team:"CHI",proj:{PPR:72,Half:66,Std:60},adp:48.5,note:"Speed: 240 rush 38 rec"},
   {name:"Jashaun Corbin",pos:"RB",age:26,team:"SF",proj:{PPR:68,Half:62,Std:56},adp:51.0,note:"SF depth behind CMC"},
   {name:"Gerrid Doaks",pos:"RB",age:27,team:"MIA",proj:{PPR:62,Half:57,Std:52},adp:55.0,note:"Power back depth"},
-  {name:"Emari Demercado",pos:"RB",age:27,team:"ARI",proj:{PPR:82,Half:75,Std:68},adp:45.5,note:"ARI committee: 320 rush 42 rec"},
-  {name:"Dare Ogunbowale",pos:"RB",age:31,team:"HOU",proj:{PPR:78,Half:72,Std:66},adp:47.0,note:"Pass-catching veteran: 260 rush 48 rec"},
   {name:"Ty Davis-Price",pos:"RB",age:25,team:"SF",proj:{PPR:72,Half:66,Std:60},adp:49.0,note:"Power back depth"},
-  {name:"Kendre Miller",pos:"RB",age:24,team:"NO",proj:{PPR:145,Half:133,Std:121},adp:25.0,note:"NO lead back: 650 rush 6 TD Year 3"},
   {name:"Craig Reynolds",pos:"RB",age:29,team:"DET",proj:{PPR:88,Half:81,Std:74},adp:43.5,note:"DET depth: 380 rush 38 rec"},
-  {name:"Dwayne Washington",pos:"RB",age:32,team:"FA",proj:{PPR:58,Half:53,Std:48},adp:56.0,note:"Veteran power back depth"},
   // TE deep depth Wave 18
-  {name:"Noah Gray",pos:"TE",age:27,team:"KC",proj:{PPR:88,Half:80,Std:72},adp:43.5,note:"KC TE2: 34 rec 360 yds 4 TD"},
   {name:"Eric Ebron",pos:"TE",age:32,team:"FA",proj:{PPR:65,Half:59,Std:53},adp:53.0,note:"Veteran receiving TE"},
-  {name:"Donald Parham Jr.",pos:"TE",age:29,team:"LAC",proj:{PPR:72,Half:66,Std:60},adp:48.0,note:"Tall TE: 28 rec 290 yds"},
-  {name:"Luke Farrell",pos:"TE",age:28,team:"JAX",proj:{PPR:62,Half:57,Std:52},adp:54.0,note:"Blocking TE: 20 rec 200 yds"},
   {name:"Brycen Hopkins",pos:"TE",age:28,team:"LAR",proj:{PPR:65,Half:59,Std:53},adp:52.5,note:"TE2: 24 rec 250 yds"},
-  {name:"MyCole Pruitt",pos:"TE",age:34,team:"FA",proj:{PPR:52,Half:47,Std:42},adp:57.5,note:"Veteran blocking TE depth"},
-  {name:"Andrew Beck",pos:"TE",age:30,team:"HOU",proj:{PPR:55,Half:50,Std:45},adp:56.0,note:"Blocking TE: 18 rec 180 yds"},
   // Wave 17 — 2025 LB rookies + veteran IDP depth
   // 2025 LB rookies
   {name:"Jihaad Campbell",pos:"LB",age:22,team:"PHI",proj:{PPR:98,Half:98,Std:98},adp:21.5,note:"2025 1st round: 95 tackles 3 sacks elite coverage"},
@@ -970,12 +941,10 @@ const PLAYERS=[
   {name:"Keanu Neal",pos:"DB",age:30,team:"TB",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"SS: 70 tackles 2 sacks physical"},
   {name:"Landon Collins",pos:"DB",age:32,team:"FA",proj:{PPR:65,Half:65,Std:65},adp:44.0,note:"SS veteran: 68 tackles 2 INT"},
   {name:"Ha Ha Clinton-Dix",pos:"DB",age:34,team:"FA",proj:{PPR:52,Half:52,Std:52},adp:56.0,note:"Veteran FS depth"},
-  {name:"Chamarri Conner",pos:"DB",age:27,team:"WAS",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"S/LB: 75 tackles 2 sacks versatile"},
   // Wave 16 — IDP LB/DB depth + final fill-ins
   // IDP LB Wave 16
   {name:"Darius Leonard",pos:"LB",age:30,team:"IND",proj:{PPR:102,Half:102,Std:102},adp:19.5,note:"Shaq: 100 tackles 3 INT comeback"},
   {name:"John Johnson III",pos:"DB",age:30,team:"CLE",proj:{PPR:85,Half:85,Std:85},adp:29.5,note:"S: 72 tackles 3 INT veteran"},
-  {name:"Jaquan Brisker",pos:"DB",age:27,team:"CHI",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"S: 78 tackles 3 INT ascending"},
   {name:"Dominique Hampton",pos:"DB",age:24,team:"WAS",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"S Year 3: 65 tackles 2 INT"},
   {name:"Markquese Bell",pos:"DB",age:25,team:"DAL",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"S: 62 tackles 2 INT physical"},
   {name:"Jammie Robinson",pos:"DB",age:25,team:"CAR",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"S: 58 tackles 2 INT developing"},
@@ -1003,14 +972,12 @@ const PLAYERS=[
   {name:"Trill Williams",pos:"DB",age:27,team:"MIN",proj:{PPR:68,Half:68,Std:68},adp:41.0,note:"CB: 55 tackles 2 INT physical"},
   {name:"Sevyn Banks",pos:"DB",age:26,team:"CLE",proj:{PPR:65,Half:65,Std:65},adp:43.5,note:"CB: 52 tackles 2 INT developing"},
   {name:"Robert Rochell",pos:"DB",age:28,team:"LAC",proj:{PPR:62,Half:62,Std:62},adp:46.0,note:"CB depth: 48 tackles 1 INT"},
-  {name:"Jaylen Watson",pos:"DB",age:27,team:"KC",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"CB: 58 tackles 3 INT ascending"},
   {name:"Darius Phillips",pos:"DB",age:31,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:52.0,note:"Veteran CB depth"},
   {name:"Josh Blackwell",pos:"DB",age:26,team:"DAL",proj:{PPR:58,Half:58,Std:58},adp:49.0,note:"CB: 45 tackles 1 INT special teams"},
   {name:"Paul Taulelei",pos:"TE",age:27,team:"BUF",proj:{PPR:55,Half:50,Std:45},adp:55.0,note:"Blocking TE: 18 rec 180 yds"},
   // Wave 14 — Cam Skattebo + 2025 RB class + WR/TE/IDP depth
   // 2025 RB class additions
   {name:"Cam Skattebo",pos:"RB",age:23,team:"NYG",proj:{PPR:225,Half:207,Std:189},adp:8.5,note:"2025 1st round: bruising style 1,100 rush 55 rec physical"},
-  {name:"Kaleb Johnson",pos:"RB",age:22,team:"PIT",proj:{PPR:195,Half:179,Std:163},adp:13.0,note:"2025 draft: power runner 900 rush 6 TD"},
   {name:"Donovan Edwards",pos:"RB",age:23,team:"DET",proj:{PPR:178,Half:163,Std:148},adp:16.5,note:"DET handcuff: 700 rush 50 rec speed"},
   {name:"Bhayshul Tuten",pos:"RB",age:23,team:"TEN",proj:{PPR:162,Half:149,Std:136},adp:20.0,note:"Explosive back: 650 rush 42 rec"},
   {name:"Brashard Smith",pos:"RB",age:23,team:"KC",proj:{PPR:155,Half:142,Std:129},adp:22.5,note:"KC depth: 580 rush 48 rec"},
@@ -1029,7 +996,6 @@ const PLAYERS=[
   {name:"Corey Davis",pos:"WR",age:30,team:"FA",proj:{PPR:78,Half:72,Std:66},adp:48.5,note:"Veteran: 30 rec 350 yds if active"},
   {name:"Anthony Miller",pos:"WR",age:30,team:"FA",proj:{PPR:72,Half:66,Std:60},adp:50.0,note:"Veteran slot depth"},
   {name:"Penny Hart",pos:"WR",age:29,team:"SEA",proj:{PPR:68,Half:62,Std:56},adp:51.5,note:"Slot depth: 28 rec 320 yds"},
-  {name:"Jakeem Grant Jr.",pos:"WR",age:31,team:"CHI",proj:{PPR:75,Half:69,Std:63},adp:48.0,note:"Return specialist: 30 rec 340 yds"},
   // TE depth Wave 14
   {name:"Ko Kieft",pos:"TE",age:27,team:"TB",proj:{PPR:68,Half:62,Std:56},adp:50.5,note:"Blocking TE: 22 rec 220 yds"},
   {name:"Jack Stoll",pos:"TE",age:27,team:"PHI",proj:{PPR:72,Half:66,Std:60},adp:48.5,note:"TE2: 28 rec 280 yds"},
@@ -1038,19 +1004,14 @@ const PLAYERS=[
   {name:"Dre'Mont Jones",pos:"DL",age:28,team:"SEA",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"IDL: 7 sacks 42 tackles versatile"},
   {name:"Maliek Collins",pos:"DL",age:30,team:"HOU",proj:{PPR:72,Half:72,Std:72},adp:37.0,note:"NT: 38 tackles 3 sacks"},
   {name:"Rashad Weaver",pos:"DL",age:29,team:"PIT",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"EDGE: 7 sacks rotational"},
-  {name:"Leonard Williams",pos:"DL",age:31,team:"SEA",proj:{PPR:85,Half:85,Std:85},adp:29.5,note:"IDL veteran: 8 sacks 48 tackles"},
   {name:"Trysten Hill",pos:"DL",age:28,team:"DAL",proj:{PPR:65,Half:65,Std:65},adp:43.0,note:"IDL: 30 tackles 2 sacks"},
   {name:"Darius Philon",pos:"DL",age:30,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:49.0,note:"Veteran IDL depth"},
   {name:"Corey Peters",pos:"DL",age:37,team:"FA",proj:{PPR:45,Half:45,Std:45},adp:58.0,note:"Veteran NT depth if active"},
   // IDP LB Wave 14
-  {name:"Anthony Walker Jr.",pos:"LB",age:30,team:"CLE",proj:{PPR:92,Half:92,Std:92},adp:25.0,note:"ILB: 95 tackles 2 sacks starting"},
   {name:"Davion Taylor",pos:"LB",age:28,team:"PHI",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"Speed LB: 72 tackles 2 sacks"},
   // IDP DB Wave 14
   {name:"Juan Thornhill",pos:"DB",age:30,team:"CLE",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"S: 68 tackles 3 INT"},
-  {name:"Eddie Jackson",pos:"DB",age:31,team:"CHI",proj:{PPR:85,Half:85,Std:85},adp:29.5,note:"FS: 65 tackles 4 INT veteran"},
   {name:"Duron Harmon",pos:"DB",age:35,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:53.0,note:"Veteran FS depth: 45 tackles 2 INT"},
-  {name:"Jabrill Peppers",pos:"DB",age:30,team:"NE",proj:{PPR:80,Half:80,Std:80},adp:33.0,note:"S: 72 tackles 2 INT versatile"},
-  {name:"Marcus Williams",pos:"DB",age:29,team:"BAL",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"FS: 68 tackles 4 INT"},
   {name:"Jeremy Reaves",pos:"DB",age:29,team:"WAS",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"S: 68 tackles 1 INT physical"},
   {name:"Tae Hayes",pos:"DB",age:26,team:"TEN",proj:{PPR:68,Half:68,Std:68},adp:41.0,note:"CB: 52 tackles 2 INT ascending"},
   // Wave 13 — final depth: WR/RB/TE/IDP fill-ins
@@ -1076,8 +1037,6 @@ const PLAYERS=[
   {name:"Blake Bell",pos:"TE",age:33,team:"FA",proj:{PPR:68,Half:62,Std:56},adp:50.0,note:"Blocking TE veteran"},
   {name:"Stephen Sullivan",pos:"TE",age:27,team:"CAR",proj:{PPR:72,Half:66,Std:60},adp:47.0,note:"TE2: 28 rec 290 yds"},
   {name:"Cade McDonald",pos:"TE",age:24,team:"NE",proj:{PPR:82,Half:75,Std:68},adp:43.5,note:"Developing TE: 32 rec 340 yds"},
-  {name:"Nick Vannett",pos:"TE",age:33,team:"FA",proj:{PPR:60,Half:55,Std:50},adp:53.0,note:"Veteran blocking TE"},
-  {name:"Ross Dwelley",pos:"TE",age:31,team:"FA",proj:{PPR:58,Half:53,Std:48},adp:55.5,note:"Blocking TE veteran"},
   // IDP DL depth Wave 13
   {name:"Clelin Ferrell",pos:"DL",age:28,team:"LV",proj:{PPR:68,Half:68,Std:68},adp:41.0,note:"EDGE depth: 5 sacks rotational"},
   {name:"Michael Hoecht",pos:"DL",age:28,team:"LAR",proj:{PPR:72,Half:72,Std:72},adp:37.5,note:"IDL: 30 tackles 3 sacks"},
@@ -1085,7 +1044,6 @@ const PLAYERS=[
   {name:"Vincent Taylor",pos:"DL",age:30,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:48.0,note:"IDL veteran depth"},
   {name:"Takkarist McKinley",pos:"DL",age:30,team:"FA",proj:{PPR:60,Half:60,Std:60},adp:46.5,note:"EDGE if active: 5 sacks upside"},
   // IDP LB depth Wave 13
-  {name:"Alex Anzalone",pos:"LB",age:30,team:"DET",proj:{PPR:88,Half:88,Std:88},adp:28.5,note:"ILB: 88 tackles 2 sacks"},
   {name:"Joel Heath",pos:"LB",age:31,team:"HOU",proj:{PPR:70,Half:70,Std:70},adp:39.5,note:"LB depth: 62 tackles 1 sack"},
   {name:"Jonas Griffith",pos:"LB",age:28,team:"SF",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"ILB: 70 tackles 2 sacks"},
   {name:"Dylan Cole",pos:"LB",age:30,team:"HOU",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"ST/LB: 60 tackles 1 sack"},
@@ -1097,16 +1055,11 @@ const PLAYERS=[
   {name:"Jalen Elliott",pos:"DB",age:27,team:"NO",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"S: 58 tackles 1 INT depth"},
   // Wave 12 — IDP DL/LB/DB depth + WR/TE/RB stragglers
   // IDP DL Wave 12
-  {name:"Chase Young",pos:"DL",age:26,team:"NO",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"EDGE: 9 sacks elite athlete Year 5"},
-  {name:"Azeez Ojulari",pos:"DL",age:25,team:"NYG",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"EDGE: 8.5 sacks when healthy"},
-  {name:"Gregory Rousseau",pos:"DL",age:26,team:"BUF",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"EDGE: 8 sacks ascending Year 5"},
   {name:"K'Lavon Chaisson",pos:"DL",age:26,team:"LV",proj:{PPR:72,Half:72,Std:72},adp:37.5,note:"EDGE: 6 sacks rotational"},
   {name:"AJ Epenesa",pos:"DL",age:26,team:"BUF",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"EDGE depth: 6 sacks rotational"},
   {name:"Boogie Basham",pos:"DL",age:27,team:"BUF",proj:{PPR:68,Half:68,Std:68},adp:41.0,note:"EDGE rotational: 5 sacks"},
-  {name:"Zach Allen",pos:"DL",age:28,team:"DEN",proj:{PPR:80,Half:80,Std:80},adp:32.0,note:"Versatile DL: 7 sacks 40 tackles"},
   {name:"Al Woods",pos:"DL",age:37,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:50.0,note:"Veteran NT depth: 28 tackles"},
   {name:"Isaiah Buggs",pos:"DL",age:28,team:"DET",proj:{PPR:62,Half:62,Std:62},adp:44.0,note:"IDL rotational: 28 tackles 2 sacks"},
-  {name:"Uchenna Nwosu",pos:"DL",age:29,team:"SEA",proj:{PPR:82,Half:82,Std:82},adp:30.5,note:"EDGE: 7 sacks versatile"},
   // IDP LB Wave 12
   {name:"Jayon Brown",pos:"LB",age:30,team:"FA",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"Veteran coverage LB: 78 tackles 2 INT"},
   {name:"Reggie Ragland",pos:"LB",age:32,team:"FA",proj:{PPR:70,Half:70,Std:70},adp:40.0,note:"Veteran ILB depth: 68 tackles"},
@@ -1115,33 +1068,19 @@ const PLAYERS=[
   {name:"Dakota Allen",pos:"LB",age:28,team:"LAR",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"LB: 75 tackles depth role"},
   // IDP DB Wave 12
   {name:"Tashaun Gipson",pos:"DB",age:35,team:"FA",proj:{PPR:65,Half:65,Std:65},adp:44.0,note:"Veteran FS: 50 tackles 2 INT"},
-  {name:"Vonn Bell",pos:"DB",age:31,team:"CAR",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"SS: 75 tackles 2 INT physical"},
   {name:"Tre Flowers",pos:"DB",age:29,team:"CIN",proj:{PPR:70,Half:70,Std:70},adp:39.5,note:"CB depth: 52 tackles 2 INT"},
   {name:"Adrian Phillips",pos:"DB",age:33,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"SS/LB hybrid: 72 tackles 2 sacks"},
   {name:"Marcus Epps",pos:"DB",age:29,team:"ARI",proj:{PPR:80,Half:80,Std:80},adp:32.5,note:"FS: 72 tackles 2 INT"},
-  {name:"Quandre Diggs",pos:"DB",age:33,team:"SEA",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"FS veteran: 62 tackles 3 INT"},
   {name:"Dean Marlowe",pos:"DB",age:33,team:"DET",proj:{PPR:62,Half:62,Std:62},adp:45.0,note:"S depth: 55 tackles special teams"},
-  {name:"Elijah Molden",pos:"DB",age:27,team:"TEN",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"Slot CB/S: 62 tackles 2 INT"},
   // WR depth Wave 12
   {name:"Isaiah Bond",pos:"WR",age:22,team:"NE",proj:{PPR:102,Half:94,Std:86},adp:38.5,note:"Speed: 40 rec 480 yds 4 TD"},
   {name:"Malik Washington",pos:"WR",age:25,team:"DEN",proj:{PPR:88,Half:81,Std:74},adp:44.0,note:"Slot depth: 36 rec 400 yds"},
   {name:"Devin Duvernay",pos:"WR",age:28,team:"JAX",proj:{PPR:95,Half:87,Std:79},adp:41.5,note:"Returner/receiver: 38 rec 420 yds"},
-  {name:"Marvin Mims Jr.",pos:"WR",age:24,team:"DEN",proj:{PPR:108,Half:99,Std:90},adp:35.5,note:"Speed: 42 rec 520 yds 5 TD"},
   {name:"Bub Means",pos:"WR",age:24,team:"NO",proj:{PPR:92,Half:84,Std:76},adp:43.0,note:"2024 gem: 38 rec 450 yds 4 TD"},
-  {name:"David Moore",pos:"WR",age:31,team:"CAR",proj:{PPR:82,Half:75,Std:68},adp:46.5,note:"Veteran deep threat"},
-  {name:"Jahan Dotson",pos:"WR",age:25,team:"PHI",proj:{PPR:118,Half:108,Std:98},adp:33.0,note:"Year 4: 48 rec 560 yds 5 TD"},
-  {name:"Van Jefferson",pos:"WR",age:29,team:"ATL",proj:{PPR:92,Half:84,Std:76},adp:42.5,note:"Outside WR: 36 rec 440 yds"},
   // RB depth Wave 12
   {name:"Cody Schrader",pos:"RB",age:25,team:"LAR",proj:{PPR:112,Half:103,Std:94},adp:34.5,note:"UDFA gem: 480 rush 40 rec"},
-  {name:"Isaac Guerendo",pos:"RB",age:24,team:"SF",proj:{PPR:145,Half:133,Std:121},adp:25.5,note:"SF handcuff: explosive 600 rush"},
-  {name:"Ray Davis",pos:"RB",age:25,team:"BUF",proj:{PPR:132,Half:121,Std:110},adp:28.5,note:"BUF committee: 520 rush 42 rec"},
-  {name:"Eric Gray",pos:"RB",age:24,team:"NYG",proj:{PPR:118,Half:108,Std:98},adp:33.0,note:"Receiving back: 380 rush 52 rec"},
-  {name:"Deon Jackson",pos:"RB",age:27,team:"IND",proj:{PPR:108,Half:99,Std:90},adp:36.5,note:"Pass-catching depth: 300 rush 48 rec"},
-  {name:"Will Shipley",pos:"RB",age:23,team:"PHI",proj:{PPR:128,Half:117,Std:106},adp:30.0,note:"Explosive: 480 rush 50 rec handcuff"},
   // TE depth Wave 12
-  {name:"Brevin Jordan",pos:"TE",age:25,team:"HOU",proj:{PPR:102,Half:93,Std:84},adp:30.5,note:"HOU TE: 40 rec 420 yds 4 TD"},
   {name:"Devin Asiasi",pos:"TE",age:28,team:"NYG",proj:{PPR:85,Half:77,Std:69},adp:42.0,note:"Athletic TE: 34 rec 360 yds"},
-  {name:"Tanner McLachlan",pos:"TE",age:25,team:"ARI",proj:{PPR:92,Half:84,Std:76},adp:38.0,note:"ARI TE depth: 36 rec 380 yds"},
   // Wave 11 — final depth: QB/RB/IDP stragglers
   // QB depth Wave 11
   {name:"Mitchell Trubisky",pos:"QB",age:31,team:"PIT",proj:{PPR:225,Half:225,Std:225},adp:27.5,note:"Backup veteran: mobile 2,600 yds"},
@@ -1154,7 +1093,6 @@ const PLAYERS=[
   {name:"Michael Carter",pos:"RB",age:26,team:"NYJ",proj:{PPR:128,Half:117,Std:106},adp:30.0,note:"Pass-catching back: 350 rush 50 rec"},
   {name:"Chase Edmonds",pos:"RB",age:29,team:"FA",proj:{PPR:112,Half:103,Std:94},adp:33.5,note:"Veteran scatback: receiving back"},
   {name:"Marlon Mack",pos:"RB",age:30,team:"FA",proj:{PPR:98,Half:90,Std:82},adp:38.5,note:"Veteran FA: power back depth"},
-  {name:"Eno Benjamin",pos:"RB",age:27,team:"HOU",proj:{PPR:108,Half:99,Std:90},adp:35.5,note:"Receiving back: 320 rush 42 rec"},
   // IDP DL Wave 11
   {name:"David Ojabo",pos:"DL",age:25,team:"BAL",proj:{PPR:88,Half:88,Std:88},adp:27.0,note:"EDGE: 8 sacks when healthy Year 4"},
   {name:"Odafe Oweh",pos:"DL",age:26,team:"BAL",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"EDGE: 9 sacks explosive athlete"},
@@ -1168,9 +1106,6 @@ const PLAYERS=[
   {name:"Eric Stokes",pos:"DB",age:27,team:"GB",proj:{PPR:80,Half:80,Std:80},adp:32.0,note:"CB: 55 tackles 2 INT when healthy"},
   {name:"Khaleke Hudson",pos:"DB",age:28,team:"CHI",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"LB/S hybrid: 70 tackles 2 sacks"},
   {name:"Myles Bryant",pos:"DB",age:27,team:"NE",proj:{PPR:70,Half:70,Std:70},adp:38.5,note:"Slot CB: 55 tackles 2 INT"},
-  {name:"Elijah Molden",pos:"DB",age:27,team:"TEN",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"Slot CB/S: 62 tackles 2 INT"},
-  {name:"Quandre Diggs",pos:"DB",age:33,team:"SEA",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"FS veteran: 62 tackles 3 INT"},
-  {name:"Darnell Savage",pos:"DB",age:28,team:"ATL",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"S: 58 tackles 2 INT"},
   // Wave 9 — All 32 NFL DSTs + remaining depth
   // DST — Defenses/Special Teams (all 32 teams)
   {name:"San Francisco 49ers DST",pos:"DST",age:0,team:"SF",proj:{PPR:148,Half:148,Std:148},adp:1.5,note:"Elite DST: Bosa/Warner/Hamilton core"},
@@ -1228,46 +1163,24 @@ const PLAYERS=[
   {name:"Ka'imi Fairbairn",pos:"K",age:32,team:"HOU",proj:{PPR:135,Half:135,Std:135},adp:7.2,note:"HOU volume: 87% FG%"},
   {name:"Matt Ammendola",pos:"K",age:29,team:"ARI",proj:{PPR:118,Half:118,Std:118},adp:10.5,note:"Depth K: 84% FG%"},
   // IDP DL Wave 8
-  {name:"Montez Sweat",pos:"DL",age:29,team:"CHI",proj:{PPR:105,Half:105,Std:105},adp:17.0,note:"EDGE: 11 sacks explosive athlete"},
-  {name:"Rashan Gary",pos:"DL",age:28,team:"GB",proj:{PPR:102,Half:102,Std:102},adp:18.5,note:"EDGE: 10 sacks when healthy"},
   {name:"Robert Quinn",pos:"DL",age:34,team:"FA",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"Veteran EDGE: 8 sacks if active"},
-  {name:"Yannick Ngakoue",pos:"DL",age:30,team:"SEA",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"EDGE: 9 sacks rush specialist"},
-  {name:"Za'Darius Smith",pos:"DL",age:33,team:"DET",proj:{PPR:82,Half:82,Std:82},adp:30.5,note:"Veteran EDGE: 8 sacks"},
   {name:"Emmanuel Ogbah",pos:"DL",age:32,team:"MIA",proj:{PPR:80,Half:80,Std:80},adp:32.0,note:"EDGE: 7.5 sacks rotational"},
   {name:"Dexter Lawrence II",pos:"DL",age:27,team:"NYG",proj:{PPR:98,Half:98,Std:98},adp:20.5,note:"IDL: 8 sacks 45 tackles disruptive"},
-  {name:"Jeffery Simmons",pos:"DL",age:28,team:"TEN",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"IDL: 7 sacks 50 tackles"},
-  {name:"Daron Payne",pos:"DL",age:28,team:"WAS",proj:{PPR:92,Half:92,Std:92},adp:24.0,note:"IDL: 7 sacks 48 tackles"},
   {name:"Jordan Davis",pos:"DL",age:26,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:30.5,note:"NT Year 4: 40 tackles 4 sacks"},
-  {name:"Jalen Carter",pos:"DL",age:24,team:"PHI",proj:{PPR:100,Half:100,Std:100},adp:19.5,note:"Elite IDL: 8 sacks 45 tackles"},
   {name:"Calais Campbell",pos:"DL",age:39,team:"FA",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"Veteran if active: 5 sacks"},
   // IDP LB Wave 8
-  {name:"Lavonte David",pos:"LB",age:35,team:"TB",proj:{PPR:105,Half:105,Std:105},adp:17.8,note:"Veteran: 105 tackles 2 INT 3 sacks"},
   {name:"Denzel Perryman",pos:"LB",age:33,team:"LV",proj:{PPR:98,Half:98,Std:98},adp:21.0,note:"Thumper: 100 tackles 2 sacks"},
-  {name:"Eric Kendricks",pos:"LB",age:33,team:"LAC",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"Veteran ILB: 95 tackles 2 INT"},
   {name:"Devin White",pos:"LB",age:27,team:"PHI",proj:{PPR:100,Half:100,Std:100},adp:20.5,note:"Speed: 98 tackles 3 sacks"},
   {name:"Myles Jack",pos:"LB",age:30,team:"SEA",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"ILB: 88 tackles 2 INT"},
-  {name:"Patrick Queen",pos:"LB",age:27,team:"PIT",proj:{PPR:112,Half:112,Std:112},adp:15.5,note:"ILB: 115 tackles 3 sacks 2 INT"},
-  {name:"Tremaine Edmunds",pos:"LB",age:27,team:"CHI",proj:{PPR:108,Half:108,Std:108},adp:16.5,note:"ILB: 110 tackles 2 INT physical"},
-  {name:"T.J. Edwards",pos:"LB",age:29,team:"CHI",proj:{PPR:105,Half:105,Std:105},adp:17.5,note:"Tackling machine: 110 tackles 2 sacks"},
-  {name:"Frankie Luvu",pos:"LB",age:29,team:"DAL",proj:{PPR:98,Half:98,Std:98},adp:21.0,note:"Versatile: 92 tackles 3 sacks"},
   {name:"Christian Kirksey",pos:"LB",age:33,team:"FA",proj:{PPR:82,Half:82,Std:82},adp:32.0,note:"Veteran: 82 tackles if active"},
   // IDP DB Wave 8
-  {name:"Tyrann Mathieu",pos:"DB",age:33,team:"NO",proj:{PPR:98,Half:98,Std:98},adp:21.5,note:"Veteran S: 72 tackles 3 INT"},
   {name:"Kendall Fuller",pos:"DB",age:30,team:"WAS",proj:{PPR:88,Half:88,Std:88},adp:27.0,note:"CB/S: 65 tackles 3 INT"},
-  {name:"L'Jarius Sneed",pos:"DB",age:28,team:"TEN",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"CB1: 68 tackles 4 INT versatile"},
-  {name:"Deommodore Lenoir",pos:"DB",age:26,team:"SF",proj:{PPR:85,Half:85,Std:85},adp:29.0,note:"CB: 60 tackles 3 INT"},
   {name:"Rasul Douglas",pos:"DB",age:30,team:"BUF",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"CB: 58 tackles 3 INT"},
   {name:"C.J. Henderson Jr.",pos:"DB",age:27,team:"CAR",proj:{PPR:78,Half:78,Std:78},adp:33.5,note:"CB: 55 tackles 2 INT"},
   {name:"Rock Ya-Sin",pos:"DB",age:29,team:"LV",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"CB: 52 tackles 2 INT"},
   // WR youth Wave 8
-  {name:"Javon Baker",pos:"WR",age:23,team:"NE",proj:{PPR:105,Half:96,Std:87},adp:36.5,note:"Year 2: 42 rec 500 yds 4 TD upside"},
-  {name:"Jalin Hyatt",pos:"WR",age:24,team:"NYG",proj:{PPR:98,Half:90,Std:82},adp:39.5,note:"Speed: 38 rec 480 yds 4 TD"},
-  {name:"Kayshon Boutte",pos:"WR",age:24,team:"NE",proj:{PPR:92,Half:84,Std:76},adp:42.5,note:"Year 3 opportunity: 36 rec 420 yds"},
   {name:"Malik Heath",pos:"WR",age:26,team:"DET",proj:{PPR:82,Half:75,Std:68},adp:47.0,note:"Physical receiver depth"},
-  {name:"Shi Smith",pos:"WR",age:26,team:"CAR",proj:{PPR:88,Half:81,Std:74},adp:44.0,note:"Slot: 38 rec 400 yds"},
   {name:"Shedrick Jackson",pos:"WR",age:25,team:"SF",proj:{PPR:85,Half:78,Std:71},adp:45.5,note:"Speed deep threat"},
-  {name:"Charlie Jones",pos:"WR",age:26,team:"CIN",proj:{PPR:95,Half:87,Std:79},adp:41.5,note:"Return/slot: 40 rec 430 yds"},
-  {name:"Bryce Ford-Wheaton",pos:"WR",age:25,team:"NYG",proj:{PPR:88,Half:81,Std:74},adp:44.5,note:"Big WR: 35 rec 420 yds"},
   // Wave 6 — additional skill + IDP depth
   {name:"Mike Williams",pos:"WR",age:30,team:"NYJ",proj:{PPR:168,Half:155,Std:142},adp:26.0,note:"Big-play threat: 58 rec 780 yds 7 TD"},
   {name:"Seth Williams",pos:"WR",age:26,team:"DEN",proj:{PPR:128,Half:118,Std:108},adp:34.0,note:"Physical receiver: 48 rec 580 yds"},
@@ -1283,7 +1196,6 @@ const PLAYERS=[
   {name:"Damarea Crockett",pos:"RB",age:29,team:"HOU",proj:{PPR:82,Half:75,Std:68},adp:46.5,note:"Power depth back"},
   {name:"Justin Jackson",pos:"RB",age:29,team:"DET",proj:{PPR:88,Half:81,Std:74},adp:44.5,note:"Speed back depth"},
   {name:"Jaret Patterson",pos:"RB",age:26,team:"WAS",proj:{PPR:78,Half:72,Std:66},adp:47.0,note:"Depth back utility"},
-  {name:"Godwin Igwebuike",pos:"RB",age:29,team:"DET",proj:{PPR:72,Half:66,Std:60},adp:50.0,note:"Special teams / depth"},
   {name:"DeWayne McBride",pos:"RB",age:24,team:"MIN",proj:{PPR:118,Half:108,Std:98},adp:32.0,note:"Powerful runner: 500 rush depth"},
   {name:"Trey Benson",pos:"RB",age:24,team:"ARI",proj:{PPR:145,Half:133,Std:121},adp:24.5,note:"Year 2: 600 rush 5 TD"},
   {name:"Dylan Laube",pos:"RB",age:24,team:"NE",proj:{PPR:122,Half:112,Std:102},adp:30.5,note:"Versatile back: 400 rush 45 rec"},
@@ -1324,8 +1236,6 @@ const PLAYERS=[
   {name:"Irv Smith Jr.",pos:"TE",age:28,team:"CIN",proj:{PPR:98,Half:90,Std:82},adp:32.5,note:"Backup: 40 rec 410 yds"},
   {name:"Tyler Kroft",pos:"TE",age:32,team:"FA",proj:{PPR:68,Half:62,Std:56},adp:50.0,note:"Veteran blocker/depth"},
   {name:"Evan Hull",pos:"RB",age:25,team:"IND",proj:{PPR:118,Half:108,Std:98},adp:32.0,note:"Pass-catching back"},
-  {name:"Ty Davis-Price",pos:"RB",age:26,team:"SF",proj:{PPR:95,Half:87,Std:79},adp:42.0,note:"Power back depth"},
-  {name:"Craig Reynolds",pos:"RB",age:28,team:"DET",proj:{PPR:92,Half:84,Std:76},adp:44.0,note:"Handcuff to Montgomery"},
   {name:"Drew Sample",pos:"TE",age:29,team:"CIN",proj:{PPR:68,Half:62,Std:56},adp:49.5,note:"Blocking/depth"},
   {name:"Anthony Firkser",pos:"TE",age:29,team:"TEN",proj:{PPR:75,Half:69,Std:63},adp:45.5,note:"Depth receiving TE"},
   {name:"Albert Okwuosa",pos:"WR",age:26,team:"NYJ",proj:{PPR:92,Half:84,Std:76},adp:44.0,note:"Developmental receiver"},
@@ -1333,7 +1243,6 @@ const PLAYERS=[
   {name:"Tanner Morgan",pos:"QB",age:28,team:"MIN",proj:{PPR:188,Half:188,Std:188},adp:35.0,note:"Developmental backup"},
   // IDP Wave 4 — more depth DL
   {name:"Raekwon Davis",pos:"DL",age:27,team:"MIA",proj:{PPR:85,Half:85,Std:85},adp:32.0,note:"NT: 45 tackles 3 sacks"},
-  {name:"Jordan Davis",pos:"DL",age:26,team:"PHI",proj:{PPR:92,Half:92,Std:92},adp:29.5,note:"DT: 50 tackles 3 sacks disruptive"},
   {name:"Keeanu Benton",pos:"DL",age:24,team:"PIT",proj:{PPR:88,Half:88,Std:88},adp:31.0,note:"Year 3: 48 tackles 4 sacks"},
   {name:"Kobie Turner",pos:"DL",age:25,team:"LAR",proj:{PPR:85,Half:85,Std:85},adp:33.0,note:"Interior: 46 tackles 3 sacks"},
   {name:"Siaki Ika",pos:"DL",age:25,team:"CLE",proj:{PPR:82,Half:82,Std:82},adp:34.5,note:"DT: 44 tackles 2 sacks"},
@@ -1344,24 +1253,18 @@ const PLAYERS=[
   {name:"Habakkuk Baldonado",pos:"DL",age:25,team:"PIT",proj:{PPR:78,Half:78,Std:78},adp:36.5,note:"Pass rush specialist"},
   {name:"Thomas Booker",pos:"DL",age:26,team:"SEA",proj:{PPR:80,Half:80,Std:80},adp:35.5,note:"Interior: 44 tackles 2 sacks"},
   // IDP Wave 4 — more LBs
-  {name:"Mykal Walker",pos:"LB",age:28,team:"ATL",proj:{PPR:105,Half:105,Std:105},adp:18.5,note:"Coverage LB: 95 tackles 2 INT"},
-  {name:"Devin White",pos:"LB",age:28,team:"PHI",proj:{PPR:102,Half:102,Std:102},adp:19.5,note:"Speed LB: 95 tackles 3 sacks"},
-  {name:"Christian Kirksey",pos:"LB",age:33,team:"HOU",proj:{PPR:95,Half:95,Std:95},adp:22.0,note:"Veteran: 90 tackles 2 sacks"},
   {name:"Cam Curl",pos:"LB",age:26,team:"WAS",proj:{PPR:105,Half:105,Std:105},adp:18.0,note:"Hybrid LB/S: 100 tackles 2 INT"},
   {name:"Derek Stingley Jr.",pos:"DB",age:25,team:"HOU",proj:{PPR:110,Half:110,Std:110},adp:15.5,note:"CB: 68 tackles 5 INT"},
   {name:"Stephon Gilmore",pos:"DB",age:35,team:"DAL",proj:{PPR:88,Half:88,Std:88},adp:30.0,note:"Veteran CB: 55 tackles 3 INT"},
   {name:"Denzel Ward",pos:"DB",age:28,team:"CLE",proj:{PPR:102,Half:102,Std:102},adp:18.5,note:"CB: 62 tackles 4 INT"},
-  {name:"Kendall Fuller",pos:"DB",age:30,team:"WAS",proj:{PPR:95,Half:95,Std:95},adp:22.0,note:"CB/S: 72 tackles 3 INT"},
   {name:"Eli Apple",pos:"DB",age:30,team:"CAR",proj:{PPR:88,Half:88,Std:88},adp:30.5,note:"CB: 58 tackles 2 INT"},
   {name:"Trayvon Mullen",pos:"DB",age:28,team:"LV",proj:{PPR:85,Half:85,Std:85},adp:32.0,note:"CB: 55 tackles 2 INT"},
-  {name:"Rasul Douglas",pos:"DB",age:30,team:"BUF",proj:{PPR:98,Half:98,Std:98},adp:21.0,note:"CB: 62 tackles 4 INT ball hawk"},
   {name:"Trent McDuffie",pos:"DB",age:25,team:"KC",proj:{PPR:108,Half:108,Std:108},adp:16.5,note:"CB: 68 tackles 4 INT elite"},
   {name:"Kelee Ringo",pos:"DB",age:23,team:"PHI",proj:{PPR:92,Half:92,Std:92},adp:26.0,note:"Year 3 CB: 60 tackles 3 INT upside"},
   {name:"Joey Porter Jr.",pos:"DB",age:25,team:"PIT",proj:{PPR:98,Half:98,Std:98},adp:21.5,note:"CB: 64 tackles 3 INT Year 3"},
   // Missing RBs
   {name:"Audric Estime",pos:"RB",age:23,team:"DEN",proj:{PPR:162,Half:148,Std:134},adp:21.5,note:"Year 2: 700 rush 5 TD power back"},
   {name:"Alex Mattison",pos:"RB",age:28,team:"MIN",proj:{PPR:155,Half:142,Std:129},adp:23.5,note:"Lead back if healthy"},
-  {name:"Patrick Taylor Jr.",pos:"RB",age:27,team:"GB",proj:{PPR:98,Half:90,Std:82},adp:40.2,note:"Backup power back"},
   {name:"Abram Smith",pos:"RB",age:26,team:"NO",proj:{PPR:108,Half:99,Std:90},adp:36.8,note:"Committee depth back"},
   {name:"Latavius Murray",pos:"RB",age:34,team:"FA",proj:{PPR:82,Half:75,Std:68},adp:47.5,note:"Veteran depth"},
   {name:"Jakob Johnson",pos:"RB",age:29,team:"LV",proj:{PPR:72,Half:66,Std:60},adp:50.0,note:"FB/utility role"},
@@ -1371,14 +1274,10 @@ const PLAYERS=[
   {name:"Demario Douglas",pos:"WR",age:26,team:"NE",proj:{PPR:162,Half:149,Std:136},adp:27.0,note:"Slot: 64 rec 720 yds YAC machine"},
   {name:"Jauan Jennings",pos:"WR",age:29,team:"SF",proj:{PPR:158,Half:145,Std:132},adp:27.5,note:"Red zone target: 58 rec 680 yds 7 TD"},
   {name:"Jalen Reagor",pos:"WR",age:27,team:"NE",proj:{PPR:108,Half:99,Std:90},adp:39.0,note:"Return/depth role"},
-  {name:"DeAndre Carter",pos:"WR",age:31,team:"LAC",proj:{PPR:102,Half:94,Std:86},adp:41.5,note:"Slot/return veteran"},
-  {name:"Kalif Raymond",pos:"WR",age:30,team:"DET",proj:{PPR:98,Half:90,Std:82},adp:42.0,note:"Return/depth receiver"},
   // Missing TEs
   {name:"Luke Schoonmaker",pos:"TE",age:26,team:"DAL",proj:{PPR:112,Half:103,Std:94},adp:26.5,note:"Year 3: 44 rec 460 yds 4 TD"},
   {name:"Dalton Kincaid",pos:"TE",age:26,team:"BUF",proj:{PPR:118,Half:108,Std:98},adp:24.8,note:"Receiving TE: 48 rec 500 yds"},
   {name:"Nate Wieting",pos:"TE",age:28,team:"DET",proj:{PPR:75,Half:69,Std:63},adp:45.0,note:"Blocking/depth"},
-  {name:"Matt Bushman",pos:"TE",age:28,team:"PHI",proj:{PPR:78,Half:72,Std:66},adp:44.0,note:"Blocking/depth TE"},
-  {name:"Brycen Hopkins",pos:"TE",age:28,team:"LAR",proj:{PPR:82,Half:75,Std:68},adp:43.0,note:"Developmental receiving TE"},
 ];
 
 const DRAFT_PICKS=[
