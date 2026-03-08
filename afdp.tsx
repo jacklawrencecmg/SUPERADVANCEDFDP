@@ -751,6 +751,45 @@ const PLAYERS=[
   {name:"Kyle Pitts",pos:"TE",age:25,team:"ATL",proj:{PPR:188,Half:172,Std:156},adp:12.5,note:"Athletic TE: 72 rec 780 yds 6 TD bounce-back"},
   {name:"Mike Gesicki",pos:"TE",age:30,team:"NE",proj:{PPR:115,Half:105,Std:95},adp:24.5,note:"Receiving TE: 46 rec 490 yds 4 TD"},
   {name:"Juwan Johnson",pos:"TE",age:29,team:"NO",proj:{PPR:102,Half:93,Std:84},adp:30.0,note:"Receiving threat: 38 rec 400 yds 5 TD"},
+  // Wave 10 — 2025 NFL Draft rookies: skill + IDP
+  // 2025 RB Rookies
+  {name:"Ashton Jeanty",pos:"RB",age:22,team:"LV",proj:{PPR:285,Half:262,Std:239},adp:3.2,note:"2025 #1 pick: Boise St legend 1,800 rush proj"},
+  {name:"Omarion Hampton",pos:"RB",age:22,team:"LAC",proj:{PPR:232,Half:213,Std:194},adp:7.5,note:"2025 1st rounder: 1,200 rush powerful runner"},
+  {name:"Quinshon Judkins",pos:"RB",age:22,team:"CLE",proj:{PPR:218,Half:200,Std:182},adp:9.5,note:"2025 draft: dual-threat 1,100 rush 55 rec"},
+  {name:"TreVeyon Henderson",pos:"RB",age:22,team:"NE",proj:{PPR:195,Half:179,Std:163},adp:12.5,note:"Explosive back: 900 rush 50 rec"},
+  {name:"Trevor Etienne",pos:"RB",age:22,team:"JAX",proj:{PPR:182,Half:167,Std:152},adp:15.0,note:"2025 draft: pass-catching 800 rush 55 rec"},
+  {name:"Nicholas Singleton",pos:"RB",age:22,team:"PHI",proj:{PPR:168,Half:154,Std:140},adp:18.5,note:"Power speed combo: 700 rush depth"},
+  {name:"Ollie Gordon II",pos:"RB",age:22,team:"PIT",proj:{PPR:175,Half:161,Std:147},adp:17.0,note:"Big back: 800 rush 40 rec"},
+  {name:"Dylan Sampson",pos:"RB",age:22,team:"TEN",proj:{PPR:162,Half:149,Std:136},adp:20.0,note:"2025 depth: explosive short-yardage"},
+  {name:"Tahj Brooks",pos:"RB",age:23,team:"KC",proj:{PPR:155,Half:142,Std:129},adp:22.5,note:"Power back: 650 rush handcuff"},
+  // 2025 QB Rookies
+  {name:"Shedeur Sanders",pos:"QB",age:23,team:"CLE",proj:{PPR:312,Half:312,Std:312},adp:12.5,note:"2025 1st round: 3,600 yds 27 TD Year 1"},
+  {name:"Cam Ward",pos:"QB",age:23,team:"TEN",proj:{PPR:318,Half:318,Std:318},adp:11.8,note:"2025 #1 overall: 3,700 yds 28 TD"},
+  {name:"Jaxson Dart",pos:"QB",age:23,team:"NYG",proj:{PPR:288,Half:288,Std:288},adp:16.5,note:"2025 1st round: 3,200 yds 24 TD"},
+  {name:"Will Howard",pos:"QB",age:23,team:"PIT",proj:{PPR:272,Half:272,Std:272},adp:19.5,note:"2025 mid-round: 3,000 yds 22 TD"},
+  {name:"Tyler Shough",pos:"QB",age:26,team:"NO",proj:{PPR:255,Half:255,Std:255},adp:22.5,note:"2025 draft: veteran passer 2,800 yds"},
+  // 2025 WR Rookies
+  {name:"Travis Hunter",pos:"WR",age:22,team:"DAL",proj:{PPR:245,Half:226,Std:207},adp:9.8,note:"2025 #2 pick: elite two-way 90 rec 1,000 yds"},
+  {name:"Luther Burden III",pos:"WR",age:22,team:"CHI",proj:{PPR:215,Half:198,Std:181},adp:13.5,note:"2025 1st round: YAC monster 80 rec 920 yds"},
+  {name:"Emeka Egbuka",pos:"WR",age:22,team:"TB",proj:{PPR:198,Half:183,Std:168},adp:17.2,note:"2025 1st round: route runner 75 rec 860 yds"},
+  {name:"Elic Ayomanor",pos:"WR",age:22,team:"TEN",proj:{PPR:168,Half:155,Std:142},adp:23.5,note:"2025 2nd round: 62 rec 740 yds 6 TD"},
+  {name:"Jack Bech",pos:"WR",age:22,team:"LV",proj:{PPR:155,Half:143,Std:131},adp:27.0,note:"2025 draft: reliable receiver 58 rec 680 yds"},
+  {name:"Dont'e Thornton Jr.",pos:"WR",age:23,team:"NE",proj:{PPR:138,Half:127,Std:116},adp:32.5,note:"Deep threat: 48 rec 620 yds"},
+  {name:"Jayden Higgins",pos:"WR",age:22,team:"HOU",proj:{PPR:145,Half:133,Std:121},adp:29.5,note:"2025 pick: 55 rec 650 yds 5 TD"},
+  {name:"Savion Williams",pos:"WR",age:22,team:"GB",proj:{PPR:125,Half:115,Std:105},adp:34.5,note:"Big WR prospect: 48 rec 550 yds"},
+  {name:"Chimere Dike",pos:"WR",age:24,team:"GB",proj:{PPR:112,Half:103,Std:94},adp:37.5,note:"Speed slot: 42 rec 480 yds"},
+  // 2025 TE Rookies
+  {name:"Elijah Arroyo",pos:"TE",age:22,team:"SEA",proj:{PPR:125,Half:114,Std:103},adp:21.5,note:"2025 2nd round: 48 rec 520 yds 5 TD"},
+  {name:"Landen King",pos:"TE",age:22,team:"LV",proj:{PPR:108,Half:98,Std:88},adp:27.5,note:"2025 pick: 42 rec 460 yds 4 TD"},
+  {name:"Jalen Berger",pos:"TE",age:23,team:"DEN",proj:{PPR:95,Half:86,Std:77},adp:33.5,note:"Hybrid TE: 36 rec 380 yds"},
+  // 2025 IDP Rookies — DL
+  {name:"Abdul Carter",pos:"DL",age:22,team:"NYG",proj:{PPR:115,Half:115,Std:115},adp:10.5,note:"2025 top-5 pick: elite EDGE 12 sacks upside"},
+  {name:"Mason Graham",pos:"DL",age:22,team:"CLE",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"2025 1st round IDL: 40 tackles 5 sacks"},
+  {name:"James Pearce Jr.",pos:"DL",age:22,team:"KC",proj:{PPR:95,Half:95,Std:95},adp:22.5,note:"2025 1st round EDGE: 9 sacks explosive"},
+  {name:"Mykel Williams",pos:"DL",age:22,team:"SF",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"2025 1st round EDGE: 8 sacks Year 1"},
+  {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
+  {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
+  {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
   // Wave 9 — All 32 NFL DSTs + remaining depth
   // DST — Defenses/Special Teams (all 32 teams)
   {name:"San Francisco 49ers DST",pos:"DST",age:0,team:"SF",proj:{PPR:148,Half:148,Std:148},adp:1.5,note:"Elite DST: Bosa/Warner/Hamilton core"},
