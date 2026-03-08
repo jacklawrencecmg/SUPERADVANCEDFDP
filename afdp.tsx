@@ -785,6 +785,39 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 19 — backup QBs, returners, dynasty sleepers
+  // QB depth Wave 19
+  {name:"Jake Browning",pos:"QB",age:29,team:"CIN",proj:{PPR:248,Half:248,Std:248},adp:23.5,note:"CIN backup: 2,900 yds 21 TD handcuff"},
+  {name:"Skylar Thompson",pos:"QB",age:28,team:"MIA",proj:{PPR:235,Half:235,Std:235},adp:25.5,note:"MIA backup handcuff: 2,700 yds"},
+  {name:"Clayton Tune",pos:"QB",age:26,team:"ARI",proj:{PPR:228,Half:228,Std:228},adp:27.0,note:"ARI backup: 2,600 yds mobile"},
+  {name:"Kyle Allen",pos:"QB",age:30,team:"WAS",proj:{PPR:222,Half:222,Std:222},adp:28.5,note:"Veteran backup: 2,500 yds"},
+  {name:"Nate Sudfeld",pos:"QB",age:32,team:"FA",proj:{PPR:185,Half:185,Std:185},adp:38.0,note:"Veteran emergency depth"},
+  {name:"PJ Walker",pos:"QB",age:30,team:"FA",proj:{PPR:195,Half:195,Std:195},adp:35.0,note:"Veteran backup: mobile"},
+  {name:"Shane Buechele",pos:"QB",age:28,team:"FA",proj:{PPR:182,Half:182,Std:182},adp:39.5,note:"Veteran depth QB"},
+  {name:"Holton Ahlers",pos:"QB",age:26,team:"NE",proj:{PPR:178,Half:178,Std:178},adp:41.5,note:"Developmental backup"},
+  // WR returner/special teams Wave 19
+  {name:"Jamal Agnew",pos:"WR",age:30,team:"JAX",proj:{PPR:82,Half:75,Std:68},adp:46.5,note:"Return specialist: 32 rec 360 yds ST value"},
+  {name:"Kevontae Turpin",pos:"WR",age:27,team:"DAL",proj:{PPR:78,Half:72,Std:66},adp:48.0,note:"Return/gadget: 28 rec 340 yds speed"},
+  {name:"Jakeem Grant Jr.",pos:"WR",age:31,team:"CHI",proj:{PPR:75,Half:69,Std:63},adp:49.0,note:"Elite returner: 30 rec 340 yds"},
+  {name:"Braxton Berrios",pos:"WR",age:30,team:"MIA",proj:{PPR:72,Half:66,Std:60},adp:49.5,note:"Return/slot: 28 rec 310 yds"},
+  {name:"Daurice Fountain",pos:"WR",age:29,team:"KC",proj:{PPR:65,Half:60,Std:55},adp:53.5,note:"Big WR depth: 24 rec 280 yds"},
+  {name:"Dennis Houston",pos:"WR",age:28,team:"JAX",proj:{PPR:68,Half:62,Std:56},adp:51.5,note:"Physical slot: 26 rec 295 yds"},
+  {name:"Trishton Jackson",pos:"WR",age:26,team:"CHI",proj:{PPR:62,Half:57,Std:52},adp:55.0,note:"Developmental WR depth"},
+  {name:"Aaron Parker",pos:"WR",age:28,team:"DET",proj:{PPR:60,Half:55,Std:50},adp:56.5,note:"Depth: 22 rec 245 yds"},
+  {name:"Damon Hazelton",pos:"WR",age:28,team:"TB",proj:{PPR:58,Half:53,Std:48},adp:57.5,note:"Physical receiver depth"},
+  // RB returner/depth Wave 19
+  {name:"Derrick Gore",pos:"RB",age:30,team:"KC",proj:{PPR:65,Half:60,Std:55},adp:53.0,note:"ST/power: 220 rush depth"},
+  {name:"Godwin Igwebuike",pos:"RB",age:29,team:"DET",proj:{PPR:62,Half:57,Std:52},adp:55.0,note:"ST/RB: 180 rush depth"},
+  {name:"Mike Boone",pos:"RB",age:29,team:"DEN",proj:{PPR:68,Half:62,Std:56},adp:51.0,note:"Backup: 240 rush 32 rec"},
+  {name:"Patrick Taylor Jr.",pos:"RB",age:27,team:"MIA",proj:{PPR:72,Half:66,Std:60},adp:49.0,note:"Power back depth: 280 rush"},
+  // TE depth Wave 19
+  {name:"Charlie Kolar",pos:"TE",age:26,team:"BAL",proj:{PPR:88,Half:80,Std:72},adp:43.0,note:"BAL TE2: 34 rec 360 yds 4 TD"},
+  {name:"Foster Moreau",pos:"TE",age:29,team:"NO",proj:{PPR:82,Half:75,Std:68},adp:45.5,note:"TE2: 32 rec 330 yds"},
+  {name:"Daniel Bellinger",pos:"TE",age:26,team:"NYG",proj:{PPR:85,Half:78,Std:71},adp:44.0,note:"NYG TE: 34 rec 350 yds 4 TD"},
+  {name:"Geoff Swaim",pos:"TE",age:32,team:"TEN",proj:{PPR:58,Half:53,Std:48},adp:56.0,note:"Blocking TE veteran"},
+  {name:"Matt Bushman",pos:"TE",age:29,team:"FA",proj:{PPR:52,Half:47,Std:42},adp:58.0,note:"Blocking TE veteran depth"},
+  {name:"Princeton Fant",pos:"TE",age:29,team:"NYJ",proj:{PPR:65,Half:59,Std:53},adp:52.5,note:"TE2: 24 rec 250 yds"},
+  {name:"Jordan Franks",pos:"TE",age:30,team:"FA",proj:{PPR:48,Half:43,Std:38},adp:60.0,note:"Blocking TE depth"},
   // Wave 18 — deep WR/RB/TE/QB depth sweep
   // WR deep depth Wave 18
   {name:"Kendall Hinton",pos:"WR",age:28,team:"DEN",proj:{PPR:72,Half:66,Std:60},adp:48.5,note:"Slot depth: 28 rec 310 yds"},
