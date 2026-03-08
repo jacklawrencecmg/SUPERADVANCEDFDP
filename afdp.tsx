@@ -1718,7 +1718,13 @@ export default function App(){
         var rv=cfg.pk*Math.pow(cfg.dc,p.posRank-1);
         // dynastyBonus^2: aggressive age curve — old RBs lose ~40-55%, young prospects gain ~10-18%
         var ab=dynastyBonus(p.pos,p.age);
-        p.tradeVal=Math.round(Math.max(100,Math.min(9500,rv*ab*ab)));
+        var rankVal=Math.round(Math.max(100,Math.min(9500,rv*ab*ab)));
+        // Raw production floor: veterans below replacement still get credit for actual season output
+        // Prevents e.g. Kelce at 37 (below TE baseline) from getting ~500 when KTC says 2,500+
+        // Floor: raw pts * 15 * age-adj, capped at 3,500 so it only saves undervalued veterans
+        // Kelce: 182 * 15 * 0.61 = 1,666 → reasonable for a 37yo TE in dynasty
+        var rawFloor=Math.round((p.proj[sKey]||0)*15*ab);
+        p.tradeVal=Math.max(rankVal,Math.min(3500,rawFloor));
       } else {
         p.tradeVal=Math.max(10,Math.min(9500,baseTV));
       }
