@@ -1678,7 +1678,7 @@ export default function App(){
       p.scarcity=scarcityLabel(p.posRank,bl[p.pos]||teams);
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.88)):1;
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
-      var tvMult=isDynasty?1000:isSF?800:scoring==="PPR"?600:scoring==="Half"?550:500;
+      var tvMult=isDynasty?1000:isSF?8000:scoring==="PPR"?6000:scoring==="Half"?5500:5000;
       var baseTV=Math.round(p.vbd*tvMult);
       if(isDynasty){
         var dyFloor=Math.max(50,Math.round(40000/Math.max(1,p.posRank)*dynastyBonus(p.pos,p.age)));
