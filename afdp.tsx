@@ -65,7 +65,7 @@ const PLAYERS=[
   {name:"Lamar Jackson",pos:"QB",age:30,team:"BAL",proj:{PPR:445,Half:445,Std:445},adp:1.1,note:"2026: 4,400 yds 44 TD 950 rush MVP level"},
   {name:"Josh Allen",pos:"QB",age:30,team:"BUF",proj:{PPR:432,Half:432,Std:432},adp:1.5,note:"2026: 4,500 yds 43 TD elite"},
   {name:"Jalen Hurts",pos:"QB",age:28,team:"PHI",proj:{PPR:418,Half:418,Std:418},adp:2.0,note:"2026: 4,100 yds 35 TD 850 rush"},
-  {name:"Patrick Mahomes",pos:"QB",age:31,team:"KC",proj:{PPR:408,Half:408,Std:408},adp:2.4,note:"2026: 4,400 yds 38 TD consistent"},
+  {name:"Patrick Mahomes",pos:"QB",age:31,team:"KC",proj:{PPR:425,Half:425,Std:425},adp:2.4,note:"2026: 4,600 yds 40 TD consistent"},
   {name:"Jayden Daniels",pos:"QB",age:26,team:"WAS",proj:{PPR:398,Half:398,Std:398},adp:3.1,note:"2026 Year 2 leap: 4,100 yds 32 TD"},
   {name:"Joe Burrow",pos:"QB",age:30,team:"CIN",proj:{PPR:388,Half:388,Std:388},adp:3.9,note:"2026: 4,800 yds 39 TD healthy"},
   {name:"C.J. Stroud",pos:"QB",age:25,team:"HOU",proj:{PPR:375,Half:375,Std:375},adp:5.0,note:"2026: 4,400 yds 34 TD Year 3"},
@@ -80,7 +80,7 @@ const PLAYERS=[
   {name:"Baker Mayfield",pos:"QB",age:32,team:"TB",proj:{PPR:322,Half:322,Std:322},adp:12.5,note:"2026: 3,800 yds 29 TD"},
   {name:"Cam Ward",pos:"QB",age:23,team:"TEN",proj:{PPR:335,Half:335,Std:335},adp:11.0,note:"2026 Year 2 breakout: 3,800 yds 29 TD"},
   {name:"Shedeur Sanders",pos:"QB",age:23,team:"CLE",proj:{PPR:318,Half:318,Std:318},adp:13.5,note:"2026 Year 2: 3,500 yds 25 TD"},
-  {name:"Saquon Barkley",pos:"RB",age:29,team:"PHI",proj:{PPR:348,Half:322,Std:296},adp:1.2,note:"2026: 1,900 rush 15 TD elite workhorse"},
+  {name:"Saquon Barkley",pos:"RB",age:29,team:"PHI",proj:{PPR:328,Half:302,Std:276},adp:1.2,note:"2026: 1,650 rush 13 TD age 29 workhorse"},
   {name:"Bijan Robinson",pos:"RB",age:24,team:"ATL",proj:{PPR:335,Half:310,Std:285},adp:1.9,note:"2026: 1,800 rush 14 TD 75 rec"},
   {name:"Jahmyr Gibbs",pos:"RB",age:24,team:"DET",proj:{PPR:328,Half:303,Std:278},adp:2.4,note:"2026: 1,600 rush 13 TD 70 rec"},
   {name:"Ashton Jeanty",pos:"RB",age:22,team:"LV",proj:{PPR:315,Half:291,Std:267},adp:3.2,note:"2026 Year 2: 1,600 rush 13 TD full feature back"},
@@ -98,9 +98,9 @@ const PLAYERS=[
   {name:"CeeDee Lamb",pos:"WR",age:27,team:"DAL",proj:{PPR:332,Half:308,Std:284},adp:2.6,note:"2026: 125 rec 1,560 yds 13 TD"},
   {name:"Amon-Ra St. Brown",pos:"WR",age:26,team:"DET",proj:{PPR:322,Half:298,Std:274},adp:3.5,note:"2026: 128 rec 1,360 yds 12 TD"},
   {name:"Marvin Harrison Jr.",pos:"WR",age:23,team:"ARI",proj:{PPR:315,Half:292,Std:269},adp:3.9,note:"2026 Year 2 breakout: 110 rec 1,300 yds 12 TD"},
-  {name:"Tetairoa McMillan",pos:"WR",age:22,team:"CAR",proj:{PPR:308,Half:285,Std:262},adp:4.2,note:"2026 Year 2: 105 rec 1,200 yds 10 TD"},
-  {name:"Travis Hunter",pos:"WR",age:22,team:"JAX",proj:{PPR:295,Half:273,Std:251},adp:5.1,note:"2026 Year 2: 98 rec 1,150 yds 9 TD"},
-  {name:"Puka Nacua",pos:"WR",age:24,team:"LAR",proj:{PPR:315,Half:292,Std:269},adp:3.9,note:"2026: 118 rec 1,400 yds 10 TD"},
+  {name:"Tetairoa McMillan",pos:"WR",age:22,team:"CAR",proj:{PPR:235,Half:218,Std:201},adp:4.2,note:"2026 Year 2: 82 rec 950 yds 8 TD"},
+  {name:"Travis Hunter",pos:"WR",age:22,team:"JAX",proj:{PPR:175,Half:162,Std:149},adp:5.1,note:"2026 WR/CB dual role: 62 rec 720 yds 6 TD"},
+  {name:"Puka Nacua",pos:"WR",age:24,team:"LAR",proj:{PPR:270,Half:250,Std:230},adp:3.9,note:"2026: 102 rec 1,100 yds 8 TD"},
   {name:"A.J. Brown",pos:"WR",age:29,team:"PHI",proj:{PPR:302,Half:280,Std:258},adp:5.4,note:"2026: 110 rec 1,450 yds 14 TD"},
   {name:"Brandon Aiyuk",pos:"WR",age:28,team:"SF",proj:{PPR:295,Half:273,Std:251},adp:6.0,note:"2026: 102 rec 1,400 yds 12 TD"},
   {name:"Tee Higgins",pos:"WR",age:27,team:"CIN",proj:{PPR:290,Half:268,Std:246},adp:6.5,note:"2026: 98 rec 1,250 yds 12 TD"},
@@ -740,7 +740,7 @@ const PLAYERS=[
   {name:"Marquise Brown",pos:"WR",age:28,team:"KC",proj:{PPR:112,Half:103,Std:94},adp:35.5,note:"Speed slot: 45 rec 540 yds"},
   {name:"Mecole Hardman Jr.",pos:"WR",age:28,team:"KC",proj:{PPR:95,Half:87,Std:79},adp:42.0,note:"Speed: 38 rec 450 yds 4 TD"},
   // TE Wave 7
-  {name:"Kyle Pitts",pos:"TE",age:25,team:"ATL",proj:{PPR:188,Half:172,Std:156},adp:12.5,note:"Athletic TE: 72 rec 780 yds 6 TD bounce-back"},
+  {name:"Kyle Pitts",pos:"TE",age:25,team:"ATL",proj:{PPR:215,Half:198,Std:181},adp:12.5,note:"Elite athletic TE: 84 rec 920 yds 7 TD breakout"},
   {name:"Mike Gesicki",pos:"TE",age:30,team:"NE",proj:{PPR:115,Half:105,Std:95},adp:24.5,note:"Receiving TE: 46 rec 490 yds 4 TD"},
   // Wave 10 — 2025 NFL Draft rookies: skill + IDP
   // 2025 RB Rookies
@@ -1363,7 +1363,10 @@ const UNQ=PLAYERS.filter(function(p,i,a){return a.findIndex(function(x){return x
 function dynastyBonus(pos,age){
   if(pos==="DST"||pos==="K"||pos==="PICK") return 1;
   var lo=PRIME[pos]?PRIME[pos][0]:25;
-  if(age<lo) return 1+(lo-age)*0.045;
+  // QBs age slower — youth bonus capped at 2%/yr (vs 4.5% for skill positions)
+  // prevents double-dip: young QBs get extra posRank boost AND ab^2 multiply
+  var yRate=pos==="QB"?0.020:0.045;
+  if(age<lo) return 1+(lo-age)*yRate;
   if(age>lo+6) return Math.max(0.45,1-(age-lo-6)*0.065);
   return 1;
 }
@@ -1710,7 +1713,7 @@ export default function App(){
         // Position-specific exponential decay calibrated to KTC dynasty value curves
         // peak * decay^(posRank-1) gives natural drop-off matching KTC market data
         var isIDP=p.pos==="DL"||p.pos==="LB"||p.pos==="DB";
-        var cfg=p.pos==="QB"?(isSF?{pk:9000,dc:0.921}:{pk:7500,dc:0.880})
+        var cfg=p.pos==="QB"?(isSF?{pk:9000,dc:0.921}:{pk:8500,dc:0.900})
           :p.pos==="RB"?{pk:9300,dc:0.931}
           :p.pos==="TE"?{pk:8500,dc:0.828}
           :isIDP?{pk:5000,dc:0.940}
@@ -1723,8 +1726,8 @@ export default function App(){
         // Prevents e.g. Kelce at 37 (below TE baseline) from getting ~500 when KTC says 2,500+
         // Floor: raw pts * 15 * age-adj, capped at 3,500 so it only saves undervalued veterans
         // Kelce: 182 * 15 * 0.61 = 1,666 → reasonable for a 37yo TE in dynasty
-        var rawFloor=Math.round((p.proj[sKey]||0)*15*ab);
-        p.tradeVal=Math.max(rankVal,Math.min(3500,rawFloor));
+        var rawFloor=p.pos!=="QB"?Math.round((p.proj[sKey]||0)*15*ab):0;
+        p.tradeVal=p.pos!=="QB"?Math.max(rankVal,Math.min(3500,rawFloor)):rankVal;
       } else {
         p.tradeVal=Math.max(10,Math.min(9500,baseTV));
       }
