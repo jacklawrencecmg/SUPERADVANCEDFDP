@@ -765,6 +765,26 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 25 — IDP DB/LB depth + safety tier
+  // IDP Safety/DB Wave 25
+  {name:"Jalen Pitre",pos:"DB",age:26,team:"HOU",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"S: 88 tackles 3 INT versatile"},
+  {name:"Kareem Jackson",pos:"DB",age:36,team:"FA",proj:{PPR:62,Half:62,Std:62},adp:46.5,note:"Veteran S: 55 tackles 2 INT if active"},
+  {name:"Adrian Amos",pos:"DB",age:32,team:"FA",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"Veteran FS: 60 tackles 3 INT"},
+  {name:"Rodney McLeod",pos:"DB",age:35,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:54.0,note:"Veteran S depth"},
+  {name:"Tycen Anderson",pos:"DB",age:26,team:"CLE",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"FS: 65 tackles 2 INT ascending"},
+  {name:"Deionte Thompson",pos:"DB",age:27,team:"CAR",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"S: 62 tackles 2 INT"},
+  {name:"JL Skinner",pos:"DB",age:25,team:"DEN",proj:{PPR:75,Half:75,Std:75},adp:36.5,note:"S Year 3: 70 tackles 2 INT physical"},
+  {name:"Quentin Lake",pos:"DB",age:27,team:"LAR",proj:{PPR:70,Half:70,Std:70},adp:40.0,note:"S: 65 tackles 1 INT"},
+  {name:"Elijah Riley",pos:"DB",age:27,team:"MIN",proj:{PPR:65,Half:65,Std:65},adp:44.5,note:"S depth: 58 tackles 1 INT"},
+  {name:"Keenan Isaac",pos:"DB",age:25,team:"JAX",proj:{PPR:62,Half:62,Std:62},adp:46.0,note:"CB depth: 50 tackles 1 INT"},
+  {name:"Josh Jobe",pos:"DB",age:26,team:"PIT",proj:{PPR:68,Half:68,Std:68},adp:41.0,note:"CB: 55 tackles 2 INT slot"},
+  {name:"Coby Bryant",pos:"DB",age:26,team:"CIN",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"CB: 60 tackles 2 INT solid"},
+  // IDP LB Wave 25
+  {name:"Ja'Whaun Bentley",pos:"LB",age:30,team:"NE",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"ILB: 85 tackles 2 sacks veteran"},
+  {name:"Sam Eguavoen",pos:"LB",age:32,team:"MIA",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"LB: 70 tackles 2 INT coverage"},
+  {name:"Mack Wilson Sr.",pos:"LB",age:27,team:"NE",proj:{PPR:80,Half:80,Std:80},adp:33.0,note:"ILB: 75 tackles 2 sacks"},
+  {name:"Damien Wilson",pos:"LB",age:33,team:"FA",proj:{PPR:65,Half:65,Std:65},adp:44.5,note:"Veteran ILB: 65 tackles depth"},
+  {name:"Devion Cunningham",pos:"LB",age:26,team:"ATL",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"LB depth: 62 tackles 1 sack"},
   // Wave 24 — missing starters + IDP depth sweep
   // Missing starters
   {name:"DeAndre Hopkins",pos:"WR",age:33,team:"KC",proj:{PPR:188,Half:173,Std:158},adp:22.5,note:"Veteran: 72 rec 840 yds 7 TD jump-ball"},
