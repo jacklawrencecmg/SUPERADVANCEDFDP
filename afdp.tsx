@@ -1561,11 +1561,13 @@ export default function App(){
   var [contactSubject,setContactSubject]=useState("");
   var [contactMsg,setContactMsg]=useState("");
   var [contactSent,setContactSent]=useState(false);
-  var [user,setUser]=useState(null);
+  var [user,setUser]=useState(function(){try{var s=localStorage.getItem('fdp_user_v1');return s?JSON.parse(s):null;}catch(e){return null;}});
+  function saveAndSetUser(u){try{if(u)localStorage.setItem('fdp_user_v1',JSON.stringify(u));else localStorage.removeItem('fdp_user_v1');}catch(e){}setUser(u);}
   var [showAuth,setShowAuth]=useState(false);
   var [authMode,setAuthMode]=useState("signup");
   var [showAdmin,setShowAdmin]=useState(false);
-  var [darkMode,setDarkMode]=useState(false);
+  var [darkMode,setDarkMode]=useState(function(){try{var s=localStorage.getItem('fdp_dark_v1');return s?JSON.parse(s):true;}catch(e){return true;}});
+  function toggleDarkMode(){setDarkMode(function(d){var next=!d;try{localStorage.setItem('fdp_dark_v1',JSON.stringify(next));}catch(e){}return next;});}
   // League
   var [leagueSubTab,setLeagueSubTab]=useState("power");
   var [byeWeek,setByeWeek]=useState(1);
@@ -1983,7 +1985,7 @@ export default function App(){
 
   return React.createElement("div",{style:{background:T.bg,minHeight:"100vh",color:T.text,fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif",maxWidth:480,margin:"0 auto",paddingBottom:70}},
 
-    showAuth&&React.createElement(AuthModal,{mode:authMode,onClose:function(){setShowAuth(false);},onAuth:function(u){setUser(u);setShowAuth(false);},T:T}),
+    showAuth&&React.createElement(AuthModal,{mode:authMode,onClose:function(){setShowAuth(false);},onAuth:function(u){saveAndSetUser(u);setShowAuth(false);},T:T}),
 
     // Roster modal
     rosterViewTeam!==null&&(function(){
@@ -2046,11 +2048,11 @@ export default function App(){
         React.createElement("img",{src:appLogoSrc,alt:"Fantasy DraftPros",style:{height:150,width:"auto",maxWidth:380}})
       ),
       React.createElement("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:8}},
-        React.createElement("button",{onClick:function(){setDarkMode(function(d){return !d;});},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1}},darkMode?"☀ Light":"🌙 Dark"),
+        React.createElement("button",{onClick:toggleDarkMode,style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1}},darkMode?"☀ Light":"🌙 Dark"),
         !user?React.createElement(React.Fragment,null,
           React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"7px 16px",borderRadius:20,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:12}},"Sign In"),
           React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"7px 18px",borderRadius:20,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:12}},"Sign Up Free")
-        ):React.createElement(UserMenu,{user:user,T:T,onSignOut:function(){setUser(null);setShowAdmin(false);},onUpgrade:function(){setAuthMode("signup");setShowAuth(true);},onAdmin:function(){setShowAdmin(true);}})
+        ):React.createElement(UserMenu,{user:user,T:T,onSignOut:function(){saveAndSetUser(null);setShowAdmin(false);},onUpgrade:function(){setAuthMode("signup");setShowAuth(true);},onAdmin:function(){setShowAdmin(true);}})
       )
     ),
 
