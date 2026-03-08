@@ -785,6 +785,25 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 17 — 2025 LB rookies + veteran IDP depth
+  // 2025 LB rookies
+  {name:"Jihaad Campbell",pos:"LB",age:22,team:"PHI",proj:{PPR:98,Half:98,Std:98},adp:21.5,note:"2025 1st round: 95 tackles 3 sacks elite coverage"},
+  {name:"Harold Perkins Jr.",pos:"LB",age:21,team:"LV",proj:{PPR:95,Half:95,Std:95},adp:23.0,note:"2025 pick: elite athleticism 90 tackles 4 sacks"},
+  {name:"Payton Wilson",pos:"LB",age:24,team:"PIT",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"2025: speed LB 88 tackles 3 sacks"},
+  {name:"Carson Schwesinger",pos:"LB",age:23,team:"CLE",proj:{PPR:85,Half:85,Std:85},adp:29.0,note:"2025 pick: 80 tackles 2 sacks reliable"},
+  {name:"Nick Jackson",pos:"LB",age:23,team:"ATL",proj:{PPR:80,Half:80,Std:80},adp:32.5,note:"2025: ILB 75 tackles 2 sacks"},
+  {name:"Danny Striggow",pos:"LB",age:24,team:"DEN",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"2025 depth LB: 65 tackles 2 sacks"},
+  // IDP DL additions Wave 17
+  {name:"Christian Barmore",pos:"DL",age:26,team:"NE",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"IDL: 8 sacks 45 tackles disruptive"},
+  {name:"Malik Reed",pos:"DL",age:29,team:"DEN",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"EDGE rotational: 6 sacks"},
+  {name:"Derek Rivers",pos:"DL",age:30,team:"FA",proj:{PPR:62,Half:62,Std:62},adp:46.0,note:"EDGE veteran depth: 5 sacks if active"},
+  // Veteran DB additions Wave 17
+  {name:"Micah Hyde",pos:"DB",age:34,team:"FA",proj:{PPR:68,Half:68,Std:68},adp:42.0,note:"Veteran FS: 55 tackles 3 INT if active"},
+  {name:"Devin McCourty",pos:"DB",age:37,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:54.0,note:"Retired legend: historical reference"},
+  {name:"Keanu Neal",pos:"DB",age:30,team:"TB",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"SS: 70 tackles 2 sacks physical"},
+  {name:"Landon Collins",pos:"DB",age:32,team:"FA",proj:{PPR:65,Half:65,Std:65},adp:44.0,note:"SS veteran: 68 tackles 2 INT"},
+  {name:"Ha Ha Clinton-Dix",pos:"DB",age:34,team:"FA",proj:{PPR:52,Half:52,Std:52},adp:56.0,note:"Veteran FS depth"},
+  {name:"Chamarri Conner",pos:"DB",age:27,team:"WAS",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"S/LB: 75 tackles 2 sacks versatile"},
   // Wave 16 — IDP LB/DB depth + final fill-ins
   // IDP LB Wave 16
   {name:"Darius Leonard",pos:"LB",age:30,team:"IND",proj:{PPR:102,Half:102,Std:102},adp:19.5,note:"Shaq: 100 tackles 3 INT comeback"},
