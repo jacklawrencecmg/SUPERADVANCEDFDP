@@ -1632,6 +1632,19 @@ export default function App(){
   var [compareP2,setCompareP2]=useState(null);
   var [compareS1,setCompareS1]=useState("");
   var [compareS2,setCompareS2]=useState("");
+  var [tradeHistory,setTradeHistory]=useState(function(){try{var s=localStorage.getItem('fdp_th_v1');return s?JSON.parse(s):[];}catch(e){return [];}});
+  var [tradeSaved,setTradeSaved]=useState(false);
+  var [aiAnalysis,setAiAnalysis]=useState("");
+  var [sleeperTrending,setSleeperTrending]=useState(null);
+  var [leagueTrades,setLeagueTrades]=useState(null);
+  var [leagueTradesLoading,setLeagueTradesLoading]=useState(false);
+  var [auctionNoms,setAuctionNoms]=useState([]);
+  var [auctionBudget,setAuctionBudget]=useState(200);
+  var [auctionTeams,setAuctionTeams]=useState(10);
+  var [auctionSearch,setAuctionSearch]=useState("");
+  var [auctionBidAmt,setAuctionBidAmt]=useState("");
+  var [auctionBidPlayer,setAuctionBidPlayer]=useState(null);
+  var [histSearch,setHistSearch]=useState("");
 
   var T=darkMode?DARK:LIGHT;
   var isPro=user&&user.isPro;
@@ -1842,6 +1855,74 @@ export default function App(){
   }
   function srchRes(q,excl){if(!q)return[];return tradePool.filter(function(p){return p.name.toLowerCase().includes(q.toLowerCase())&&!excl.find(function(x){return x.name===p.name;});}).slice(0,8);}
 
+  function saveTrade(){
+    var entry={id:Date.now(),date:new Date().toLocaleDateString(),sideA:tradeA.map(function(p){return{name:p.name,pos:p.pos,tradeVal:p.tradeVal||p.est||0};}),sideB:tradeB.map(function(p){return{name:p.name,pos:p.pos,tradeVal:p.tradeVal||p.est||0};}),tvA:tvA,tvB:tvB,scoring:scoring};
+    var nh=[entry].concat(tradeHistory).slice(0,50);
+    try{localStorage.setItem('fdp_th_v1',JSON.stringify(nh));}catch(e){}
+    setTradeHistory(nh);setTradeSaved(true);setTimeout(function(){setTradeSaved(false);},2500);
+  }
+
+  function genAiAnalysis(sA,sB,valA,valB){
+    var diff=valA-valB;
+    var pct=valB>0?Math.abs(diff/valB)*100:0;
+    var aPlrs=sA.filter(function(p){return p.pos!=="PICK";});
+    var bPlrs=sB.filter(function(p){return p.pos!=="PICK";});
+    var aPicks=sA.filter(function(p){return p.pos==="PICK";});
+    var bPicks=sB.filter(function(p){return p.pos==="PICK";});
+    var lines=[];
+    if(pct<8){lines.push("This is a fair trade — both sides exchange roughly equal value within the standard 8% threshold.");}
+    else if(diff>0){lines.push("Team A wins this trade by "+pct.toFixed(0)+"%. Team B is overpaying for what they receive.");}
+    else{lines.push("Team B wins this trade by "+pct.toFixed(0)+"%. Team A is giving up too much value.");}
+    if(aPlrs.length>0&&bPlrs.length>0){
+      var aAge=+(aPlrs.reduce(function(s,p){return s+(p.age||25);},0)/aPlrs.length).toFixed(0);
+      var bAge=+(bPlrs.reduce(function(s,p){return s+(p.age||25);},0)/bPlrs.length).toFixed(0);
+      if(aAge>bAge+2){lines.push("You're moving older assets (avg age "+aAge+") for younger pieces (avg "+bAge+") — solid dynasty value exchange.");}
+      else if(bAge>aAge+2){lines.push("Incoming players average age "+bAge+" vs "+aAge+" outgoing. Win-now move — good if you're contending.");}
+    }
+    var oldRbs=aPlrs.filter(function(p){return p.pos==="RB"&&(p.age||25)>=30;});
+    if(oldRbs.length>0){lines.push("Risk flag: "+oldRbs.map(function(p){return p.name;}).join(" & ")+" "+( oldRbs.length>1?"are":"is")+" 30+ at RB — steep production cliff ahead.");}
+    if(aPicks.length>bPicks.length){var ep=aPicks.length-bPicks.length;lines.push("You're adding "+ep+" extra pick"+(ep>1?"s":"")+" — speculative upside, best for rebuilders.");}
+    else if(bPicks.length>aPicks.length){var ep2=bPicks.length-aPicks.length;lines.push("You're landing "+ep2+" extra pick"+(ep2>1?"s":"")+" — future capital secured.");}
+    var eliteIn=bPlrs.filter(function(p){return p.posRank&&p.posRank<=5;});
+    if(eliteIn.length>0){lines.push("You're acquiring "+eliteIn.map(function(p){return p.name;}).join(" & ")+", an elite top-5 asset at their position. That's a significant win.");}
+    var qbIn=bPlrs.filter(function(p){return p.pos==="QB";});
+    var qbOut=aPlrs.filter(function(p){return p.pos==="QB";});
+    if(qbOut.length>qbIn.length){lines.push("You're giving up a QB without equal return. Ensure you have starter depth — QB scarcity is real.");}
+    return lines.join(" ");
+  }
+
+  function loadSleeperTrending(){
+    if(sleeperTrending)return;
+    Promise.all([
+      fetch("https://api.sleeper.app/v1/players/nfl/trending/add?lookback_hours=24&limit=20").then(function(r){return r.ok?r.json():[];}).catch(function(){return[];}),
+      fetch("https://api.sleeper.app/v1/players/nfl/trending/drop?lookback_hours=24&limit=20").then(function(r){return r.ok?r.json():[];}).catch(function(){return[];})
+    ]).then(function(res){setSleeperTrending({adds:res[0]||[],drops:res[1]||[],ts:Date.now()});});
+  }
+
+  function loadLeagueTrades(){
+    if(!activeLeague||!activeLeague.league_id||activeLeague.league_id.startsWith("espn_")||activeLeague.league_id==="manual")return;
+    setLeagueTradesLoading(true);setLeagueTrades(null);
+    var weeks=[];for(var w=1;w<=17;w++){weeks.push(w);}
+    Promise.all(weeks.map(function(wk){
+      return fetch("https://api.sleeper.app/v1/league/"+activeLeague.league_id+"/transactions/"+wk).then(function(r){return r.ok?r.json():[];}).catch(function(){return[];});
+    })).then(function(results){
+      var allTx=[].concat.apply([],results);
+      var trades=allTx.filter(function(tx){return tx.type==="trade"&&tx.status==="complete";});
+      trades.sort(function(a,b){return (b.created||0)-(a.created||0);});
+      setLeagueTrades(trades);setLeagueTradesLoading(false);
+    }).catch(function(){setLeagueTradesLoading(false);});
+  }
+
+  function sparkline(playerName,posRank,age,pos){
+    // Deterministic pseudo-random sparkline based on player name hash
+    var hash=0;for(var i=0;i<playerName.length;i++){hash=(hash*31+playerName.charCodeAt(i))&0xffff;}
+    var base=Math.max(100,10000-posRank*120);
+    var trend=age<26?1.04:age<30?1.01:age>32?0.95:0.99;
+    var pts=[];
+    for(var w=0;w<12;w++){var noise=((hash*(w+1)*7919)&0xfff)/0xfff-0.5;pts.push(Math.max(10,Math.round(base*Math.pow(trend,w-6)+noise*base*0.12)));}
+    return pts;
+  }
+
   function importSleeper(){
     if(!slUser.trim())return;
     setImpStatus("loading");setImpData(null);setImpErr("");
@@ -2039,7 +2120,7 @@ export default function App(){
         React.createElement("button",{onClick:function(){
           if(tradeA.length===0&&tradeB.length===0)return;
           if(!isPro&&tradeCount>=FREE_TRADE_LIMIT){setAuthMode("signup");setShowAuth(true);return;}
-          setAnalyzed(true);if(!isPro)setTradeCount(function(c){return c+1;});
+          setAnalyzed(true);setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));setTradeSaved(false);if(!isPro)setTradeCount(function(c){return c+1;});
         },style:{width:"100%",padding:"15px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:800,fontSize:15,
           background:(tradeA.length>0||tradeB.length>0)?(!isPro&&tradeCount>=FREE_TRADE_LIMIT?"linear-gradient(135deg,"+T.gold+",#92400e)":"linear-gradient(135deg,"+T.purple+",#5b21b6)"):T.purpleDim,
           color:(tradeA.length>0||tradeB.length>0)?"#fff":T.textDim}},
@@ -2054,6 +2135,17 @@ export default function App(){
             React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
               React.createElement("div",{style:{background:T.bgCard,borderRadius:10,padding:12,border:"1px solid "+T.border,textAlign:"center"}},React.createElement("div",{style:{fontSize:9,color:T.textSub,letterSpacing:1,marginBottom:4}},"GIVES"),React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.purple}},tvA.toFixed(0))),
               React.createElement("div",{style:{background:T.bgCard,borderRadius:10,padding:12,border:"1px solid "+T.border,textAlign:"center"}},React.createElement("div",{style:{fontSize:9,color:T.textSub,letterSpacing:1,marginBottom:4}},"GETS"),React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.purpleLight}},tvB.toFixed(0)))
+            ),
+            aiAnalysis&&React.createElement("div",{style:{marginTop:12,background:darkMode?"#1a1035":"#f5f3ff",border:"1px solid "+T.borderPurple,borderRadius:12,padding:"12px 14px"}},
+              React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6,marginBottom:6}},
+                React.createElement("span",{style:{fontSize:13,color:T.purple}},"✦"),
+                React.createElement("span",{style:{fontSize:10,fontWeight:800,color:T.purple,letterSpacing:1}}),"AI ANALYSIS"
+              ),
+              React.createElement("div",{style:{fontSize:12,color:T.text,lineHeight:1.8}},aiAnalysis)
+            ),
+            React.createElement("div",{style:{display:"flex",gap:8,marginTop:12}},
+              React.createElement("button",{onClick:saveTrade,disabled:tradeSaved,style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+(tradeSaved?T.green:T.border),cursor:tradeSaved?"default":"pointer",fontWeight:700,fontSize:12,background:tradeSaved?T.green:T.bgInput,color:tradeSaved?"#fff":T.textSub}},tradeSaved?"Saved ✓":"Save Trade"),
+              React.createElement("button",{onClick:function(){setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));},style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+T.borderPurple,cursor:"pointer",fontWeight:700,fontSize:12,background:T.purpleDim,color:T.purpleLight}},"Refresh Analysis")
             ),
             !user&&React.createElement("div",{style:{marginTop:12,background:T.purpleDim,border:"1px solid "+T.purple+"44",borderRadius:12,padding:"12px 14px"}},
               React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.purpleLight,marginBottom:4}},"Want AI Trade Suggestions?"),
@@ -2122,7 +2214,7 @@ export default function App(){
     // ════ MY LEAGUE TAB ════
     tab==="league"&&React.createElement("div",{style:{paddingBottom:80}},
       React.createElement("div",{style:{display:"flex",gap:8,overflowX:"auto",padding:"12px 16px",borderBottom:"1px solid "+T.border,scrollbarWidth:"none"}},
-        [["power","Power Rankings"],["playoff","Playoff Odds"],["champ","Championship"],["advice","Team Advice"],["roster","Roster Health"],["waiver","Waiver Wire"],["lineup","Lineup"],["rivalry","Rivalry"],["recap","Recap"],["chat","Chat"],["alerts","Alerts"],["leagimport","Import"]].map(function(st){
+        [["power","Power Rankings"],["playoff","Playoff Odds"],["champ","Championship"],["advice","Team Advice"],["roster","Roster Health"],["waiver","Waiver Wire"],["lineup","Lineup"],["trades","League Trades"],["auction","Auction"],["rivalry","Rivalry"],["recap","Recap"],["chat","Chat"],["alerts","Alerts"],["leagimport","Import"]].map(function(st){
           var active=leagueSubTab===st[0];
           return React.createElement("button",{key:st[0],onClick:function(){
             setLeagueSubTab(st[0]);
@@ -2535,12 +2627,9 @@ export default function App(){
           var rbs=teamPlrs.filter(function(p){return p.pos==="RB";});
           var wrs=teamPlrs.filter(function(p){return p.pos==="WR";});
           var tes=teamPlrs.filter(function(p){return p.pos==="TE";});
-          var allQbs=rankedPlayers.filter(function(p){return p.pos==="QB";});
-          var allRbs=rankedPlayers.filter(function(p){return p.pos==="RB";});
-          var allWrs=rankedPlayers.filter(function(p){return p.pos==="WR";});
-          var allTes=rankedPlayers.filter(function(p){return p.pos==="TE";});
+          var sortP=function(arr){return arr.slice().sort(function(a,b){return b.pts-a.pts;});};
           var curSlots=[["QB",qbs[0]||null],["RB",rbs[0]||null],["RB",rbs[1]||null],["WR",wrs[0]||null],["WR",wrs[1]||null],["TE",tes[0]||null]];
-          var optSlots=[["QB",allQbs[0]],["RB",allRbs[0]],["RB",allRbs[1]],["WR",allWrs[0]],["WR",allWrs[1]],["TE",allTes[0]]];
+          var optSlots=[["QB",sortP(qbs)[0]||null],["RB",sortP(rbs)[0]||null],["RB",sortP(rbs)[1]||null],["WR",sortP(wrs)[0]||null],["WR",sortP(wrs)[1]||null],["TE",sortP(tes)[0]||null]];
           var bench=teamPlrs.filter(function(p){return !curSlots.find(function(s){return s[1]&&s[1].name===p.name;});}).slice(0,5);
           var curPts=curSlots.reduce(function(s,sl){return s+(sl[1]?sl[1].pts:0);},0);
           var optPts=optSlots.reduce(function(s,sl){return s+(sl[1]?sl[1].pts:0);},0);
@@ -2746,6 +2835,165 @@ export default function App(){
       ),
 
       // LEAGUE IMPORT (sub-tab)
+      leagueSubTab==="trades"&&React.createElement("div",{style:{padding:"16px"}},
+        React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:2}},"League Trades"),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"All completed trades in your league this season")
+          ),
+          React.createElement("button",{onClick:loadLeagueTrades,style:{padding:"9px 18px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}},"Load Trades")
+        ),
+        !activeLeague&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"40px 20px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:36,marginBottom:10}},"🔗"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:16,marginBottom:6}},"No League Connected"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Import your Sleeper league to see trade history"),
+          React.createElement("button",{onClick:function(){setLeagueSubTab("leagimport");},style:{padding:"10px 20px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Import League")
+        ),
+        activeLeague&&activeLeague.league_id.startsWith("espn_")&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"32px 20px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Trade history is only available for Sleeper leagues.")
+        ),
+        activeLeague&&!activeLeague.league_id.startsWith("espn_")&&activeLeague.league_id!=="manual"&&React.createElement("div",null,
+          leagueTradesLoading&&React.createElement("div",{style:{textAlign:"center",padding:"32px",color:T.textSub}},"Loading trades..."),
+          !leagueTradesLoading&&leagueTrades===null&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"40px 20px",textAlign:"center"}},
+            React.createElement("div",{style:{fontSize:36,marginBottom:10}},"📋"),
+            React.createElement("div",{style:{fontSize:13,color:T.textSub}},"Press \"Load Trades\" to fetch this season's trade log")
+          ),
+          !leagueTradesLoading&&leagueTrades!==null&&leagueTrades.length===0&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"40px 20px",textAlign:"center"}},
+            React.createElement("div",{style:{fontSize:36,marginBottom:10}},"🤝"),
+            React.createElement("div",{style:{fontWeight:700,fontSize:15,marginBottom:6}},"No Trades Yet"),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"No completed trades found for this league")
+          ),
+          !leagueTradesLoading&&leagueTrades&&leagueTrades.length>0&&React.createElement("div",null,
+            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:12,fontWeight:600}},leagueTrades.length+" COMPLETED TRADES"),
+            leagueTrades.slice(0,30).map(function(tx,idx){
+              var adds=tx.adds||{};var drops=tx.drops||{};
+              var addIds=Object.keys(adds);var dropIds=Object.keys(drops);
+              var ts=tx.status_updated?new Date(tx.status_updated).toLocaleDateString():"";
+              return React.createElement("div",{key:tx.transaction_id||idx,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"14px",marginBottom:10}},
+                React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+                  React.createElement("div",{style:{fontWeight:700,fontSize:12,color:T.purple}},"Trade #"+(leagueTrades.length-idx)),
+                  React.createElement("div",{style:{fontSize:11,color:T.textSub}},ts)
+                ),
+                React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center"}},
+                  React.createElement("div",null,
+                    React.createElement("div",{style:{fontSize:10,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:4}},"SENDS"),
+                    addIds.map(function(pid){
+                      var p=sleeperIdToPlayer[pid]||{name:"Player "+pid,pos:"?",tradeVal:0};
+                      return React.createElement("div",{key:pid,style:{background:T.bgInput,borderRadius:6,padding:"4px 8px",marginBottom:3,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:6}},
+                        React.createElement("span",{style:{color:T.purple,fontWeight:700,fontSize:9}},p.pos),p.name,
+                        p.tradeVal>0&&React.createElement("span",{style:{fontSize:9,color:T.textSub,marginLeft:"auto"}},(p.tradeVal||0).toLocaleString())
+                      );
+                    })
+                  ),
+                  React.createElement("div",{style:{fontSize:16,color:T.textDim,textAlign:"center"}},"⇄"),
+                  React.createElement("div",null,
+                    React.createElement("div",{style:{fontSize:10,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:4}},"RECEIVES"),
+                    dropIds.map(function(pid){
+                      var p=sleeperIdToPlayer[pid]||{name:"Player "+pid,pos:"?",tradeVal:0};
+                      return React.createElement("div",{key:pid,style:{background:T.bgInput,borderRadius:6,padding:"4px 8px",marginBottom:3,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:6}},
+                        React.createElement("span",{style:{color:T.purple,fontWeight:700,fontSize:9}},p.pos),p.name,
+                        p.tradeVal>0&&React.createElement("span",{style:{fontSize:9,color:T.textSub,marginLeft:"auto"}},(p.tradeVal||0).toLocaleString())
+                      );
+                    })
+                  )
+                )
+              );
+            })
+          )
+        )
+      ),
+
+      leagueSubTab==="auction"&&React.createElement("div",{style:{padding:"16px"}},
+        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:16}},
+          React.createElement("span",{style:{fontSize:28,color:T.gold}}),"$",
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:900,fontSize:22}},"Auction Draft Assistant"),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Track live bids and budget in real time")
+          )
+        ),
+        React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}},
+          React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px"}},
+            React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:4,fontWeight:600}},"YOUR BUDGET"),
+            React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},
+              React.createElement("span",{style:{color:T.textSub,fontWeight:700,fontSize:14}},"$"),
+              React.createElement("input",{type:"number",value:auctionBudget,onChange:function(e){setAuctionBudget(+e.target.value||200);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"6px 10px",fontSize:16,fontWeight:800,width:"100%",outline:"none"}})
+            )
+          ),
+          React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px"}},
+            React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:4,fontWeight:600}},"TEAMS"),
+            React.createElement("input",{type:"number",value:auctionTeams,onChange:function(e){setAuctionTeams(+e.target.value||10);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"6px 10px",fontSize:16,fontWeight:800,width:"100%",outline:"none"}})
+          )
+        ),
+        (function(){
+          var spent=auctionNoms.filter(function(n){return n.mine;}).reduce(function(s,n){return s+n.price;},0);
+          var remaining=auctionBudget-spent;
+          var slots=auctionTeams-auctionNoms.filter(function(n){return n.mine;}).length;
+          var maxBid=slots>1?remaining-slots+1:remaining;
+          return React.createElement("div",{style:{background:T.purpleDim,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"14px",marginBottom:14,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
+            [["Spent","$"+spent,T.red],["Remaining","$"+remaining,T.green],["Max Next Bid","$"+Math.max(1,maxBid),T.gold]].map(function(s){
+              return React.createElement("div",{key:s[0],style:{textAlign:"center"}},
+                React.createElement("div",{style:{fontSize:9,color:T.textSub,marginBottom:3,fontWeight:700,letterSpacing:0.5}},s[0]),
+                React.createElement("div",{style:{fontWeight:900,fontSize:18,color:s[2]}},s[1])
+              );
+            })
+          );
+        })(),
+        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"14px",marginBottom:14}},
+          React.createElement("div",{style:{fontWeight:700,fontSize:13,marginBottom:10}},"Add Nomination"),
+          React.createElement("div",{style:{position:"relative",marginBottom:8}},
+            React.createElement("input",{value:auctionSearch,onChange:function(e){setAuctionSearch(e.target.value);},placeholder:"Search player...",style:Object.assign({},inpS,{paddingRight:36})}),
+            auctionSearch&&React.createElement("div",{style:{position:"absolute",top:"100%",left:0,right:0,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:10,zIndex:50,maxHeight:200,overflowY:"auto"}},
+              rankedPlayers.filter(function(p){return p.name.toLowerCase().includes(auctionSearch.toLowerCase());}).slice(0,6).map(function(p){
+                return React.createElement("div",{key:p.name,onClick:function(){setAuctionBidPlayer(p);setAuctionSearch(p.name);},style:{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.border,display:"flex",alignItems:"center",gap:8}},
+                  React.createElement(PBadge,{pos:p.pos}),
+                  React.createElement("span",{style:{flex:1,fontSize:13,fontWeight:600}},p.name),
+                  React.createElement("span",{style:{fontSize:11,color:T.purple,fontWeight:700}},"$"+(p.auction||1))
+                );
+              })
+            )
+          ),
+          React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center"}},
+            React.createElement("span",{style:{fontWeight:700,color:T.textSub}},"$"),
+            React.createElement("input",{type:"number",value:auctionBidAmt,onChange:function(e){setAuctionBidAmt(e.target.value);},placeholder:"Final price",min:1,style:Object.assign({},inpS,{flex:1})}),
+            React.createElement("label",{style:{display:"flex",alignItems:"center",gap:6,fontSize:12,color:T.textSub,whiteSpace:"nowrap",cursor:"pointer"}},
+              React.createElement("input",{type:"checkbox",id:"mine_cb",style:{accentColor:T.purple}}),
+              "My roster"
+            ),
+            React.createElement("button",{onClick:function(){
+              if(!auctionBidPlayer&&!auctionSearch.trim())return;
+              var name=auctionBidPlayer?auctionBidPlayer.name:auctionSearch.trim();
+              var pos=auctionBidPlayer?auctionBidPlayer.pos:"?";
+              var price=parseInt(auctionBidAmt)||1;
+              var mine=document.getElementById("mine_cb")&&document.getElementById("mine_cb").checked;
+              setAuctionNoms(function(prev){return[{name:name,pos:pos,price:price,mine:mine,id:Date.now()}].concat(prev);});
+              setAuctionSearch("");setAuctionBidAmt("");setAuctionBidPlayer(null);
+            },style:{padding:"10px 16px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},"Add")
+          )
+        ),
+        auctionNoms.length>0&&React.createElement("div",null,
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}},
+            React.createElement("div",{style:{fontWeight:700,fontSize:14}},"Nominations ("+auctionNoms.length+")"),
+            React.createElement("button",{onClick:function(){if(window.confirm("Clear all?"))setAuctionNoms([]);},style:{fontSize:11,color:T.red,background:"none",border:"none",cursor:"pointer",fontWeight:600}},"Clear All")
+          ),
+          auctionNoms.map(function(nom){
+            return React.createElement("div",{key:nom.id,style:{background:T.bgCard,border:"1px solid "+(nom.mine?T.borderPurple:T.border),borderRadius:10,padding:"10px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
+              React.createElement(PBadge,{pos:nom.pos}),
+              React.createElement("div",{style:{flex:1}},
+                React.createElement("div",{style:{fontWeight:700,fontSize:13}},nom.name),
+                nom.mine&&React.createElement("div",{style:{fontSize:10,color:T.purple,fontWeight:700}},"On your roster")
+              ),
+              React.createElement("div",{style:{fontWeight:900,fontSize:18,color:nom.mine?T.purple:T.text}},"$"+nom.price),
+              React.createElement("button",{onClick:function(){setAuctionNoms(function(p){return p.filter(function(n){return n.id!==nom.id;});});},style:{background:"none",border:"none",cursor:"pointer",color:T.textDim,fontSize:16,padding:"0 4px"}},"×")
+            );
+          })
+        ),
+        auctionNoms.length===0&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"40px 20px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:36,marginBottom:10}},"🏷"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:15,marginBottom:4}},"No Nominations Yet"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Add player nominations as the draft progresses to track spending")
+        )
+      ),
+
       leagueSubTab==="leagimport"&&React.createElement("div",{style:{padding:"16px"}},
         React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},"Import League"),
         React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Connect your fantasy league for live power rankings"),
@@ -2825,7 +3073,7 @@ export default function App(){
     // ════ RANKINGS TAB ════
     tab==="rankings"&&React.createElement("div",{style:{paddingBottom:80}},
       React.createElement("div",{style:{display:"flex",gap:6,overflowX:"auto",padding:"10px 12px",borderBottom:"1px solid "+T.border,scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}},
-        [["playervalues","$ Player Values"],["allrankings","All Rankings"],["qbs","QBs"],["rbs","RBs"],["wrs","WRs"],["tes","TEs"],["idp","IDP"],["rookie","Rookie Picks"],["trending","Trending"],["market","Market"],["valuetrends","Value Trends"],["watchlist","Watchlist"],["draft","Draft Kit"],["keeper","Keeper Calc"],["compare","Compare"]].map(function(st){
+        [["playervalues","$ Player Values"],["allrankings","All Rankings"],["qbs","QBs"],["rbs","RBs"],["wrs","WRs"],["tes","TEs"],["idp","IDP"],["rookie","Rookie Picks"],["trending","Trending"],["market","Market"],["valuetrends","Value Trends"],["watchlist","Watchlist"],["draft","Draft Kit"],["keeper","Keeper Calc"],["compare","Compare"],["history","Trade History"]].map(function(st){
           var active=rankSubTab===st[0];
           return React.createElement("button",{key:st[0],onClick:function(){setRankSubTab(st[0]);},style:{padding:"7px 14px",borderRadius:20,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},st[1]);
         })
@@ -2957,22 +3205,66 @@ export default function App(){
 
       // ROOKIE PICKS
       rankSubTab==="rookie"&&React.createElement("div",{style:{padding:"16px"}},
-        React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},"Rookie Picks"),
-        React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"2026 dynasty draft pick values"),
-        DRAFT_PICKS.map(function(pk){
-          var tierC=pk.round===1?"#f1c40f":pk.round===2?"#818cf8":"#4b5563";
-          return React.createElement("div",{key:pk.id,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"14px 16px",marginBottom:8,display:"flex",alignItems:"center",gap:12}},
-            React.createElement("div",{style:{width:42,height:42,borderRadius:10,background:tierC+"22",border:"1px solid "+tierC+"44",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:11,color:tierC,flexShrink:0,textAlign:"center"}},"R"+pk.round),
-            React.createElement("div",{style:{flex:1}},
-              React.createElement("div",{style:{fontWeight:700,fontSize:14,color:T.text}},pk.name),
-              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},pk.note)
+        React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:2}},"2025 Rookie Class"),
+        React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Player grades, draft capital & dynasty upside"),
+        (function(){
+          var ROOKIE_GRADES=[
+            {name:"Ashton Jeanty",pos:"RB",team:"LV",grade:"A+",dc:"1.2 OA",fit:"A",note:"Elite rushing prospect, workhorse upside, immediate starter",color:T.green},
+            {name:"Travis Hunter",pos:"WR",team:"JAX",grade:"A+",dc:"2.2 OA",fit:"A",note:"Two-way star, elite WR upside, dynasty WR1 potential",color:T.green},
+            {name:"Cam Ward",pos:"QB",team:"TEN",grade:"A",dc:"1.1 OA",fit:"B+",note:"Elite arm talent, SF league must-have, Year 2 leap expected",color:"#22c55e"},
+            {name:"Tetairoa McMillan",pos:"WR",team:"CAR",grade:"A",dc:"1.1 OA",fit:"A-",note:"Massive target share, elite size/athleticism combo",color:"#22c55e"},
+            {name:"Omarion Hampton",pos:"RB",team:"LAC",grade:"A-",dc:"1.22 OA",fit:"B+",note:"Three-down back, great landing spot, immediate contributor",color:"#86efac"},
+            {name:"Tyler Warren",pos:"TE",team:"IND",grade:"A-",dc:"1.25 OA",fit:"A",note:"Rare TE prospect, top-5 dynasty TE upside within 2 years",color:"#86efac"},
+            {name:"Shedeur Sanders",pos:"QB",team:"CLE",grade:"B+",dc:"1.5 OA",fit:"B",note:"Elite accuracy, landing spot concern, SF value buy-low",color:"#f59e0b"},
+            {name:"Quinshon Judkins",pos:"RB",team:"CLE",grade:"B+",dc:"2.5 OA",fit:"B",note:"Power runner, committee risk early, long-term upside",color:"#f59e0b"},
+            {name:"Emeka Egbuka",pos:"WR",team:"TB",grade:"B+",dc:"1.28 OA",fit:"B+",note:"Slot demon, elite route runner, Evans heir apparent",color:"#f59e0b"},
+            {name:"Luther Burden III",pos:"WR",team:"CHI",grade:"B",dc:"2.39 OA",fit:"A",note:"Perfect landing spot with DJ Moore, upside play at price",color:"#fbbf24"},
+            {name:"Harold Fannin Jr.",pos:"TE",team:"CLE",grade:"B",dc:"2.45 OA",fit:"B+",note:"Dominant college production, developing QB is key risk",color:"#fbbf24"},
+            {name:"Cam Skattebo",pos:"RB",team:"NYG",grade:"B",dc:"1.87 OA",fit:"B",note:"Physical runner, role TBD behind committee, value pick",color:"#fbbf24"},
+          ];
+          return React.createElement("div",null,
+            React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:12,background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"8px 10px"}},
+              [["Grade","Dynasty potential"],["DC","Draft capital"],["Fit","Team fit"]].map(function(l){return React.createElement("div",{key:l[0],style:{textAlign:"center"}},React.createElement("div",{style:{fontWeight:700,fontSize:11,color:T.purpleLight}},l[0]),React.createElement("div",{style:{fontSize:9,color:T.textDim}},l[1]));})
             ),
-            React.createElement("div",{style:{textAlign:"right",flexShrink:0}},
-              React.createElement("div",{style:{fontWeight:800,fontSize:16,color:tierC}},pk.est+" val"),
-              React.createElement("div",{style:{fontSize:9,color:T.textSub,marginTop:2}},pk.round===1?"1st Round":pk.round===2?"2nd Round":"3rd Round")
-            )
+            ROOKIE_GRADES.map(function(r){
+              var p=rankedPlayers.find(function(x){return x.name===r.name;});
+              return React.createElement("div",{key:r.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"13px 14px",marginBottom:8}},
+                React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10}},
+                  p&&React.createElement(Avatar,{name:r.name,pos:r.pos,size:40}),
+                  React.createElement("div",{style:{flex:1}},
+                    React.createElement("div",{style:{fontWeight:800,fontSize:14}},r.name),
+                    React.createElement("div",{style:{fontSize:11,color:T.textSub}},r.team+" · "+r.pos+(r.dc?" · Pick "+r.dc:""))
+                  ),
+                  React.createElement("div",{style:{width:40,height:40,borderRadius:10,background:r.color+"22",border:"2px solid "+r.color+"66",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:16,color:r.color,flexShrink:0}},r.grade)
+                ),
+                React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginTop:10}},
+                  [["Draft Capital",r.dc,T.gold],["Team Fit",r.fit,T.cyan],["Dynasty Val",p?p.tradeVal.toLocaleString():"N/A",T.purple]].map(function(s){
+                    return React.createElement("div",{key:s[0],style:{background:T.bgInput,borderRadius:8,padding:"7px 6px",textAlign:"center"}},
+                      React.createElement("div",{style:{fontSize:9,color:T.textSub,marginBottom:2}},s[0]),
+                      React.createElement("div",{style:{fontWeight:800,fontSize:13,color:s[2]}},s[1])
+                    );
+                  })
+                ),
+                React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:8,lineHeight:1.5,borderTop:"1px solid "+T.border,paddingTop:8}},r.note)
+              );
+            }),
+            React.createElement("div",{style:{marginTop:20,fontWeight:800,fontSize:16,marginBottom:10}},"2026 Pick Values"),
+            DRAFT_PICKS.map(function(pk){
+              var tierC=pk.round===1?"#f1c40f":pk.round===2?"#818cf8":"#4b5563";
+              return React.createElement("div",{key:pk.id,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"13px 16px",marginBottom:8,display:"flex",alignItems:"center",gap:12}},
+                React.createElement("div",{style:{width:40,height:40,borderRadius:10,background:tierC+"22",border:"1px solid "+tierC+"44",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:11,color:tierC,flexShrink:0,textAlign:"center"}},"R"+pk.round),
+                React.createElement("div",{style:{flex:1}},
+                  React.createElement("div",{style:{fontWeight:700,fontSize:14}},pk.name),
+                  React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},pk.note)
+                ),
+                React.createElement("div",{style:{textAlign:"right"}},
+                  React.createElement("div",{style:{fontWeight:800,fontSize:15,color:tierC}},pk.est+" val"),
+                  React.createElement("div",{style:{fontSize:9,color:T.textSub,marginTop:2}},pk.round===1?"1st Round":pk.round===2?"2nd Round":"3rd Round")
+                )
+              );
+            })
           );
-        })
+        })()
       ),
 
       // TRENDING (image 3)
@@ -3102,11 +3394,37 @@ export default function App(){
           ),
           React.createElement("button",{style:{width:"100%",padding:"13px",borderRadius:10,border:"none",background:"#2563eb",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}},"Refresh Trends")
         ),
-        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"48px 20px",textAlign:"center"}},
-          React.createElement("div",{style:{fontSize:44,color:T.textDim,marginBottom:16,lineHeight:1}},"^"),
-          React.createElement("div",{style:{fontWeight:700,fontSize:17,color:T.textSub,marginBottom:8}},"No trend data available yet"),
-          React.createElement("div",{style:{fontSize:13,color:T.textDim,lineHeight:1.6}},"Player values will be tracked automatically over time")
-        )
+        (function(){
+          var display=rankedPlayers.filter(function(p){
+            if(valueTrendSearch&&!p.name.toLowerCase().includes(valueTrendSearch.toLowerCase()))return false;
+            return ["QB","RB","WR","TE"].includes(p.pos);
+          }).slice(0,Math.min(valueTrendSearch?20:16,rankedPlayers.length));
+          return React.createElement("div",null,
+            display.map(function(p){
+              var pts=sparkline(p.name,p.posRank,p.age,p.pos);
+              var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts);
+              var h=40,w=120;
+              var trendUp=pts[pts.length-1]>pts[0];
+              var lineColor=trendUp?T.green:T.red;
+              var svgPts=pts.map(function(v,i){var x=i*(w/(pts.length-1));var y=h-(v-mn)/(mx-mn||1)*h;return x+","+y;}).join(" ");
+              return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:10}},
+                React.createElement(Avatar,{name:p.name,pos:p.pos,size:36}),
+                React.createElement("div",{style:{flex:1}},
+                  React.createElement("div",{style:{fontWeight:700,fontSize:13}},p.name),
+                  React.createElement("div",{style:{fontSize:10,color:T.textSub}},"#"+p.posRank+" "+p.pos+" · "+p.team)
+                ),
+                React.createElement("svg",{width:w,height:h,style:{flexShrink:0}},
+                  React.createElement("polyline",{points:svgPts,fill:"none",stroke:lineColor,strokeWidth:2,strokeLinejoin:"round"}),
+                  React.createElement("circle",{cx:pts.length-1?(pts.length-1)*(w/(pts.length-1)):0,cy:h-(pts[pts.length-1]-mn)/(mx-mn||1)*h,r:3,fill:lineColor})
+                ),
+                React.createElement("div",{style:{textAlign:"right",flexShrink:0,minWidth:52}},
+                  React.createElement("div",{style:{fontWeight:800,fontSize:13,color:T.purpleLight}},p.tradeVal.toLocaleString()),
+                  React.createElement("div",{style:{fontSize:10,fontWeight:700,color:trendUp?T.green:T.red}},(trendUp?"↑":"↓")+Math.abs(pts[pts.length-1]-pts[0]).toLocaleString())
+                )
+              );
+            })
+          );
+        })()
       ),
 
       // WATCHLIST — empty state redesign
@@ -3327,6 +3645,53 @@ export default function App(){
         )
       ),
 
+      // TRADE HISTORY
+      rankSubTab==="history"&&React.createElement("div",{style:{padding:"16px"}},
+        React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}},
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:2}},"Trade History"),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"All trades you've analyzed and saved")
+          ),
+          tradeHistory.length>0&&React.createElement("button",{onClick:function(){if(window.confirm("Clear all trade history?")){{try{localStorage.removeItem('fdp_th_v1');}catch(e){}setTradeHistory([]);}}},style:{fontSize:11,color:T.red,background:"none",border:"none",cursor:"pointer",fontWeight:600}},"Clear All")
+        ),
+        tradeHistory.length===0&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"48px 20px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:44,marginBottom:12}},"📋"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:17,marginBottom:6}},"No Saved Trades"),
+          React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.6}},"Analyze a trade and hit \"Save Trade\" to build your history")
+        ),
+        tradeHistory.map(function(entry,idx){
+          var diff=entry.tvA-entry.tvB;
+          var pct=entry.tvB>0?Math.abs(diff/entry.tvB)*100:0;
+          var fair=pct<8;
+          var aWins=diff>0;
+          var vc=fair?T.green:aWins?T.gold:T.red;
+          var vt=fair?"Fair Trade":aWins?"You won ("+pct.toFixed(0)+"%)":"You overpaid ("+pct.toFixed(0)+"%)";
+          return React.createElement("div",{key:entry.id,style:{background:T.bgCard,border:"1px solid "+(fair?T.green+"44":aWins?T.gold+"44":T.red+"44"),borderRadius:12,padding:"14px",marginBottom:10}},
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+              React.createElement("div",{style:{fontWeight:800,fontSize:13,color:vc}},vt),
+              React.createElement("div",{style:{fontSize:11,color:T.textDim}},entry.date+(entry.scoring?" · "+entry.scoring:""))
+            ),
+            React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"start"}},
+              React.createElement("div",null,
+                React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:4}},"YOU GAVE"),
+                entry.sideA.map(function(p){return React.createElement("div",{key:p.name,style:{fontSize:11,fontWeight:600,marginBottom:3,display:"flex",alignItems:"center",gap:4}},
+                  React.createElement("span",{style:{color:POS_COLORS[p.pos]||T.textSub,fontSize:9,fontWeight:700,flexShrink:0}},p.pos),p.name
+                );}),
+                React.createElement("div",{style:{fontSize:12,fontWeight:900,color:T.purple,marginTop:4}},entry.tvA.toLocaleString())
+              ),
+              React.createElement("div",{style:{fontSize:14,color:T.textDim,marginTop:12,textAlign:"center"}},"⇄"),
+              React.createElement("div",null,
+                React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:4}},"YOU GOT"),
+                entry.sideB.map(function(p){return React.createElement("div",{key:p.name,style:{fontSize:11,fontWeight:600,marginBottom:3,display:"flex",alignItems:"center",gap:4}},
+                  React.createElement("span",{style:{color:POS_COLORS[p.pos]||T.textSub,fontSize:9,fontWeight:700,flexShrink:0}},p.pos),p.name
+                );}),
+                React.createElement("div",{style:{fontSize:12,fontWeight:900,color:T.purpleLight,marginTop:4}},entry.tvB.toLocaleString())
+              )
+            )
+          );
+        })
+      ),
+
       // FOOTER
       React.createElement("div",{style:{padding:"32px 20px 16px",borderTop:"1px solid "+T.border,textAlign:"center",marginTop:8}},
         React.createElement("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginBottom:10}},
@@ -3368,31 +3733,70 @@ export default function App(){
           React.createElement("div",{style:{fontSize:13,color:T.textSub}},"Weekly dynasty market reports will appear here")
         )
       ),
-      // Player News
+      // Player News — Sleeper Trending
       reportSubTab==="news"&&React.createElement("div",{style:{padding:"20px 16px"}},
-        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:20}},
-          React.createElement("span",{style:{fontSize:40,color:"#60a5fa",flexShrink:0,lineHeight:1}},"\uD83D\uDCF0"),
-          React.createElement("div",{style:{fontWeight:900,fontSize:28,color:T.text,lineHeight:1.1}},"Player News Feed")
-        ),
-        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"16px",marginBottom:16}},
-          React.createElement("div",{style:{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}},
-            [["all","All News"],["injury","Injuries"],["trade","Trades"],["depth","Depth Chart"],["perf","Performances"]].map(function(f){
-              var active=newsFilter===f[0];
-              return React.createElement("button",{key:f[0],onClick:function(){setNewsFilter(f[0]);},style:{padding:"8px 14px",borderRadius:8,border:"none",background:active?"#3b82f6":T.bgInput,color:active?"#fff":T.text,fontWeight:700,fontSize:13,cursor:"pointer"}},f[1]);
-            })
-          ),
-          React.createElement("div",{style:{display:"flex",justifyContent:"flex-end"}},
-            React.createElement("button",{style:{display:"flex",alignItems:"center",gap:6,padding:"10px 20px",borderRadius:10,border:"none",background:"#22c55e",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}},
-              React.createElement("span",null,"\u21BB"),"Refresh"
-            )
+        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:16}},
+          React.createElement("span",{style:{fontSize:40,color:"#60a5fa",flexShrink:0,lineHeight:1}},"📰"),
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.text,lineHeight:1.1}},"Trending Players"),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"24-hour add/drop activity from Sleeper leagues")
           )
         ),
-        React.createElement("div",{style:{background:T.red+"22",border:"1px solid "+T.red+"44",borderRadius:12,padding:"14px 16px",marginBottom:20}},
-          React.createElement("div",{style:{fontSize:14,color:T.red}},"Unable to load news. Check your SportsData.io API key.")
+        React.createElement("div",{style:{display:"flex",gap:8,marginBottom:16}},
+          React.createElement("button",{onClick:function(){setSleeperTrending(null);loadSleeperTrending();},style:{flex:1,padding:"11px",borderRadius:10,border:"none",background:"#22c55e",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"↻ Refresh Trending"),
+          sleeperTrending&&React.createElement("div",{style:{display:"flex",alignItems:"center",padding:"0 12px",borderRadius:10,border:"1px solid "+T.border,fontSize:11,color:T.textSub,whiteSpace:"nowrap"}},"Updated "+(new Date(sleeperTrending.ts)).toLocaleTimeString())
         ),
-        React.createElement("div",{style:{textAlign:"center",padding:"32px 0"}},
-          React.createElement("div",{style:{fontSize:48,color:T.textDim,marginBottom:12}},"\uD83D\uDCF0"),
-          React.createElement("div",{style:{fontSize:14,color:T.textSub}},"No news items found.")
+        !sleeperTrending&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"48px 20px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:36,marginBottom:10}},"📊"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:15,marginBottom:6}},"Load Trending Players"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Pulls live 24-hour add/drop data from Sleeper"),
+          React.createElement("button",{onClick:loadSleeperTrending,style:{padding:"11px 24px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Load Now")
+        ),
+        sleeperTrending&&React.createElement("div",null,
+          React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:10,display:"flex",alignItems:"center",gap:8}},
+            React.createElement("span",{style:{color:T.green,fontSize:18}},"↑"),
+            "Trending Adds"
+          ),
+          sleeperTrending.adds.slice(0,12).map(function(item){
+            var p=sleeperIdToPlayer[item.player_id]||null;
+            var name=p?p.name:("Player "+item.player_id);
+            var pos=p?p.pos:"?";
+            var tv=p?p.tradeVal:0;
+            return React.createElement("div",{key:item.player_id,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
+              p&&React.createElement(Avatar,{name:p.name,pos:p.pos,size:36}),
+              !p&&React.createElement("div",{style:{width:36,height:36,borderRadius:"50%",background:T.bgInput,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:T.textSub,flexShrink:0}},pos),
+              React.createElement("div",{style:{flex:1}},
+                React.createElement("div",{style:{fontWeight:700,fontSize:13}},name),
+                React.createElement("div",{style:{fontSize:11,color:T.textSub}},p?"#"+p.posRank+" "+p.pos+" · "+p.team:"Unknown")
+              ),
+              React.createElement("div",{style:{textAlign:"right"}},
+                React.createElement("div",{style:{background:T.green+"20",color:T.green,fontWeight:800,fontSize:11,borderRadius:6,padding:"3px 8px",marginBottom:2}},"+"+item.count.toLocaleString()+" adds"),
+                tv>0&&React.createElement("div",{style:{fontSize:10,color:T.textSub}},"Val: "+tv.toLocaleString())
+              )
+            );
+          }),
+          React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:10,marginTop:20,display:"flex",alignItems:"center",gap:8}},
+            React.createElement("span",{style:{color:T.red,fontSize:18}},"↓"),
+            "Trending Drops"
+          ),
+          sleeperTrending.drops.slice(0,8).map(function(item){
+            var p=sleeperIdToPlayer[item.player_id]||null;
+            var name=p?p.name:("Player "+item.player_id);
+            var pos=p?p.pos:"?";
+            var tv=p?p.tradeVal:0;
+            return React.createElement("div",{key:item.player_id,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
+              p&&React.createElement(Avatar,{name:p.name,pos:p.pos,size:36}),
+              !p&&React.createElement("div",{style:{width:36,height:36,borderRadius:"50%",background:T.bgInput,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:T.textSub,flexShrink:0}},pos),
+              React.createElement("div",{style:{flex:1}},
+                React.createElement("div",{style:{fontWeight:700,fontSize:13}},name),
+                React.createElement("div",{style:{fontSize:11,color:T.textSub}},p?"#"+p.posRank+" "+p.pos+" · "+p.team:"Unknown")
+              ),
+              React.createElement("div",{style:{textAlign:"right"}},
+                React.createElement("div",{style:{background:T.red+"20",color:T.red,fontWeight:800,fontSize:11,borderRadius:6,padding:"3px 8px",marginBottom:2}},"+"+item.count.toLocaleString()+" drops"),
+                tv>0&&React.createElement("div",{style:{fontSize:10,color:T.textSub}},"Val: "+tv.toLocaleString())
+              )
+            );
+          })
         )
       ),
       // Export & Share
