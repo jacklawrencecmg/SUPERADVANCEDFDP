@@ -1647,6 +1647,14 @@ export default function App(){
   var [auctionBidAmt,setAuctionBidAmt]=useState("");
   var [auctionBidPlayer,setAuctionBidPlayer]=useState(null);
   var [histSearch,setHistSearch]=useState("");
+  var [showSettings,setShowSettings]=useState(false);
+  var [tePremium,setTePremium]=useState(function(){try{var s=localStorage.getItem('fdp_tep_v1');return s?+s:0;}catch(e){return 0;}});
+  var [customPPRVal,setCustomPPRVal]=useState(function(){try{var s=localStorage.getItem('fdp_ppr_v1');return s?+s:1;}catch(e){return 1;}});
+  var [pickCalcSearch,setPickCalcSearch]=useState("");
+  var [pickCalcPlayer,setPickCalcPlayer]=useState(null);
+  var [sleeperStats,setSleeperStats]=useState(null);
+  var [sleeperStatsLoading,setSleeperStatsLoading]=useState(false);
+  var [watchlistSearch,setWatchlistSearch]=useState("");
 
   var T=darkMode?DARK:LIGHT;
   var isPro=user&&user.isPro;
@@ -1665,6 +1673,7 @@ export default function App(){
     });
     var list=UNQ.map(function(p){
       var pts=p.proj[sKey]||p.proj["PPR"]||0;
+      if(p.pos==="TE"&&tePremium>0){var estRec=p.proj["PPR"]&&p.proj["Std"]?Math.round((p.proj["PPR"]-p.proj["Std"])*0.7):p.posRank<=5?80:p.posRank<=12?55:35;pts+=tePremium*estRec;}
       if(isDynasty) pts=pts*dynastyBonus(p.pos,p.age);
       var raw=pts-(baseVal[p.pos]||0);
       var vbd=isSF&&p.pos==="QB"?raw*1.38:raw;
@@ -1690,7 +1699,7 @@ export default function App(){
       }
     });
     return list;
-  },[scoring,teams,budget,ffab,sKey,isDynasty,isSF]);
+  },[scoring,teams,budget,ffab,sKey,isDynasty,isSF,tePremium]);
 
   var tradePool=useMemo(function(){return rankedPlayers.concat(DRAFT_PICKS.map(makePick));},[rankedPlayers]);
 
@@ -1915,6 +1924,19 @@ export default function App(){
     }).catch(function(){setLeagueTradesLoading(false);});
   }
 
+  function loadSleeperStats(){
+    setSleeperStatsLoading(true);
+    // Get current NFL state to find the latest week
+    fetch("https://api.sleeper.app/v1/state/nfl").then(function(r){return r.json();}).then(function(state){
+      var season=state.season||"2025";
+      var week=Math.max(1,state.display_week||state.week||1);
+      return fetch("https://api.sleeper.app/v1/stats/nfl/"+season+"/"+week+"?season_type=regular").then(function(r){return r.ok?r.json():null;}).then(function(stats){
+        setSleeperStats({data:stats||{},week:week,season:season,ts:Date.now()});
+        setSleeperStatsLoading(false);
+      });
+    }).catch(function(){setSleeperStatsLoading(false);});
+  }
+
   function sparkline(playerName,posRank,age,pos){
     // Deterministic pseudo-random sparkline based on player name hash
     var hash=0;for(var i=0;i<playerName.length;i++){hash=(hash*31+playerName.charCodeAt(i))&0xffff;}
@@ -2042,6 +2064,46 @@ export default function App(){
       )
     ),
 
+    // SETTINGS MODAL
+    showSettings&&React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:900,overflowY:"auto",padding:16,display:"flex",alignItems:"flex-start",justifyContent:"center"}},
+      React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:20,padding:20,width:"100%",maxWidth:440,marginTop:40}},
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
+          React.createElement("div",{style:{fontWeight:900,fontSize:20}},"League Settings"),
+          React.createElement("button",{onClick:function(){setShowSettings(false);},style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:24,lineHeight:1}},"×")
+        ),
+        React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:"14px 16px",marginBottom:14}},
+          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:4}},"TE Premium"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12}},"Extra points per reception for Tight Ends"),
+          React.createElement("div",{style:{display:"flex",gap:8}},
+            [0,0.25,0.5,1.0].map(function(v){
+              var active=tePremium===v;
+              return React.createElement("button",{key:v,onClick:function(){setTePremium(v);try{localStorage.setItem('fdp_tep_v1',String(v));}catch(e){}},style:{flex:1,padding:"10px 4px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:13,cursor:"pointer"}},v===0?"None":"+"+v);
+            })
+          )
+        ),
+        React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:"14px 16px",marginBottom:14}},
+          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:4}},"Points Per Reception"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12}},"Override the per-reception scoring for all positions"),
+          React.createElement("div",{style:{display:"flex",gap:8}},
+            [[0,"Std"],[0.5,"Half"],[1,"PPR"],[1.5,"1.5 PPR"]].map(function(v){
+              var active=customPPRVal===v[0];
+              return React.createElement("button",{key:v[0],onClick:function(){setCustomPPRVal(v[0]);try{localStorage.setItem('fdp_ppr_v1',String(v[0]));}catch(e){}},style:{flex:1,padding:"10px 4px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},v[1]);
+            })
+          )
+        ),
+        React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:"14px 16px",marginBottom:20}},
+          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:10}},"Teams in League"),
+          React.createElement("div",{style:{display:"flex",gap:8}},
+            [8,10,12,14,16].map(function(n){
+              var active=teams===n;
+              return React.createElement("button",{key:n,onClick:function(){setTeams(n);},style:{flex:1,padding:"10px 4px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:13,cursor:"pointer"}},n);
+            })
+          )
+        ),
+        React.createElement("button",{onClick:function(){setShowSettings(false);},style:{width:"100%",padding:"13px",borderRadius:12,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}},"Save Settings")
+      )
+    ),
+
     // NAV
     React.createElement("div",{style:{position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,paddingBottom:10}},
       React.createElement("div",{style:{display:"flex",justifyContent:"center",paddingTop:12}},
@@ -2049,6 +2111,7 @@ export default function App(){
       ),
       React.createElement("div",{style:{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:8}},
         React.createElement("button",{onClick:toggleDarkMode,style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1}},darkMode?"☀ Light":"🌙 Dark"),
+        React.createElement("button",{onClick:function(){setShowSettings(true);},style:{padding:"6px 10px",borderRadius:20,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,cursor:"pointer",fontSize:12,lineHeight:1,display:"flex",alignItems:"center",gap:4}},"⚙ Settings"),
         !user?React.createElement(React.Fragment,null,
           React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"7px 16px",borderRadius:20,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:12}},"Sign In"),
           React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"7px 18px",borderRadius:20,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:12}},"Sign Up Free")
@@ -3075,7 +3138,7 @@ export default function App(){
     // ════ RANKINGS TAB ════
     tab==="rankings"&&React.createElement("div",{style:{paddingBottom:80}},
       React.createElement("div",{style:{display:"flex",gap:6,overflowX:"auto",padding:"10px 12px",borderBottom:"1px solid "+T.border,scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}},
-        [["playervalues","$ Player Values"],["allrankings","All Rankings"],["qbs","QBs"],["rbs","RBs"],["wrs","WRs"],["tes","TEs"],["idp","IDP"],["rookie","Rookie Picks"],["trending","Trending"],["market","Market"],["valuetrends","Value Trends"],["watchlist","Watchlist"],["draft","Draft Kit"],["keeper","Keeper Calc"],["compare","Compare"],["history","Trade History"]].map(function(st){
+        [["playervalues","$ Player Values"],["allrankings","All Rankings"],["qbs","QBs"],["rbs","RBs"],["wrs","WRs"],["tes","TEs"],["idp","IDP"],["rookie","Rookie Picks"],["trending","Trending"],["market","Market"],["valuetrends","Value Trends"],["pickcalc","Pick Calculator"],["watchlist","Watchlist"],["draft","Draft Kit"],["keeper","Keeper Calc"],["compare","Compare"],["history","Trade History"]].map(function(st){
           var active=rankSubTab===st[0];
           return React.createElement("button",{key:st[0],onClick:function(){setRankSubTab(st[0]);},style:{padding:"7px 14px",borderRadius:20,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},st[1]);
         })
@@ -3429,16 +3492,114 @@ export default function App(){
         })()
       ),
 
+      // PICK VALUE CALCULATOR
+      rankSubTab==="pickcalc"&&React.createElement("div",{style:{padding:"16px"}},
+        React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},"Pick Value Calculator"),
+        React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Compare draft picks to player values to find fair trades"),
+        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:14,padding:"14px",marginBottom:14}},
+          React.createElement("div",{style:{fontWeight:700,fontSize:13,marginBottom:8}},"Search a Player"),
+          React.createElement("div",{style:{position:"relative"}},
+            React.createElement("input",{value:pickCalcSearch,onChange:function(e){setPickCalcSearch(e.target.value);if(!e.target.value)setPickCalcPlayer(null);},placeholder:"e.g. Ja'Marr Chase...",style:Object.assign({},inpS)}),
+            pickCalcSearch&&!pickCalcPlayer&&React.createElement("div",{style:{position:"absolute",top:"calc(100%+4px)",left:0,right:0,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:10,zIndex:50,maxHeight:200,overflowY:"auto",marginTop:4}},
+              rankedPlayers.filter(function(p){return p.name.toLowerCase().includes(pickCalcSearch.toLowerCase());}).slice(0,8).map(function(p){
+                return React.createElement("div",{key:p.name,onClick:function(){setPickCalcPlayer(p);setPickCalcSearch(p.name);},style:{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.border,display:"flex",alignItems:"center",gap:8}},
+                  React.createElement(PBadge,{pos:p.pos}),
+                  React.createElement("span",{style:{flex:1,fontWeight:600,fontSize:13}},p.name),
+                  React.createElement("span",{style:{fontWeight:800,fontSize:13,color:T.purple}},p.tradeVal.toLocaleString())
+                );
+              })
+            )
+          )
+        ),
+        pickCalcPlayer&&React.createElement("div",null,
+          React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:14,padding:"16px",marginBottom:14}},
+            React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:14}},
+              React.createElement(Avatar,{name:pickCalcPlayer.name,pos:pickCalcPlayer.pos,size:52}),
+              React.createElement("div",{style:{flex:1}},
+                React.createElement("div",{style:{fontWeight:900,fontSize:18}},pickCalcPlayer.name),
+                React.createElement("div",{style:{fontSize:12,color:T.textSub}},pickCalcPlayer.team+" · #"+pickCalcPlayer.posRank+" "+pickCalcPlayer.pos+" · Age "+pickCalcPlayer.age)
+              ),
+              React.createElement("div",{style:{textAlign:"right"}},
+                React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.purple}},pickCalcPlayer.tradeVal.toLocaleString()),
+                React.createElement("div",{style:{fontSize:10,color:T.textSub}},"Trade Value")
+              )
+            ),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:10,fontWeight:600}},"EQUIVALENT PICK VALUES"),
+            DRAFT_PICKS.map(function(pk){
+              var diff=pk.est-pickCalcPlayer.tradeVal;
+              var pct=pickCalcPlayer.tradeVal>0?Math.abs(diff/pickCalcPlayer.tradeVal)*100:0;
+              var fair=pct<15;
+              var barW=Math.min(100,Math.max(5,100-pct));
+              var color=fair?T.green:diff>0?T.gold:T.red;
+              return React.createElement("div",{key:pk.id,style:{background:T.bgInput,borderRadius:10,padding:"10px 12px",marginBottom:6}},
+                React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}},
+                  React.createElement("div",{style:{fontWeight:700,fontSize:13}},pk.name),
+                  React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8}},
+                    React.createElement("span",{style:{fontWeight:800,fontSize:13,color:T.textSub}},pk.est.toLocaleString()),
+                    React.createElement("span",{style:{fontSize:11,fontWeight:700,color:color,background:color+"18",borderRadius:6,padding:"2px 8px"}},fair?"≈ Fair":diff>0?"Pick Wins":"Player Wins")
+                  )
+                ),
+                React.createElement("div",{style:{background:T.border,borderRadius:99,height:5}},
+                  React.createElement("div",{style:{width:barW+"%",height:"100%",background:"linear-gradient(90deg,"+T.purple+","+color+")",borderRadius:99}})
+                )
+              );
+            })
+          ),
+          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:10}},"Players With Similar Value"),
+          rankedPlayers.filter(function(p){
+            return p.name!==pickCalcPlayer.name&&Math.abs(p.tradeVal-pickCalcPlayer.tradeVal)<pickCalcPlayer.tradeVal*0.15;
+          }).slice(0,8).map(function(p){
+            return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
+              React.createElement(Avatar,{name:p.name,pos:p.pos,size:32}),
+              React.createElement(PBadge,{pos:p.pos,rank:p.posRank}),
+              React.createElement("div",{style:{flex:1}},
+                React.createElement("div",{style:{fontWeight:700,fontSize:13}},p.name),
+                React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team+" · Age "+p.age)
+              ),
+              React.createElement("div",{style:{fontWeight:800,fontSize:13,color:T.purpleLight}},p.tradeVal.toLocaleString())
+            );
+          })
+        ),
+        !pickCalcPlayer&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"40px 20px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:36,marginBottom:10}},"🏈"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:16,marginBottom:6}},"Search Any Player"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub}},"See which picks match their dynasty value and find comparable players")
+        )
+      ),
+
       // WATCHLIST — empty state redesign
       rankSubTab==="watchlist"&&React.createElement("div",{style:{paddingBottom:8}},
         watchlist.length===0
           ?React.createElement("div",{style:{padding:"60px 24px 32px",textAlign:"center"}},
               React.createElement("div",{style:{fontSize:64,color:T.textDim,marginBottom:20,lineHeight:1}},"\u2606"),
               React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.text,marginBottom:10}},"Your Watchlist is Empty"),
-              React.createElement("div",{style:{fontSize:14,color:T.textSub,lineHeight:1.6,marginBottom:28,maxWidth:280,margin:"0 auto 28px"}},"Follow players to receive alerts when their values change significantly"),
-              React.createElement("input",{placeholder:"Search players to add to watchlist...",style:Object.assign({},inpS,{background:T.bgCard,borderRadius:12,border:"1px solid "+T.border})})
+              React.createElement("div",{style:{fontSize:14,color:T.textSub,lineHeight:1.6,marginBottom:20,maxWidth:280,margin:"0 auto 20px"}},"Track players to monitor their value changes"),
+              React.createElement("div",{style:{position:"relative",width:"100%",maxWidth:320,margin:"0 auto"}},
+                React.createElement("input",{value:watchlistSearch,onChange:function(e){setWatchlistSearch(e.target.value);},placeholder:"Search players to watch...",style:Object.assign({},inpS,{background:T.bgCard,borderRadius:12,border:"1px solid "+T.border})}),
+                watchlistSearch&&React.createElement("div",{style:{position:"absolute",top:"calc(100%+4px)",left:0,right:0,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:10,zIndex:50,marginTop:4}},
+                  rankedPlayers.filter(function(p){return p.name.toLowerCase().includes(watchlistSearch.toLowerCase())&&watchlist.indexOf(p.name)===-1;}).slice(0,6).map(function(p){
+                    return React.createElement("div",{key:p.name,onClick:function(){setWatchlist(function(w){return w.concat([p.name]);});setWatchlistSearch("");},style:{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.border,display:"flex",alignItems:"center",gap:8}},
+                      React.createElement(PBadge,{pos:p.pos}),
+                      React.createElement("span",{style:{flex:1,fontWeight:600,fontSize:13}},p.name),
+                      React.createElement("span",{style:{fontSize:11,color:T.textSub}},p.team)
+                    );
+                  })
+                )
+              )
             )
           :React.createElement("div",{style:{padding:"16px"}},
+              React.createElement("div",{style:{position:"relative",marginBottom:12}},
+                React.createElement("input",{value:watchlistSearch,onChange:function(e){setWatchlistSearch(e.target.value);},placeholder:"Add player to watchlist...",style:Object.assign({},inpS)}),
+                watchlistSearch&&React.createElement("div",{style:{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:10,zIndex:50}},
+                  rankedPlayers.filter(function(p){return p.name.toLowerCase().includes(watchlistSearch.toLowerCase())&&watchlist.indexOf(p.name)===-1;}).slice(0,5).map(function(p){
+                    return React.createElement("div",{key:p.name,onClick:function(){setWatchlist(function(w){return w.concat([p.name]);});setWatchlistSearch("");},style:{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.border,display:"flex",alignItems:"center",gap:8}},
+                      React.createElement(PBadge,{pos:p.pos}),
+                      React.createElement("span",{style:{flex:1,fontWeight:600,fontSize:13}},p.name),
+                      React.createElement("span",{style:{color:T.purple,fontWeight:700,fontSize:12}},p.tradeVal.toLocaleString())
+                    );
+                  })
+                )
+              ),
               rankedPlayers.filter(function(p){return watchlist.indexOf(p.name)!==-1;}).map(function(p){
                 return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"10px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:10}},
                   React.createElement(Avatar,{name:p.name,pos:p.pos,size:32}),
@@ -3714,7 +3875,7 @@ export default function App(){
     tab==="reports"&&React.createElement("div",{style:{paddingBottom:80}},
       // sub-nav pills
       React.createElement("div",{style:{display:"flex",gap:6,padding:"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none"}},
-        [["dynasty","\uD83D\uDCC4","Dynasty Reports"],["news","\uD83D\uDCF0","Player News"],["export","\uD83D\uDD17","Export & Share"],["upgrade","\u2728","Upgrade to Pro"],["contact","\u2709","Contact"]].map(function(s){
+        [["dynasty","\uD83D\uDCC4","Dynasty Reports"],["news","\uD83D\uDCF0","Trending"],["stats","\uD83D\uDCCA","Live Stats"],["export","\uD83D\uDD17","Export & Share"],["upgrade","\u2728","Upgrade"],["contact","\u2709","Contact"]].map(function(s){
           var active=reportSubTab===s[0];
           var isUpgrade=s[0]==="upgrade";
           return React.createElement("button",{key:s[0],onClick:function(){setReportSubTab(s[0]);},style:{whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:10,border:"1px solid "+(active?T.purple:(isUpgrade?T.purple:T.border)),background:active?T.purple:(isUpgrade?"linear-gradient(135deg,"+T.purple+",#5b21b6)":"transparent"),color:(active||isUpgrade)?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},
@@ -3801,6 +3962,53 @@ export default function App(){
           })
         )
       ),
+      // LIVE STATS
+      reportSubTab==="stats"&&React.createElement("div",{style:{padding:"20px 16px"}},
+        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:16}},
+          React.createElement("span",{style:{fontSize:36,color:T.green,lineHeight:1}},"📊"),
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:900,fontSize:24}},"Live Stats"),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Real weekly stats from Sleeper")
+          )
+        ),
+        React.createElement("div",{style:{display:"flex",gap:8,marginBottom:16}},
+          React.createElement("button",{onClick:loadSleeperStats,style:{flex:1,padding:"11px",borderRadius:10,border:"none",background:T.green,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},sleeperStatsLoading?"Loading...":"↻ Load This Week's Stats"),
+          sleeperStats&&React.createElement("div",{style:{display:"flex",alignItems:"center",padding:"0 12px",borderRadius:10,border:"1px solid "+T.border,fontSize:11,color:T.textSub,whiteSpace:"nowrap"}},"Wk "+sleeperStats.week)
+        ),
+        !sleeperStats&&!sleeperStatsLoading&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"48px 20px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:36,marginBottom:10}},"📈"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:15,marginBottom:6}},"Load Weekly Stats"),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Pulls actual scoring stats from Sleeper's free API"),
+          React.createElement("button",{onClick:loadSleeperStats,style:{padding:"11px 24px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Load Now")
+        ),
+        sleeperStats&&sleeperStats.data&&React.createElement("div",null,
+          React.createElement("div",{style:{fontSize:11,color:T.textSub,fontWeight:600,marginBottom:10}},"TOP SCORERS — WEEK "+sleeperStats.week),
+          (function(){
+            var entries=Object.entries(sleeperStats.data);
+            var scored=entries.map(function(e){
+              var pid=e[0];var stats=e[1]||{};
+              var pts=(stats.pts_ppr||stats.pts_half_ppr||stats.pts_std||0);
+              var p=sleeperIdToPlayer[pid]||null;
+              return {pid:pid,pts:pts,player:p};
+            }).filter(function(x){return x.pts>0&&x.player&&["QB","RB","WR","TE"].includes(x.player.pos);});
+            scored.sort(function(a,b){return b.pts-a.pts;});
+            return scored.slice(0,25).map(function(item,idx){
+              var p=item.player;
+              return React.createElement("div",{key:item.pid,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
+                React.createElement("div",{style:{width:24,fontWeight:900,fontSize:12,color:idx<3?T.gold:T.textDim,flexShrink:0,textAlign:"center"}},"#"+(idx+1)),
+                React.createElement(Avatar,{name:p.name,pos:p.pos,size:34}),
+                React.createElement(PBadge,{pos:p.pos}),
+                React.createElement("div",{style:{flex:1}},
+                  React.createElement("div",{style:{fontWeight:700,fontSize:13}},p.name),
+                  React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team+" · "+p.pos)
+                ),
+                React.createElement("div",{style:{fontWeight:900,fontSize:16,color:idx<3?T.gold:T.purpleLight}},item.pts.toFixed(1)," pts")
+              );
+            });
+          })()
+        )
+      ),
+
       // Export & Share
       reportSubTab==="export"&&React.createElement("div",{style:{padding:"20px 16px"}},
         React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:20}},
