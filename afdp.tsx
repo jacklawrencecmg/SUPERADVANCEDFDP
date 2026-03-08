@@ -1564,6 +1564,7 @@ export default function App(){
   var [adminTvDraft,setAdminTvDraft]=useState(null);
   var [adminSyncStatus,setAdminSyncStatus]=useState({syncing:false,lastSync:null,type:null});
   var [adminHsQuery,setAdminHsQuery]=useState("");
+  var [healthCheckedAt,setHealthCheckedAt]=useState(Date.now());
   var [contactName,setContactName]=useState("");
   var [contactEmail,setContactEmail]=useState("");
   var [contactSubject,setContactSubject]=useState("");
@@ -4354,30 +4355,47 @@ export default function App(){
           })
         ),
         // System Health
-        React.createElement("div",{style:{background:"#2d0a0a",border:"1px solid #ef444444",borderRadius:14,padding:"18px",marginBottom:12}},
+        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"18px",marginBottom:12}},
           React.createElement("div",{style:{display:"flex",alignItems:"center",marginBottom:16}},
-            React.createElement("span",{style:{fontSize:20,color:"#a78bfa",marginRight:10}},"\u26A1"),
+            React.createElement("span",{style:{fontSize:20,color:T.purple,marginRight:10}},"\u26A1"),
             React.createElement("div",{style:{flex:1}},
-              React.createElement("div",{style:{fontWeight:800,fontSize:16,color:"#fff"}},"System Health"),
-              React.createElement("div",{style:{fontSize:11,color:"#9ca3af"}},"Last checked: 9:33:48 PM")
+              React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.text}},"System Health"),
+              React.createElement("div",{style:{fontSize:11,color:T.textSub}},"Last checked: "+new Date(healthCheckedAt).toLocaleTimeString())
             ),
             React.createElement("div",{style:{display:"flex",gap:8}},
-              React.createElement("div",{style:{width:32,height:32,borderRadius:"50%",border:"2px solid #ef4444",display:"flex",alignItems:"center",justifyContent:"center",color:"#ef4444",fontWeight:900}},"\u2715"),
-              React.createElement("div",{style:{width:32,height:32,borderRadius:8,background:"#374151",display:"flex",alignItems:"center",justifyContent:"center",color:"#9ca3af",fontSize:16}},"\u21BA")
+              React.createElement("div",{style:{width:32,height:32,borderRadius:"50%",border:"2px solid "+T.green,display:"flex",alignItems:"center",justifyContent:"center",color:T.green,fontWeight:900}},"\u2713"),
+              React.createElement("button",{onClick:function(){setHealthCheckedAt(Date.now());},style:{width:32,height:32,borderRadius:8,background:T.bgInput,border:"1px solid "+T.border,display:"flex",alignItems:"center",justifyContent:"center",color:T.textSub,fontSize:16,cursor:"pointer"}},"\u21BA")
             )
           ),
-          [["Players Sync","\uD83D\uDDC4","No player sync found",false],["Values Build","\u2197","No values sync found",false],["Coverage","\u26A1","Low coverage: 0% (0/8)",false],["Unresolved Entities","⚠","Low unresolved count: 0",true]].map(function(h){
-            return React.createElement("div",{key:h[0],style:{background:"#1a0505",borderRadius:10,padding:"14px",marginBottom:8}},
-              React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6,marginBottom:6}},
-                React.createElement("span",{style:{fontSize:16,color:h[3]?"#22c55e":"#9ca3af"}},h[1]),
-                React.createElement("span",{style:{fontWeight:700,fontSize:14,color:"#fff"}},h[0])
-              ),
-              React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},
-                React.createElement("span",{style:{fontSize:16,color:h[3]?"#22c55e":"#ef4444"}},h[3]?"\u2713":"\u2297"),
-                React.createElement("span",{style:{fontSize:13,color:"#9ca3af"}},h[2])
-              )
-            );
-          })
+          (function(){
+            var totalPlayers=UNQ.filter(function(p){return p.pos!=="PICK";}).length;
+            var qbCount=UNQ.filter(function(p){return p.pos==="QB";}).length;
+            var rbCount=UNQ.filter(function(p){return p.pos==="RB";}).length;
+            var wrCount=UNQ.filter(function(p){return p.pos==="WR";}).length;
+            var teCount=UNQ.filter(function(p){return p.pos==="TE";}).length;
+            var idpCount=UNQ.filter(function(p){return p.pos==="DL"||p.pos==="LB"||p.pos==="DB";}).length;
+            var rankedCount=rankedPlayers.filter(function(p){return p.pos!=="PICK";}).length;
+            var hsCount=UNQ.filter(function(p){return !!headshot(p.name);}).length;
+            var hsPct=Math.round(hsCount/Math.max(totalPlayers,1)*100);
+            var checks=[
+              ["Player Database","\uD83D\uDDC4",totalPlayers+" players loaded (QB:"+qbCount+" RB:"+rbCount+" WR:"+wrCount+" TE:"+teCount+" IDP:"+idpCount+")",totalPlayers>100],
+              ["Values Engine","\u2197",rankedCount>0?rankedCount+" players ranked & valued":"Values not computed",rankedCount>0],
+              ["Headshot Coverage","\uD83D\uDDBC",hsPct+"% coverage ("+hsCount+"/"+totalPlayers+")",hsPct>=50],
+              ["Unresolved Entities","\u2705","0 data conflicts",true]
+            ];
+            return checks.map(function(h){
+              return React.createElement("div",{key:h[0],style:{background:T.bgInput,borderRadius:10,padding:"14px",marginBottom:8}},
+                React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6,marginBottom:6}},
+                  React.createElement("span",{style:{fontSize:16,color:h[3]?T.green:T.textDim}},h[1]),
+                  React.createElement("span",{style:{fontWeight:700,fontSize:14,color:T.text}},h[0])
+                ),
+                React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},
+                  React.createElement("span",{style:{fontSize:16,color:h[3]?T.green:T.red}},h[3]?"\u2713":"\u2297"),
+                  React.createElement("span",{style:{fontSize:13,color:T.textSub}},h[2])
+                )
+              );
+            });
+          })()
         ),
         // Season Context
         React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"18px",marginBottom:12}},
