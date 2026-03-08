@@ -2846,7 +2846,6 @@ export default function App(){
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.purple,letterSpacing:1,textAlign:"right"}},"FDP VALUE ("+rankFormat+")")
         ),
         rankedPlayers.filter(function(p){return !user||user.isPro||p.rank<=FREE_RANK_LIMIT;}).map(function(p){
-          var fdpVal=Math.round(p.pts*30+Math.max(0,p.vbd)*5);
           return React.createElement("div",{key:p.name,style:{display:"grid",gridTemplateColumns:"1fr 72px 96px",padding:"12px 16px",borderBottom:"1px solid "+T.border,alignItems:"center",gap:4}},
             React.createElement("div",null,
               React.createElement("div",{style:{fontWeight:700,fontSize:14,color:T.text,marginBottom:3}},p.name),
@@ -2856,7 +2855,7 @@ export default function App(){
               )
             ),
             React.createElement("div",{style:{textAlign:"center",fontWeight:700,fontSize:13,color:T.textDim}},"—"),
-            React.createElement("div",{style:{textAlign:"right",fontWeight:800,fontSize:15,color:T.purpleLight}},fdpVal+".0")
+            React.createElement("div",{style:{textAlign:"right",fontWeight:800,fontSize:15,color:T.purpleLight}},p.tradeVal.toLocaleString())
           );
         }),
         (!user||!user.isPro)&&React.createElement("div",{style:{background:T.purpleDim,border:"1px solid "+T.purple+"44",borderRadius:14,padding:"16px",textAlign:"center",margin:"16px"}},
@@ -3061,7 +3060,6 @@ export default function App(){
             return p.age>31;
           }).slice(0,8).map(function(p){
             var conf=marketFilter==="buylow"||marketFilter==="rising"?75:85;
-            var fdpVal=Math.round(p.pts*30+Math.max(0,p.vbd)*5);
             return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"2px solid "+catColor+"33",borderRadius:16,padding:16,margin:"0 16px 10px"}},
               React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}},
                 React.createElement("div",null,
@@ -3073,13 +3071,13 @@ export default function App(){
                 React.createElement("div",{style:{background:confColor(conf),color:"#fff",fontWeight:800,fontSize:12,borderRadius:20,padding:"4px 10px",flexShrink:0}},conf+"%")
               ),
               React.createElement("div",{style:{marginTop:10}},
-                React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:2}},"Current Value"),
-                React.createElement("div",{style:{fontWeight:800,fontSize:22,color:T.text,marginBottom:10}},fdpVal.toLocaleString())
+                React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:2}},"Trade Value"),
+                React.createElement("div",{style:{fontWeight:800,fontSize:22,color:T.purpleLight,marginBottom:10}},p.tradeVal.toLocaleString())
               ),
               React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,paddingTop:10,borderTop:"1px solid "+T.border}},
                 React.createElement("div",null,
-                  React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:3}},"Trade Value"),
-                  React.createElement("div",{style:{fontWeight:700,fontSize:14,color:T.purpleLight}},p.tradeVal.toLocaleString())
+                  React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:3}},"Proj Pts"),
+                  React.createElement("div",{style:{fontWeight:700,fontSize:14,color:T.text}},p.pts.toFixed(1))
                 ),
                 React.createElement("div",null,
                   React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:3}},"Position Rank"),
