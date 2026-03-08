@@ -785,6 +785,19 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 16 — IDP LB/DB depth + final fill-ins
+  // IDP LB Wave 16
+  {name:"Darius Leonard",pos:"LB",age:30,team:"IND",proj:{PPR:102,Half:102,Std:102},adp:19.5,note:"Shaq: 100 tackles 3 INT comeback"},
+  {name:"John Johnson III",pos:"DB",age:30,team:"CLE",proj:{PPR:85,Half:85,Std:85},adp:29.5,note:"S: 72 tackles 3 INT veteran"},
+  {name:"Jaquan Brisker",pos:"DB",age:27,team:"CHI",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"S: 78 tackles 3 INT ascending"},
+  {name:"Dominique Hampton",pos:"DB",age:24,team:"WAS",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"S Year 3: 65 tackles 2 INT"},
+  {name:"Markquese Bell",pos:"DB",age:25,team:"DAL",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"S: 62 tackles 2 INT physical"},
+  {name:"Jammie Robinson",pos:"DB",age:25,team:"CAR",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"S: 58 tackles 2 INT developing"},
+  {name:"Ronnie Perkins",pos:"DL",age:25,team:"GB",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"EDGE rotational: 6 sacks"},
+  {name:"Neville Hewitt",pos:"LB",age:33,team:"FA",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"Veteran ILB: 70 tackles depth"},
+  {name:"Charles Snowden",pos:"LB",age:27,team:"WAS",proj:{PPR:65,Half:65,Std:65},adp:44.0,note:"EDGE/LB hybrid: 5 sacks 55 tackles"},
+  {name:"Dylan Moses",pos:"LB",age:26,team:"BAL",proj:{PPR:70,Half:70,Std:70},adp:40.0,note:"ILB: 65 tackles 2 sacks"},
+  {name:"Elijah Sullivan",pos:"LB",age:26,team:"ARI",proj:{PPR:65,Half:65,Std:65},adp:44.0,note:"LB depth: 60 tackles special teams"},
   // Wave 15 — 2025 IDP DL rookies + CB/DB depth
   // 2025 DL rookies
   {name:"Kenneth Grant",pos:"DL",age:22,team:"MIA",proj:{PPR:82,Half:82,Std:82},adp:29.5,note:"2025 1st round NT: 38 tackles 4 sacks disruptive"},
