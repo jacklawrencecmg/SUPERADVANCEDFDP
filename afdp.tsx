@@ -785,6 +785,32 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 22 — veteran IDL depth + CB/DB/LB fill-ins
+  // IDL/DL veteran depth Wave 22
+  {name:"Cameron Heyward",pos:"DL",age:36,team:"PIT",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"Veteran IDL: 7 sacks 44 tackles if active"},
+  {name:"Grover Stewart",pos:"DL",age:31,team:"IND",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"NT: 38 tackles 3 sacks run stopper"},
+  {name:"Teair Tart",pos:"DL",age:29,team:"TEN",proj:{PPR:65,Half:65,Std:65},adp:44.5,note:"IDL: 32 tackles 3 sacks"},
+  {name:"DeMarcus Walker",pos:"DL",age:31,team:"HOU",proj:{PPR:62,Half:62,Std:62},adp:46.5,note:"EDGE depth: 5.5 sacks rotational"},
+  {name:"Carl Nassib",pos:"DL",age:32,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:50.5,note:"Veteran EDGE depth if active"},
+  {name:"Tyus Bowser",pos:"LB",age:30,team:"BAL",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"EDGE/LB: 6 sacks 55 tackles"},
+  {name:"Micah Kiser",pos:"LB",age:30,team:"LAR",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"ILB: 70 tackles 1 sack"},
+  {name:"Brandon Copeland",pos:"LB",age:34,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:51.0,note:"Veteran LB/EDGE depth"},
+  {name:"Oren Burks",pos:"LB",age:30,team:"GB",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"Coverage LB: 68 tackles 2 INT"},
+  {name:"Eric Wilson",pos:"LB",age:31,team:"HOU",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"ILB: 72 tackles 2 sacks"},
+  // CB/DB depth Wave 22
+  {name:"Jamel Dean",pos:"DB",age:29,team:"TB",proj:{PPR:78,Half:78,Std:78},adp:34.5,note:"CB: 58 tackles 3 INT press cover"},
+  {name:"Bryce Hall",pos:"DB",age:28,team:"FA",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"CB: 52 tackles 2 INT physical"},
+  {name:"Carlton Davis",pos:"DB",age:28,team:"DET",proj:{PPR:82,Half:82,Std:82},adp:31.5,note:"CB1: 60 tackles 3 INT"},
+  {name:"Nate Hairston",pos:"DB",age:31,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:54.5,note:"Veteran CB depth"},
+  {name:"Jalen Thompson",pos:"DB",age:28,team:"ARI",proj:{PPR:75,Half:75,Std:75},adp:36.5,note:"S: 68 tackles 2 INT"},
+  {name:"Chris Banjo",pos:"DB",age:34,team:"CAR",proj:{PPR:52,Half:52,Std:52},adp:57.0,note:"Veteran ST/S depth"},
+  {name:"Jordan Fuller",pos:"DB",age:28,team:"LAR",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"FS: 65 tackles 2 INT"},
+  // RB veteran depth Wave 22
+  {name:"Trey Sermon",pos:"RB",age:26,team:"FA",proj:{PPR:68,Half:62,Std:56},adp:51.5,note:"Powerful back: 280 rush depth"},
+  {name:"Wayne Gallman",pos:"RB",age:31,team:"FA",proj:{PPR:58,Half:53,Std:48},adp:56.5,note:"Veteran depth power"},
+  {name:"Jordan Wilkins",pos:"RB",age:30,team:"FA",proj:{PPR:55,Half:50,Std:45},adp:57.5,note:"Veteran RB depth"},
+  {name:"Ito Smith",pos:"RB",age:30,team:"FA",proj:{PPR:52,Half:47,Std:42},adp:58.5,note:"Receiving back depth FA"},
+  {name:"Mekale McKay",pos:"WR",age:32,team:"FA",proj:{PPR:52,Half:48,Std:44},adp:58.0,note:"Big WR veteran depth"},
   // Wave 21 — 2025 IDP class + deeper DB/WR depth
   // 2025 IDP class additions
   {name:"Laiatu Latu",pos:"DL",age:25,team:"LAC",proj:{PPR:95,Half:95,Std:95},adp:22.0,note:"2024 1st round EDGE: 9 sacks Year 2 leap"},
