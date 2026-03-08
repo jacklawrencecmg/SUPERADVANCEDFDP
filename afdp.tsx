@@ -1678,13 +1678,13 @@ export default function App(){
       p.scarcity=scarcityLabel(p.posRank,bl[p.pos]||teams);
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.88)):1;
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
-      var tvMult=isDynasty?100:isSF?80:scoring==="PPR"?60:scoring==="Half"?55:50;
+      var tvMult=isDynasty?1000:isSF?800:scoring==="PPR"?600:scoring==="Half"?550:500;
       var baseTV=Math.round(p.vbd*tvMult);
       if(isDynasty){
-        var dyFloor=Math.max(5,Math.round(4000/Math.max(1,p.posRank)*dynastyBonus(p.pos,p.age)));
+        var dyFloor=Math.max(50,Math.round(40000/Math.max(1,p.posRank)*dynastyBonus(p.pos,p.age)));
         p.tradeVal=Math.max(dyFloor,baseTV);
       } else {
-        p.tradeVal=Math.max(1,baseTV);
+        p.tradeVal=Math.max(10,baseTV);
       }
     });
     return list;
