@@ -785,6 +785,29 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 15 — 2025 IDP DL rookies + CB/DB depth
+  // 2025 DL rookies
+  {name:"Kenneth Grant",pos:"DL",age:22,team:"MIA",proj:{PPR:82,Half:82,Std:82},adp:29.5,note:"2025 1st round NT: 38 tackles 4 sacks disruptive"},
+  {name:"TJ Sanders",pos:"DL",age:22,team:"HOU",proj:{PPR:78,Half:78,Std:78},adp:33.0,note:"2025 IDL: 35 tackles 4 sacks interior"},
+  {name:"Shemar Stewart",pos:"DL",age:22,team:"DEN",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"2025 EDGE prospect: 32 tackles 5 sacks upside"},
+  {name:"Princely Umanmielen",pos:"DL",age:23,team:"ATL",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"EDGE: 7 sacks 2024 breakout"},
+  {name:"Landon Jackson",pos:"DL",age:23,team:"CHI",proj:{PPR:68,Half:68,Std:68},adp:41.5,note:"EDGE 2025: 28 tackles 4 sacks"},
+  {name:"Darius Alexander",pos:"DL",age:22,team:"CLE",proj:{PPR:65,Half:65,Std:65},adp:43.5,note:"2025 IDL: 28 tackles 3 sacks"},
+  // IDP DB depth Wave 15 — CB prospects
+  {name:"Azeez Al-Shaair",pos:"LB",age:28,team:"WAS",proj:{PPR:105,Half:105,Std:105},adp:18.0,note:"ILB: 108 tackles 3 sacks versatile"},
+  {name:"Tre Norwood",pos:"DB",age:27,team:"PIT",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"S/CB: 65 tackles 2 INT versatile"},
+  {name:"Ifeatu Melifonwu",pos:"DB",age:27,team:"BUF",proj:{PPR:72,Half:72,Std:72},adp:38.5,note:"CB: 55 tackles 2 INT physical"},
+  {name:"Israel Mukuamu",pos:"DB",age:27,team:"FA",proj:{PPR:62,Half:62,Std:62},adp:45.0,note:"S depth: 52 tackles 2 INT"},
+  {name:"Troy Pride Jr.",pos:"DB",age:28,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:49.0,note:"CB depth: 45 tackles 1 INT"},
+  {name:"Kary Vincent Jr.",pos:"DB",age:27,team:"DEN",proj:{PPR:65,Half:65,Std:65},adp:43.5,note:"CB: 52 tackles 2 INT slot"},
+  {name:"Kendall Sheffield",pos:"DB",age:29,team:"FA",proj:{PPR:58,Half:58,Std:58},adp:49.5,note:"CB: 48 tackles 2 INT speed"},
+  {name:"Trill Williams",pos:"DB",age:27,team:"MIN",proj:{PPR:68,Half:68,Std:68},adp:41.0,note:"CB: 55 tackles 2 INT physical"},
+  {name:"Sevyn Banks",pos:"DB",age:26,team:"CLE",proj:{PPR:65,Half:65,Std:65},adp:43.5,note:"CB: 52 tackles 2 INT developing"},
+  {name:"Robert Rochell",pos:"DB",age:28,team:"LAC",proj:{PPR:62,Half:62,Std:62},adp:46.0,note:"CB depth: 48 tackles 1 INT"},
+  {name:"Jaylen Watson",pos:"DB",age:27,team:"KC",proj:{PPR:72,Half:72,Std:72},adp:38.0,note:"CB: 58 tackles 3 INT ascending"},
+  {name:"Darius Phillips",pos:"DB",age:31,team:"FA",proj:{PPR:55,Half:55,Std:55},adp:52.0,note:"Veteran CB depth"},
+  {name:"Josh Blackwell",pos:"DB",age:26,team:"DAL",proj:{PPR:58,Half:58,Std:58},adp:49.0,note:"CB: 45 tackles 1 INT special teams"},
+  {name:"Paul Taulelei",pos:"TE",age:27,team:"BUF",proj:{PPR:55,Half:50,Std:45},adp:55.0,note:"Blocking TE: 18 rec 180 yds"},
   // Wave 14 — Cam Skattebo + 2025 RB class + WR/TE/IDP depth
   // 2025 RB class additions
   {name:"Cam Skattebo",pos:"RB",age:23,team:"NYG",proj:{PPR:225,Half:207,Std:189},adp:8.5,note:"2025 1st round: bruising style 1,100 rush 55 rec physical"},
