@@ -1707,10 +1707,16 @@ export default function App(){
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
       var baseTV=Math.round(p.vbd*adminTvMult);
       if(isDynasty){
-        // KTC-calibrated rank-based curve: top players 7,500-9,500, gradual drop-off
-        var r=p.rank;
-        var rv=r<=25?9500-(r-1)*80:r<=75?7580-(r-25)*60:r<=150?4580-(r-75)*35:Math.max(100,1955-(r-150)*15);
-        // dynastyBonus^2 = aggressive age adjustment (young players get up to +12%, old RBs drop steeply)
+        // Position-specific exponential decay calibrated to KTC dynasty value curves
+        // peak * decay^(posRank-1) gives natural drop-off matching KTC market data
+        var isIDP=p.pos==="DL"||p.pos==="LB"||p.pos==="DB";
+        var cfg=p.pos==="QB"?(isSF?{pk:9000,dc:0.921}:{pk:7500,dc:0.880})
+          :p.pos==="RB"?{pk:9300,dc:0.931}
+          :p.pos==="TE"?{pk:8500,dc:0.828}
+          :isIDP?{pk:5000,dc:0.940}
+          :{pk:9400,dc:0.953}; // WR + K/DST fallback
+        var rv=cfg.pk*Math.pow(cfg.dc,p.posRank-1);
+        // dynastyBonus^2: aggressive age curve — old RBs lose ~40-55%, young prospects gain ~10-18%
         var ab=dynastyBonus(p.pos,p.age);
         p.tradeVal=Math.round(Math.max(100,Math.min(9500,rv*ab*ab)));
       } else {
