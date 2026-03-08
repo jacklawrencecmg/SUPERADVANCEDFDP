@@ -765,6 +765,17 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 24 — missing starters + IDP depth sweep
+  // Missing starters
+  {name:"DeAndre Hopkins",pos:"WR",age:33,team:"KC",proj:{PPR:188,Half:173,Std:158},adp:22.5,note:"Veteran: 72 rec 840 yds 7 TD jump-ball"},
+  {name:"Evan Engram",pos:"TE",age:31,team:"JAX",proj:{PPR:195,Half:179,Std:163},adp:11.5,note:"Volume: 88 rec 950 yds 7 TD PPR monster"},
+  // More notable WRs Wave 24
+  {name:"Gabe Davis",pos:"WR",age:28,team:"JAX",proj:{PPR:148,Half:136,Std:124},adp:29.0,note:"Big play: 52 rec 660 yds 6 TD"},
+  {name:"Romeo Doubs",pos:"WR",age:26,team:"GB",proj:{PPR:162,Half:149,Std:136},adp:25.5,note:"GB slot: 65 rec 740 yds 6 TD"},
+  // More RB Wave 24
+  {name:"Sean Tucker",pos:"RB",age:25,team:"TB",proj:{PPR:135,Half:124,Std:113},adp:29.5,note:"TB committee: 520 rush 48 rec"},
+  // More TE Wave 24
+  {name:"Colby Parkinson",pos:"TE",age:27,team:"LAR",proj:{PPR:118,Half:108,Std:98},adp:23.5,note:"LAR: 46 rec 490 yds 4 TD"},
   // Wave 23 — elite IDL, QB prospects, IDP 2025 additions
   // IDL elite tier Wave 23
   {name:"DeForest Buckner",pos:"DL",age:32,team:"IND",proj:{PPR:95,Half:95,Std:95},adp:22.0,note:"Elite IDL: 9 sacks 52 tackles anchor"},
@@ -1231,7 +1242,6 @@ const PLAYERS=[
   {name:"JK Dobbins",pos:"RB",age:26,team:"LAC",proj:{PPR:195,Half:179,Std:163},adp:16.5,note:"Comeback: 850 rush 8 TD explosive"},
   {name:"Donovan Peoples-Jones",pos:"WR",age:27,team:"CLE",proj:{PPR:162,Half:149,Std:136},adp:26.5,note:"62 rec 780 yds 6 TD deep threat"},
   {name:"Jelani Woods",pos:"TE",age:26,team:"IND",proj:{PPR:115,Half:105,Std:95},adp:25.5,note:"Athletic: 44 rec 480 yds 5 TD"},
-  {name:"Colby Parkinson",pos:"TE",age:27,team:"LAR",proj:{PPR:102,Half:93,Std:84},adp:30.5,note:"Size receiver: 40 rec 420 yds"},
   {name:"Connor Heyward",pos:"TE",age:32,team:"PIT",proj:{PPR:88,Half:81,Std:74},adp:38.0,note:"Utility: 35 rec 350 yds"},
   {name:"Irv Smith Jr.",pos:"TE",age:28,team:"CIN",proj:{PPR:98,Half:90,Std:82},adp:32.5,note:"Backup: 40 rec 410 yds"},
   {name:"Tyler Kroft",pos:"TE",age:32,team:"FA",proj:{PPR:68,Half:62,Std:56},adp:50.0,note:"Veteran blocker/depth"},
