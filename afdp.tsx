@@ -790,6 +790,35 @@ const PLAYERS=[
   {name:"Walter Nolen",pos:"DL",age:22,team:"PHI",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"2025 IDL: 35 tackles 4 sacks"},
   {name:"Derrick Harmon",pos:"DL",age:23,team:"GB",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"2025 IDL: 32 tackles 3 sacks"},
   {name:"Will Campbell",pos:"DL",age:22,team:"NE",proj:{PPR:75,Half:75,Std:75},adp:36.0,note:"2025 OL/DL convert: developmental"},
+  // Wave 11 — final depth: QB/RB/IDP stragglers
+  // QB depth Wave 11
+  {name:"Mitchell Trubisky",pos:"QB",age:31,team:"PIT",proj:{PPR:225,Half:225,Std:225},adp:27.5,note:"Backup veteran: mobile 2,600 yds"},
+  {name:"Kyle Trask",pos:"QB",age:27,team:"TB",proj:{PPR:215,Half:215,Std:215},adp:29.5,note:"Backup: 2,400 yds 18 TD"},
+  {name:"Case Keenum",pos:"QB",age:37,team:"FA",proj:{PPR:195,Half:195,Std:195},adp:35.0,note:"Veteran depth: 2,200 yds"},
+  {name:"Davis Webb",pos:"QB",age:30,team:"BUF",proj:{PPR:188,Half:188,Std:188},adp:37.5,note:"BUF backup handcuff to Allen"},
+  {name:"Trace McSorley",pos:"QB",age:30,team:"FA",proj:{PPR:175,Half:175,Std:175},adp:40.0,note:"Mobile emergency QB"},
+  {name:"Brian Hoyer",pos:"QB",age:40,team:"FA",proj:{PPR:162,Half:162,Std:162},adp:43.0,note:"Veteran emergency backup"},
+  // RB depth Wave 11
+  {name:"Michael Carter",pos:"RB",age:26,team:"NYJ",proj:{PPR:128,Half:117,Std:106},adp:30.0,note:"Pass-catching back: 350 rush 50 rec"},
+  {name:"Chase Edmonds",pos:"RB",age:29,team:"FA",proj:{PPR:112,Half:103,Std:94},adp:33.5,note:"Veteran scatback: receiving back"},
+  {name:"Marlon Mack",pos:"RB",age:30,team:"FA",proj:{PPR:98,Half:90,Std:82},adp:38.5,note:"Veteran FA: power back depth"},
+  {name:"Eno Benjamin",pos:"RB",age:27,team:"HOU",proj:{PPR:108,Half:99,Std:90},adp:35.5,note:"Receiving back: 320 rush 42 rec"},
+  // IDP DL Wave 11
+  {name:"David Ojabo",pos:"DL",age:25,team:"BAL",proj:{PPR:88,Half:88,Std:88},adp:27.0,note:"EDGE: 8 sacks when healthy Year 4"},
+  {name:"Odafe Oweh",pos:"DL",age:26,team:"BAL",proj:{PPR:92,Half:92,Std:92},adp:24.5,note:"EDGE: 9 sacks explosive athlete"},
+  {name:"Charles Omenihu",pos:"DL",age:29,team:"KC",proj:{PPR:82,Half:82,Std:82},adp:30.5,note:"EDGE: 7 sacks versatile"},
+  {name:"Jonathan Allen",pos:"DL",age:30,team:"WAS",proj:{PPR:88,Half:88,Std:88},adp:27.5,note:"IDL: 8 sacks 48 tackles Pro Bowl"},
+  {name:"Tershawn Wharton",pos:"DL",age:28,team:"KC",proj:{PPR:75,Half:75,Std:75},adp:35.0,note:"IDL: 35 tackles 4 sacks rotational"},
+  {name:"Rasheem Green",pos:"DL",age:28,team:"HOU",proj:{PPR:72,Half:72,Std:72},adp:37.5,note:"EDGE depth: 6 sacks rotational"},
+  {name:"Dean Lowry",pos:"DL",age:32,team:"GB",proj:{PPR:68,Half:68,Std:68},adp:40.5,note:"IDL veteran: 28 tackles 3 sacks"},
+  {name:"Bilal Nichols",pos:"DL",age:30,team:"MIA",proj:{PPR:65,Half:65,Std:65},adp:42.0,note:"IDL depth: 30 tackles 2 sacks"},
+  // IDP DB Wave 11
+  {name:"Eric Stokes",pos:"DB",age:27,team:"GB",proj:{PPR:80,Half:80,Std:80},adp:32.0,note:"CB: 55 tackles 2 INT when healthy"},
+  {name:"Khaleke Hudson",pos:"DB",age:28,team:"CHI",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"LB/S hybrid: 70 tackles 2 sacks"},
+  {name:"Myles Bryant",pos:"DB",age:27,team:"NE",proj:{PPR:70,Half:70,Std:70},adp:38.5,note:"Slot CB: 55 tackles 2 INT"},
+  {name:"Elijah Molden",pos:"DB",age:27,team:"TEN",proj:{PPR:78,Half:78,Std:78},adp:34.0,note:"Slot CB/S: 62 tackles 2 INT"},
+  {name:"Quandre Diggs",pos:"DB",age:33,team:"SEA",proj:{PPR:82,Half:82,Std:82},adp:31.0,note:"FS veteran: 62 tackles 3 INT"},
+  {name:"Darnell Savage",pos:"DB",age:28,team:"ATL",proj:{PPR:75,Half:75,Std:75},adp:35.5,note:"S: 58 tackles 2 INT"},
   // Wave 9 — All 32 NFL DSTs + remaining depth
   // DST — Defenses/Special Teams (all 32 teams)
   {name:"San Francisco 49ers DST",pos:"DST",age:0,team:"SF",proj:{PPR:148,Half:148,Std:148},adp:1.5,note:"Elite DST: Bosa/Warner/Hamilton core"},
