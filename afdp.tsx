@@ -3538,7 +3538,7 @@ export default function App(){
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.textDim,letterSpacing:1,textAlign:"center"}},"7D CHANGE"),
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.purple,letterSpacing:1,textAlign:"right"}},"FDP VALUE ("+rankFormat+")")
         ),
-        rankedPlayers.filter(function(p){return !user||user.isPro||p.rank<=FREE_RANK_LIMIT;}).map(function(p){
+        rankedPlayers.filter(function(p){return p.pos!=="K"&&p.pos!=="DST"&&(!user||user.isPro||p.rank<=FREE_RANK_LIMIT);}).map(function(p){
           return React.createElement("div",{key:p.name,style:{display:"grid",gridTemplateColumns:"1fr 72px 96px",padding:"12px 16px",borderBottom:"1px solid "+T.border,alignItems:"center",gap:4}},
             React.createElement("div",null,
               React.createElement("div",{style:{fontWeight:700,fontSize:14,color:T.text,marginBottom:3}},p.name),
