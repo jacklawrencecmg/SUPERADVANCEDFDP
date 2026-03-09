@@ -53,7 +53,8 @@ async function loadAnalyticsData() {
 const DARK={bg:"#13111e",bgCard:"#1c1a2e",bgInput:"#0f0d1a",border:"#2e2a4a",borderPurple:"#5b3fd4",purple:"#7c4dff",purpleLight:"#9b72ff",purpleDim:"#3d2a7a",text:"#ffffff",textSub:"#9b96b8",textDim:"#5c5880",green:"#22c55e",red:"#ef4444",gold:"#f59e0b",cyan:"#06b6d4"};
 const LIGHT={bg:"#f0f2ff",bgCard:"#ffffff",bgInput:"#eef0ff",border:"#d4d8f5",borderPurple:"#7c4dff",purple:"#6d28d9",purpleLight:"#7c3aed",purpleDim:"#ede9fe",text:"#1a1d3a",textSub:"#4a5080",textDim:"#9ba3c9",green:"#059669",red:"#dc2626",gold:"#b45309",cyan:"#0891b2"};
 const POS_COLORS={QB:"#818cf8",RB:"#34d399",WR:"#c084fc",TE:"#f59e0b",K:"#a78bfa",DST:"#94a3b8",DL:"#f87171",LB:"#fb923c",DB:"#22d3ee",PICK:"#f1c40f"};
-const SCORING_FORMATS=["Dynasty","Superflex","PPR","Half","Standard"];
+const LEAGUE_TYPES=["Dynasty","Redraft"];
+const FORMATS=["Superflex","PPR","Half","Standard"];
 const ALL_POSITIONS=["ALL","QB","RB","WR","TE","K","DST","DL","LB","DB"];
 const PRIME={QB:[26,35],RB:[22,27],WR:[23,29],TE:[25,30],K:[25,38],DST:[0,99],DL:[23,30],LB:[23,30],DB:[23,29]};
 const FREE_RANK_LIMIT=20;
@@ -1763,7 +1764,8 @@ export default function App(){
   var validTabs=["trade","rankings","news","watchlist","import","admin"];
   var [tab,setTabRaw]=useState(function(){var h=window.location.hash.replace("#","");return validTabs.includes(h)?h:"trade";});
   function setTab(t:string){setTabRaw(t);window.location.hash=t;}
-  var [scoring,setScoring]=useState("Dynasty");
+  var [leagueType,setLeagueType]=useState("Dynasty");
+  var [format,setFormat]=useState("PPR");
   var [teams,setTeams]=useState(12);
   var [budget,setBudget]=useState(200);
   var [ffab,setFfab]=useState(100);
@@ -1908,9 +1910,10 @@ export default function App(){
 
   var T=darkMode?DARK:LIGHT;
   var isPro=user&&user.isPro;
-  var isDynasty=scoring==="Dynasty";
-  var isSF=scoring==="Superflex";
-  var sKey=(isDynasty||isSF)?"PPR":(scoring==="Half"?"Half":(scoring==="Standard"?"Standard":"PPR"));
+  var isDynasty=leagueType==="Dynasty";
+  var isSF=format==="Superflex";
+  var sKey=isDynasty?"PPR":(format==="Half"?"Half":(format==="Standard"?"Standard":"PPR"));
+  var scoring=leagueType+" · "+(isSF?"Superflex":format==="Half"?"Half PPR":format==="Standard"?"Standard":"PPR");
 
   var rankedPlayers=useMemo(function(){
     var bl=getBaselines(teams,isSF);
@@ -1990,7 +1993,7 @@ export default function App(){
       }
     });
     return list;
-  },[scoring,teams,budget,ffab,sKey,isDynasty,isSF,tePremium,liveProj,adminTvMult]);
+  },[leagueType,format,teams,budget,ffab,sKey,isDynasty,isSF,tePremium,liveProj,adminTvMult]);
 
   var tradePool=useMemo(function(){return rankedPlayers.concat(DRAFT_PICKS.map(makePick));},[rankedPlayers]);
 
@@ -2476,7 +2479,18 @@ export default function App(){
         ),
         React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:14}},liveProj?"Live Week "+liveProj.week+" projections active — values reflect real-time data":"No account required - Offensive + IDP + FAAB + Draft Picks"),
         React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:12,marginBottom:14}},
-          React.createElement("div",{style:{display:"flex",gap:6,flexWrap:"wrap"}},SCORING_FORMATS.map(function(f){return React.createElement(Chip,{key:f,label:f,active:scoring===f,onClick:function(){setScoring(f);setAnalyzed(false);}});}))
+          React.createElement("div",{style:{display:"flex",gap:6,marginBottom:8}},
+            LEAGUE_TYPES.map(function(lt){
+              var active=leagueType===lt;
+              return React.createElement("button",{key:lt,onClick:function(){setLeagueType(lt);setAnalyzed(false);},style:{flex:1,padding:"9px 4px",borderRadius:10,border:"2px solid "+(active?T.purple:T.border),background:active?"linear-gradient(135deg,"+T.purple+",#5b21b6)":"transparent",color:active?"#fff":T.textSub,fontWeight:800,fontSize:13,cursor:"pointer"}},lt);
+            })
+          ),
+          React.createElement("div",{style:{display:"flex",gap:6}},
+            FORMATS.map(function(f){
+              var active=format===f;
+              return React.createElement("button",{key:f,onClick:function(){setFormat(f);setAnalyzed(false);},style:{flex:1,padding:"7px 4px",borderRadius:9,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple+"22":"transparent",color:active?T.purpleLight:T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},f);
+            })
+          )
         ),
         React.createElement("div",{style:{marginBottom:12}},
           React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Your Team Gives"),
