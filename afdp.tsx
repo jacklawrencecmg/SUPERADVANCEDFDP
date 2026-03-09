@@ -4,7 +4,10 @@ import { createClient } from "@supabase/supabase-js";
 // ── Analytics (project: wizdxspglxpvvogiivsv) ──────────────────────────────
 const SUPA_URL = (import.meta as any).env?.VITE_SUPABASE_URL || "https://wizdxspglxpvvogiivsv.supabase.co";
 const SUPA_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || "sb_publishable_d8hlXb52bBoR65xl4owmSg_nW2UwoIg";
+// Service role JWT used only for admin-only analytics reads
+const SUPA_SVC = (import.meta as any).env?.VITE_SUPABASE_SERVICE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpemR4c3BnbHhwdnZvZ2lpdnN2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjQ1NTM0NywiZXhwIjoyMDg4MDMxMzQ3fQ.sr-qZWscq59_HxN8wil1GCP6CmK97kXaLvphXnupoIk";
 const analyticsClient = SUPA_URL && SUPA_KEY ? createClient(SUPA_URL, SUPA_KEY) : null;
+const analyticsReadClient = SUPA_URL && SUPA_SVC ? createClient(SUPA_URL, SUPA_SVC) : null;
 
 function getVisitorId(): string {
   try {
@@ -28,35 +31,23 @@ async function trackEvent(type: string, data: Record<string, any> = {}) {
   } catch { /* silent */ }
 }
 
-async function sbFetch(path: string, params: Record<string,string> = {}) {
-  const url = new URL(SUPA_URL + "/rest/v1/" + path);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
-  const res = await fetch(url.toString(), {
-    headers: {
-      "apikey": SUPA_KEY,
-      "Authorization": "Bearer " + SUPA_KEY,
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    }
-  });
-  if (!res.ok) { const t = await res.text(); throw new Error(t); }
-  return res.json();
-}
-
 async function loadAnalyticsData() {
-  if (!SUPA_URL || !SUPA_KEY) return null;
+  const rc = analyticsReadClient;
+  if (!rc) return null;
   try {
     const now = new Date();
     const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
-    const [daily, features, recent] = await Promise.all([
-      sbFetch("analytics_events", {"select":"visitor_id,created_at","event_type":"eq.page_view","created_at":"gte."+day14ago,"limit":"5000"}),
-      sbFetch("analytics_events", {"select":"event_data","event_type":"eq.tab_change","created_at":"gte."+day14ago,"limit":"2000"}),
-      sbFetch("analytics_events", {"select":"visitor_id,event_type,event_data,created_at","order":"created_at.desc","limit":"50"}),
+    const [r1, r2, r3, r4] = await Promise.all([
+      rc.from("analytics_events").select("visitor_id, created_at").eq("event_type","page_view").gte("created_at",day14ago),
+      rc.from("analytics_events").select("event_data").eq("event_type","tab_change").gte("created_at",day14ago),
+      rc.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","trade_analyzed"),
+      rc.from("analytics_events").select("visitor_id, event_type, event_data, created_at").order("created_at",{ascending:false}).limit(50),
     ]);
-    const trades = recent.filter((e:any) => e.event_type === "trade_analyzed").length;
-    return { daily: daily||[], features: features||[], trades, recent: recent||[], error: null };
+    const firstError = r1.error||r2.error||r3.error||r4.error;
+    if (firstError) return { daily:[], features:[], trades:0, recent:[], error: firstError.message };
+    return { daily: r1.data||[], features: r2.data||[], trades: r3.count||0, recent: r4.data||[], error: null };
   } catch(e:any) {
-    return { daily:[], features:[], trades:0, recent:[], error: e?.message||"Fetch failed" };
+    return { daily:[], features:[], trades:0, recent:[], error: e?.message||"Unknown error" };
   }
 }
 
