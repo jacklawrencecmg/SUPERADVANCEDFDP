@@ -24,14 +24,16 @@ let _trackedEmail = "";
 function setTrackedUser(email: string) { _trackedEmail = email || ""; }
 
 async function trackEvent(type: string, data: Record<string, any> = {}) {
-  if (!analyticsClient) return;
+  const client = analyticsReadClient || analyticsClient;
+  if (!client) return;
   try {
-    await analyticsClient.from("analytics_events").insert({
+    const result = await client.from("analytics_events").insert({
       visitor_id: getVisitorId(),
       event_type: type,
       event_data: _trackedEmail ? Object.assign({}, data, {user_email: _trackedEmail}) : data,
     });
-  } catch { /* silent */ }
+    if (result.error) console.warn("[FDP analytics]", result.error.message);
+  } catch(e) { console.warn("[FDP analytics]", e); }
 }
 
 async function loadPublicStats() {
