@@ -34,21 +34,35 @@ async function trackEvent(type: string, data: Record<string, any> = {}) {
   } catch { /* silent */ }
 }
 
+async function loadPublicStats() {
+  const rc = analyticsReadClient;
+  if (!rc) return null;
+  try {
+    const [v, t] = await Promise.all([
+      rc.from("analytics_events").select("visitor_id",{count:"exact",head:true}).eq("event_type","page_view"),
+      rc.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","trade_analyzed"),
+    ]);
+    return {visitors: v.count||0, trades: t.count||0};
+  } catch { return null; }
+}
+
 async function loadAnalyticsData() {
   const rc = analyticsReadClient;
   if (!rc) return null;
   try {
     const now = new Date();
     const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
-    const [r1, r2, r3, r4] = await Promise.all([
+    const [r1, r2, r3, r4, r5, r6] = await Promise.all([
       rc.from("analytics_events").select("visitor_id, created_at").eq("event_type","page_view").gte("created_at",day14ago),
       rc.from("analytics_events").select("event_data").eq("event_type","tab_change").gte("created_at",day14ago),
       rc.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","trade_analyzed"),
       rc.from("analytics_events").select("visitor_id, event_type, event_data, created_at").order("created_at",{ascending:false}).limit(50),
+      rc.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","page_view"),
+      rc.from("analytics_events").select("id",{count:"exact",head:true}),
     ]);
     const firstError = r1.error||r2.error||r3.error||r4.error;
-    if (firstError) return { daily:[], features:[], trades:0, recent:[], error: firstError.message };
-    return { daily: r1.data||[], features: r2.data||[], trades: r3.count||0, recent: r4.data||[], error: null };
+    if (firstError) return { daily:[], features:[], trades:0, recent:[], totalVisitors:0, totalEvents:0, error: firstError.message };
+    return { daily: r1.data||[], features: r2.data||[], trades: r3.count||0, recent: r4.data||[], totalVisitors: r5.count||0, totalEvents: r6.count||0, error: null };
   } catch(e:any) {
     return { daily:[], features:[], trades:0, recent:[], error: e?.message||"Unknown error" };
   }
@@ -1704,8 +1718,8 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
     ),
 
     // Summary cards
-    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginBottom:20}},
-      [["Today",todayVisitors,"📅"],["7d",weekVisitors,"📆"],["14d",totalUnique,"🗓️"],["Trades",data.trades,"⚖️"]].map(function(s:any){
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr",gap:6,marginBottom:20}},
+      [["Today",todayVisitors,"📅"],["7d",weekVisitors,"📆"],["14d",totalUnique,"🗓️"],["All Time",data.totalVisitors,"👥"],["Trades",data.trades,"⚖️"]].map(function(s:any){
         return React.createElement("div",{key:s[0] as string,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 8px",textAlign:"center"}},
           React.createElement("div",{style:{fontSize:20,marginBottom:4}},s[2]),
           React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.purple}},s[1]),
@@ -1843,6 +1857,7 @@ export default function App(){
   var [adminTvDraft,setAdminTvDraft]=useState(null);
   var [adminSyncStatus,setAdminSyncStatus]=useState({syncing:false,lastSync:null,type:null});
   var [adminHsQuery,setAdminHsQuery]=useState("");
+  var [publicStats,setPublicStats]=useState<{visitors:number,trades:number}|null>(null);
   var [healthCheckedAt,setHealthCheckedAt]=useState(Date.now());
   var [contactName,setContactName]=useState("");
   var [contactEmail,setContactEmail]=useState("");
@@ -2062,13 +2077,14 @@ export default function App(){
     }
   },[]);// eslint-disable-line react-hooks/exhaustive-deps
 
-  // Track page view on mount (once per session)
+  // Track page view on mount (once per session) + load public stats
   useEffect(function(){
     var key="fdp_tracked_"+new Date().toDateString();
     if(!sessionStorage.getItem(key)){
       sessionStorage.setItem(key,"1");
       trackEvent("page_view",{referrer:document.referrer||"direct",path:window.location.pathname});
     }
+    loadPublicStats().then(function(s){if(s)setPublicStats(s);});
   },[]);
 
   function doEspnImport(){
@@ -2506,7 +2522,18 @@ export default function App(){
       React.createElement("div",{style:{textAlign:"center",marginTop:8,marginBottom:20}},
         React.createElement("div",{style:{display:"inline-flex",alignItems:"center",gap:6,background:T.purpleDim,border:"1px solid "+T.purple+"44",borderRadius:30,padding:"5px 14px",fontSize:10,color:T.purpleLight,fontWeight:700,letterSpacing:0.5,marginBottom:14}},"#1 DYNASTY FANTASY FOOTBALL TRADE CALCULATOR - FREE"),
         React.createElement("div",{style:{fontWeight:900,fontSize:28,lineHeight:1.15,marginBottom:10}},React.createElement("span",{style:{color:T.purple}},"Win Every Trade."),React.createElement("br",null),"Dominate Your Dynasty."),
-        React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.7,marginBottom:20}},"The free dynasty fantasy football trade analyzer trusted by thousands. Combines offensive players, IDP, FAAB budget, and draft picks — 9,000+ player values updated daily."),
+        React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.7,marginBottom:16}},"The free dynasty fantasy football trade analyzer trusted by thousands. Combines offensive players, IDP, FAAB budget, and draft picks — 9,000+ player values updated daily."),
+        publicStats&&React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:24,marginBottom:20}},
+          React.createElement("div",{style:{textAlign:"center"}},
+            React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.purple}},(publicStats.visitors||0).toLocaleString()),
+            React.createElement("div",{style:{fontSize:10,color:T.textSub,fontWeight:600,letterSpacing:0.5,marginTop:2}},"VISITORS")
+          ),
+          React.createElement("div",{style:{width:1,background:T.border}}),
+          React.createElement("div",{style:{textAlign:"center"}},
+            React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.purple}},(publicStats.trades||0).toLocaleString()),
+            React.createElement("div",{style:{fontSize:10,color:T.textSub,fontWeight:600,letterSpacing:0.5,marginTop:2}},"TRADES ANALYZED")
+          )
+        ),
         !user&&React.createElement("div",{style:{display:"flex",gap:10,justifyContent:"center",marginBottom:4}},
           React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"13px 24px",borderRadius:30,border:"none",cursor:"pointer",fontWeight:800,fontSize:14,background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff"}},"Start 7-Day Free Trial"),
           React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"13px 24px",borderRadius:30,border:"1px solid "+T.border,cursor:"pointer",fontWeight:700,fontSize:14,background:"transparent",color:T.text}},"Sign In")
