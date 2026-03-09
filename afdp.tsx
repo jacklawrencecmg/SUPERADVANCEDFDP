@@ -28,26 +28,36 @@ async function trackEvent(type: string, data: Record<string, any> = {}) {
   } catch { /* silent */ }
 }
 
+async function sbFetch(path: string, params: Record<string,string> = {}) {
+  const url = new URL(SUPA_URL + "/rest/v1/" + path);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
+  const res = await fetch(url.toString(), {
+    headers: {
+      "apikey": SUPA_KEY,
+      "Authorization": "Bearer " + SUPA_KEY,
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    }
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error(t); }
+  return res.json();
+}
+
 async function loadAnalyticsData() {
-  if (!analyticsClient) return null;
-  const now = new Date();
-  const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
-
-  const [r1, r2, r3, r4] = await Promise.all([
-    analyticsClient.from("analytics_events").select("visitor_id, created_at").eq("event_type","page_view").gte("created_at",day14ago),
-    analyticsClient.from("analytics_events").select("event_data").eq("event_type","tab_change").gte("created_at",day14ago),
-    analyticsClient.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","trade_analyzed"),
-    analyticsClient.from("analytics_events").select("visitor_id, event_type, event_data, created_at").order("created_at",{ascending:false}).limit(50),
-  ]);
-
-  const firstError = r1.error||r2.error||r3.error||r4.error;
-  return {
-    daily: r1.data||[],
-    features: r2.data||[],
-    trades: r3.count||0,
-    recent: r4.data||[],
-    error: firstError ? firstError.message : null,
-  };
+  if (!SUPA_URL || !SUPA_KEY) return null;
+  try {
+    const now = new Date();
+    const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
+    const [daily, features, recent] = await Promise.all([
+      sbFetch("analytics_events", {"select":"visitor_id,created_at","event_type":"eq.page_view","created_at":"gte."+day14ago,"limit":"5000"}),
+      sbFetch("analytics_events", {"select":"event_data","event_type":"eq.tab_change","created_at":"gte."+day14ago,"limit":"2000"}),
+      sbFetch("analytics_events", {"select":"visitor_id,event_type,event_data,created_at","order":"created_at.desc","limit":"50"}),
+    ]);
+    const trades = recent.filter((e:any) => e.event_type === "trade_analyzed").length;
+    return { daily: daily||[], features: features||[], trades, recent: recent||[], error: null };
+  } catch(e:any) {
+    return { daily:[], features:[], trades:0, recent:[], error: e?.message||"Fetch failed" };
+  }
 }
 
 const DARK={bg:"#13111e",bgCard:"#1c1a2e",bgInput:"#0f0d1a",border:"#2e2a4a",borderPurple:"#5b3fd4",purple:"#7c4dff",purpleLight:"#9b72ff",purpleDim:"#3d2a7a",text:"#ffffff",textSub:"#9b96b8",textDim:"#5c5880",green:"#22c55e",red:"#ef4444",gold:"#f59e0b",cyan:"#06b6d4"};
@@ -2161,7 +2171,7 @@ export default function App(){
     });
   },[]);
 
-  function tVal(side,fa){return side.reduce(function(s,x){return s+(x.pos==="PICK"?x.est:Math.max(0,x.tradeVal));},0)+(fa||0);}
+  function tVal(side,fa){return side.reduce(function(s,x){return s+(x.pos==="PICK"?x.est:Math.max(0,x.tradeVal));},0)+((fa||0)*10);}
   var tvA=tVal(tradeA,faabA),tvB=tVal(tradeB,faabB);
   function verdict(){
     var diff=tvA-tvB,pct=tvB>0?Math.abs(diff/tvB)*100:0;
