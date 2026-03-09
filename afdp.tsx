@@ -1762,7 +1762,9 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
 }
 
 export default function App(){
-  var [tab,setTab]=useState("trade");
+  var validTabs=["trade","rankings","news","watchlist","import","admin"];
+  var [tab,setTabRaw]=useState(function(){var h=window.location.hash.replace("#","");return validTabs.includes(h)?h:"trade";});
+  function setTab(t:string){setTabRaw(t);window.location.hash=t;}
   var [scoring,setScoring]=useState("Dynasty");
   var [teams,setTeams]=useState(12);
   var [budget,setBudget]=useState(200);
