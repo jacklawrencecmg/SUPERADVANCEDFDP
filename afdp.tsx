@@ -1972,8 +1972,9 @@ export default function App(){
         var rankVal=Math.round(Math.max(100,Math.min(9500,rv*ab)));
         var rawFloor=p.pos!=="QB"?Math.round((p.proj[sKey]||0)*15*ab):0;
         var formulaVal=p.pos!=="QB"?Math.max(rankVal,Math.min(3500,rawFloor)):rankVal;
-        // Confirmed KTC values override formula — exact anchors
-        p.tradeVal=p.ktcVal||formulaVal;
+        // KTC anchor + FDP age intelligence: apply dynastyBonus on top of KTC base
+        // ab=1 for prime-age players (no change), youth gets slight boost, aging gets discount
+        p.tradeVal=p.ktcVal?Math.round(Math.min(9999,p.ktcVal*ab)):formulaVal;
       } else {
         // Redraft (PPR/Half/Standard/Superflex): VBD-based with position-rank floor
         // Floor prevents depth players from cliffing to 10 when below baseline
