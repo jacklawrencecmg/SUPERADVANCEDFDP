@@ -1970,13 +1970,14 @@ export default function App(){
         var rv=cfg.pk*Math.pow(cfg.dc,p.posRank-1);
         var ab=dynastyBonus(p.pos,p.age);
         // Linear age factor (not squared) — derived from KTC data
-        var rankVal=Math.round(Math.max(100,Math.min(9500,rv*ab)));
+        var rankVal=Math.round(Math.max(100,(isSF&&p.pos==="QB")?rv*ab:Math.min(9500,rv*ab)));
         var rawFloor=p.pos!=="QB"?Math.round((p.proj[sKey]||0)*15*ab):0;
         var formulaVal=p.pos!=="QB"?Math.max(rankVal,Math.min(3500,rawFloor)):rankVal;
         // KTC anchor + FDP age intelligence: apply dynastyBonus on top of KTC base
         // ab=1 for prime-age players (no change), youth gets slight boost, aging gets discount
         var sfQbBoost=(isSF&&p.pos==="QB")?1.25:1;
-        p.tradeVal=p.ktcVal?Math.round(Math.min(9999,p.ktcVal*ab*sfQbBoost)):formulaVal;
+        var rawVal=Math.round(p.ktcVal*ab*sfQbBoost);
+        p.tradeVal=p.ktcVal?(isSF&&p.pos==="QB"?rawVal:Math.min(9999,rawVal)):formulaVal;
       } else {
         // Redraft (PPR/Half/Standard/Superflex): VBD-based with position-rank floor
         // Floor prevents depth players from cliffing to 10 when below baseline
