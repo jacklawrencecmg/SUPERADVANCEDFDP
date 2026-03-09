@@ -1,4 +1,69 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+// ── Analytics ──────────────────────────────────────────────────────────────
+const SUPA_URL = (import.meta as any).env?.VITE_SUPABASE_URL || "";
+const SUPA_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || "";
+const analyticsClient = SUPA_URL && SUPA_KEY ? createClient(SUPA_URL, SUPA_KEY) : null;
+
+function getVisitorId(): string {
+  try {
+    let id = localStorage.getItem("fdp_vid");
+    if (!id) {
+      id = "v_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem("fdp_vid", id);
+    }
+    return id;
+  } catch { return "anonymous"; }
+}
+
+async function trackEvent(type: string, data: Record<string, any> = {}) {
+  if (!analyticsClient) return;
+  try {
+    await analyticsClient.from("analytics_events").insert({
+      visitor_id: getVisitorId(),
+      event_type: type,
+      event_data: data,
+    });
+  } catch { /* silent */ }
+}
+
+async function loadAnalyticsData() {
+  if (!analyticsClient) return null;
+  try {
+    const now = new Date();
+    const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
+
+    // Daily unique visitors (last 14 days)
+    const { data: daily } = await analyticsClient
+      .from("analytics_events")
+      .select("visitor_id, created_at")
+      .eq("event_type", "page_view")
+      .gte("created_at", day14ago);
+
+    // Feature usage
+    const { data: features } = await analyticsClient
+      .from("analytics_events")
+      .select("event_data")
+      .eq("event_type", "tab_change")
+      .gte("created_at", day14ago);
+
+    // Trade count
+    const { count: trades } = await analyticsClient
+      .from("analytics_events")
+      .select("id", { count: "exact", head: true })
+      .eq("event_type", "trade_analyzed");
+
+    // Recent events
+    const { data: recent } = await analyticsClient
+      .from("analytics_events")
+      .select("visitor_id, event_type, event_data, created_at")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    return { daily: daily || [], features: features || [], trades: trades || 0, recent: recent || [] };
+  } catch { return null; }
+}
 
 const DARK={bg:"#13111e",bgCard:"#1c1a2e",bgInput:"#0f0d1a",border:"#2e2a4a",borderPurple:"#5b3fd4",purple:"#7c4dff",purpleLight:"#9b72ff",purpleDim:"#3d2a7a",text:"#ffffff",textSub:"#9b96b8",textDim:"#5c5880",green:"#22c55e",red:"#ef4444",gold:"#f59e0b",cyan:"#06b6d4"};
 const LIGHT={bg:"#f0f2ff",bgCard:"#ffffff",bgInput:"#eef0ff",border:"#d4d8f5",borderPurple:"#7c4dff",purple:"#6d28d9",purpleLight:"#7c3aed",purpleDim:"#ede9fe",text:"#1a1d3a",textSub:"#4a5080",textDim:"#9ba3c9",green:"#059669",red:"#dc2626",gold:"#b45309",cyan:"#0891b2"};
@@ -1553,6 +1618,148 @@ function TradeItem(props){
     React.createElement("button",{onClick:onRemove,style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:18,padding:"4px 6px",minWidth:36,minHeight:36,display:"flex",alignItems:"center",justifyContent:"center",WebkitTapHighlightColor:"transparent"}},"×")
   );
 }
+// ── Analytics Dashboard Component ─────────────────────────────────────────
+function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:boolean,onLoad:()=>void}){
+  useEffect(function(){onLoad();},[]);// eslint-disable-line react-hooks/exhaustive-deps
+
+  // Build daily chart from raw page_view events
+  function buildDailyBuckets(events:any[]){
+    var buckets:Record<string,Set<string>>={};
+    var today=new Date();
+    for(var i=13;i>=0;i--){
+      var d=new Date(today);d.setDate(d.getDate()-i);
+      var key=d.toISOString().slice(0,10);
+      buckets[key]=new Set();
+    }
+    (events||[]).forEach(function(e:any){
+      var day=e.created_at?e.created_at.slice(0,10):"";
+      if(buckets[day])buckets[day].add(e.visitor_id);
+    });
+    return Object.entries(buckets).map(function([day,set]){return {day,count:set.size};});
+  }
+
+  function buildFeatureUsage(features:any[]){
+    var counts:Record<string,number>={};
+    (features||[]).forEach(function(e:any){
+      var t=e.event_data?.tab||"unknown";
+      counts[t]=(counts[t]||0)+1;
+    });
+    return Object.entries(counts).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+  }
+
+  var hasSupabase=!!(SUPA_URL&&SUPA_KEY);
+
+  if(!hasSupabase) return React.createElement("div",{style:{padding:16}},
+    React.createElement("div",{style:{background:T.bgCard,borderRadius:14,border:"1px solid "+T.border,padding:24,textAlign:"center"}},
+      React.createElement("div",{style:{fontSize:28,marginBottom:12}},"📊"),
+      React.createElement("div",{style:{fontWeight:800,fontSize:16,color:T.text,marginBottom:8}},"Analytics Setup Required"),
+      React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.6,marginBottom:20}},"Add Supabase credentials as GitHub Actions secrets to enable analytics:"),
+      ["VITE_SUPABASE_URL","VITE_SUPABASE_ANON_KEY"].map(function(v){
+        return React.createElement("div",{key:v,style:{background:T.bgInput,borderRadius:8,padding:"8px 12px",fontFamily:"monospace",fontSize:12,color:T.purple,marginBottom:8}},v);
+      }),
+      React.createElement("div",{style:{fontSize:12,color:T.textSub,marginTop:16,lineHeight:1.6}},"Then create the",React.createElement("code",{style:{color:T.purple,background:T.bgInput,padding:"1px 6px",borderRadius:4}},"analytics_events")," table in Supabase (SQL provided in console).")
+    )
+  );
+
+  if(loading) return React.createElement("div",{style:{padding:40,textAlign:"center",color:T.textSub}},
+    React.createElement("div",{style:{width:32,height:32,borderRadius:"50%",border:"3px solid "+T.purple+"30",borderTopColor:T.purple,animation:"spin 0.8s linear infinite",margin:"0 auto 12px"}}),
+    "Loading analytics..."
+  );
+
+  if(!data) return React.createElement("div",{style:{padding:16,textAlign:"center",color:T.textSub}},"No data yet — visit the site to start collecting.");
+
+  var daily=buildDailyBuckets(data.daily);
+  var maxDay=Math.max(1,...daily.map(function(d:any){return d.count;}));
+  var totalUnique=new Set((data.daily||[]).map(function(e:any){return e.visitor_id;})).size;
+  var todayKey=new Date().toISOString().slice(0,10);
+  var todayVisitors=daily.find(function(d:any){return d.day===todayKey;})?.count||0;
+  var weekVisitors=new Set((data.daily||[]).filter(function(e:any){
+    var d=new Date(e.created_at);return(Date.now()-d.getTime())<7*86400000;
+  }).map(function(e:any){return e.visitor_id;})).size;
+  var features=buildFeatureUsage(data.features);
+  var maxFeat=Math.max(1,...features.map(function(f:any){return f[1];}));
+
+  return React.createElement("div",{style:{padding:16}},
+    // Header
+    React.createElement("div",{style:{marginBottom:16}},
+      React.createElement("div",{style:{fontWeight:900,fontSize:20,color:T.text}},"Site Analytics"),
+      React.createElement("div",{style:{fontSize:12,color:T.textSub,marginTop:2}},"Last 14 days · unique visitors")
+    ),
+
+    // Summary cards
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:20}},
+      [["Today",todayVisitors,"📅"],["7 Days",weekVisitors,"📆"],["14 Days",totalUnique,"🗓️"]].map(function(s){
+        return React.createElement("div",{key:s[0] as string,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 8px",textAlign:"center"}},
+          React.createElement("div",{style:{fontSize:20,marginBottom:4}},s[2]),
+          React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.purple}},s[1]),
+          React.createElement("div",{style:{fontSize:10,color:T.textSub,fontWeight:600}},s[0])
+        );
+      })
+    ),
+
+    // Daily bar chart
+    React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"14px 12px",marginBottom:16}},
+      React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text,marginBottom:12}},"Daily Unique Visitors"),
+      React.createElement("div",{style:{display:"flex",alignItems:"flex-end",gap:3,height:80}},
+        daily.map(function(d:any){
+          var h=Math.max(4,Math.round((d.count/maxDay)*76));
+          var isToday=d.day===todayKey;
+          return React.createElement("div",{key:d.day,style:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}},
+            d.count>0&&React.createElement("div",{style:{fontSize:8,color:T.textSub,lineHeight:1}},d.count),
+            React.createElement("div",{title:d.day+" · "+d.count+" visitors",style:{width:"100%",height:h,borderRadius:3,background:isToday?T.purple:T.purple+"55",transition:"height 0.3s"}})
+          );
+        })
+      ),
+      React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginTop:6}},
+        React.createElement("div",{style:{fontSize:9,color:T.textDim}},daily[0]?.day?.slice(5)),
+        React.createElement("div",{style:{fontSize:9,color:T.textDim,fontWeight:700}},"Today")
+      )
+    ),
+
+    // Total trades
+    React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px",marginBottom:16,display:"flex",alignItems:"center",justifyContent:"space-between"}},
+      React.createElement("div",null,
+        React.createElement("div",{style:{fontSize:12,color:T.textSub,fontWeight:600}},"Total Trades Analyzed"),
+        React.createElement("div",{style:{fontSize:24,fontWeight:900,color:T.green}},data.trades.toLocaleString())
+      ),
+      React.createElement("div",{style:{fontSize:32}},"⚖️")
+    ),
+
+    // Feature usage
+    features.length>0&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"14px 12px",marginBottom:16}},
+      React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text,marginBottom:12}},"Feature Usage (14 days)"),
+      features.map(function(f:any){
+        var pct=Math.round((f[1]/maxFeat)*100);
+        return React.createElement("div",{key:f[0],style:{marginBottom:10}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:3}},
+            React.createElement("div",{style:{fontSize:12,color:T.text,fontWeight:600,textTransform:"capitalize"}},f[0]),
+            React.createElement("div",{style:{fontSize:12,color:T.textSub}},f[1]+" taps")
+          ),
+          React.createElement("div",{style:{height:6,background:T.bgInput,borderRadius:3,overflow:"hidden"}},
+            React.createElement("div",{style:{height:"100%",width:pct+"%",background:T.purple,borderRadius:3,transition:"width 0.4s"}})
+          )
+        );
+      })
+    ),
+
+    // Recent events
+    data.recent&&data.recent.length>0&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"14px 12px",marginBottom:16}},
+      React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text,marginBottom:10}},"Recent Activity"),
+      data.recent.slice(0,10).map(function(e:any,i:number){
+        var when=new Date(e.created_at);
+        var label=e.event_type==="page_view"?"🌐 Page View":e.event_type==="tab_change"?"🔀 Tab: "+e.event_data?.tab:e.event_type==="trade_analyzed"?"⚖️ Trade Analyzed":"📌 "+e.event_type;
+        return React.createElement("div",{key:i,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:i<9?"1px solid "+T.border:"none"}},
+          React.createElement("div",{style:{fontSize:12,color:T.text}},label),
+          React.createElement("div",{style:{fontSize:10,color:T.textSub}},when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
+        );
+      })
+    ),
+
+    // Refresh button
+    React.createElement("button",{onClick:onLoad,style:{width:"100%",padding:"12px",borderRadius:12,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:13}},"↻ Refresh")
+  );
+}
+
 export default function App(){
   var [tab,setTab]=useState("trade");
   var [scoring,setScoring]=useState("Dynasty");
@@ -1585,6 +1792,8 @@ export default function App(){
   var [newsFilter,setNewsFilter]=useState("all");
   var [billingPeriod,setBillingPeriod]=useState("yearly");
   var [adminSubTab,setAdminSubTab]=useState("system");
+  var [analyticsData,setAnalyticsData]=useState<any>(null);
+  var [analyticsLoading,setAnalyticsLoading]=useState(false);
   var [adminSyncSel,setAdminSyncSel]=useState("");
   var [rebuildConfirmed,setRebuildConfirmed]=useState(false);
   var [rebuildDone,setRebuildDone]=useState(false);
@@ -1807,6 +2016,15 @@ export default function App(){
       connectLeague(activeLeague);
     }
   },[]);// eslint-disable-line react-hooks/exhaustive-deps
+
+  // Track page view on mount (once per session)
+  useEffect(function(){
+    var key="fdp_tracked_"+new Date().toDateString();
+    if(!sessionStorage.getItem(key)){
+      sessionStorage.setItem(key,"1");
+      trackEvent("page_view",{referrer:document.referrer||"direct",path:window.location.pathname});
+    }
+  },[]);
 
   function doEspnImport(){
     if(!espnLeagueId.trim())return;
@@ -2228,8 +2446,8 @@ export default function App(){
         var active=tab===item[0];
         return React.createElement("button",{key:item[0],onClick:function(){
           if((item[0]==="league"||item[0]==="reports")&&!isPro){setAuthMode("signup");setShowAuth(true);return;}
-          if(item[0]==="admin"){if(!user){setAuthMode("signin");setShowAuth(true);return;}setTab("admin");return;}
-          setTab(item[0]);
+          if(item[0]==="admin"){if(!user){setAuthMode("signin");setShowAuth(true);return;}setTab("admin");trackEvent("tab_change",{tab:"admin"});return;}
+          setTab(item[0]);trackEvent("tab_change",{tab:item[0]});
         },style:{flex:1,padding:"8px 4px 8px",minHeight:56,background:active?T.purple+"12":"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,WebkitTapHighlightColor:"transparent"}},
           React.createElement("span",{style:{fontSize:18,lineHeight:1}},item[2]),
           React.createElement("span",{style:{fontSize:9,fontWeight:700,color:active?T.purple:T.textDim,marginTop:2}},item[1]),
@@ -2291,6 +2509,7 @@ export default function App(){
           if(tradeA.length===0&&tradeB.length===0)return;
           if(!isPro&&tradeCount>=FREE_TRADE_LIMIT){setAuthMode("signup");setShowAuth(true);return;}
           setAnalyzed(true);setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));setTradeSaved(false);if(!isPro)setTradeCount(function(c){return c+1;});
+          trackEvent("trade_analyzed",{scoring,sideA:tradeA.map(function(x){return x.name;}),sideB:tradeB.map(function(x){return x.name;})});
         },style:{width:"100%",padding:"15px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:800,fontSize:15,
           background:(tradeA.length>0||tradeB.length>0)?(!isPro&&tradeCount>=FREE_TRADE_LIMIT?"linear-gradient(135deg,"+T.gold+",#92400e)":"linear-gradient(135deg,"+T.purple+",#5b21b6)"):T.purpleDim,
           color:(tradeA.length>0||tradeB.length>0)?"#fff":T.textDim}},
@@ -4316,7 +4535,7 @@ export default function App(){
     tab==="admin"&&user&&React.createElement("div",{style:{paddingBottom:80}},
       // sub-nav
       React.createElement("div",{style:{display:"flex",gap:6,padding:"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none",borderBottom:"1px solid "+T.border}},
-        [["system","\u21BA","System"],["valuetuner","\u2AE5","Value Tuner"],["rbcontext","\u270E","RB Context"],["rbai","\u2728","RB AI"],["headshots","\uD83D\uDC64","Headshots"],["idpupload","\u2B06","IDP Upload"]].map(function(s){
+        [["analytics","📊","Analytics"],["system","\u21BA","System"],["valuetuner","\u2AE5","Value Tuner"],["rbcontext","\u270E","RB Context"],["rbai","\u2728","RB AI"],["headshots","\uD83D\uDC64","Headshots"],["idpupload","\u2B06","IDP Upload"]].map(function(s){
           var active=adminSubTab===s[0];
           return React.createElement("button",{key:s[0],onClick:function(){setAdminSubTab(s[0]);},style:{whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,padding:"8px 12px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},
             React.createElement("span",null,s[1]),s[2]
@@ -4776,7 +4995,14 @@ export default function App(){
           React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:24,marginBottom:14}},["Contact","FAQ","Help"].map(function(l){return React.createElement("span",{key:l,style:{fontSize:12,color:T.textSub,cursor:"pointer"}},l);})),
           React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:24,marginBottom:14}},[["f","Facebook"],["@","Instagram"],["T","TikTok"]].map(function(s){return React.createElement("div",{key:s[1],style:{width:32,height:32,borderRadius:"50%",background:T.bgCard,border:"1px solid "+T.border,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:13,color:T.textSub,fontWeight:700}},s[0]);})),
           React.createElement("div",{style:{fontSize:10,color:T.textDim,lineHeight:1.6}},"Player values powered by Fantasy Draft Pros. Not affiliated with",React.createElement("br",null),"Sleeper, ESPN, or Yahoo. For entertainment only.")
-        )
+        ),
+
+      // ── ANALYTICS SUB-TAB ────────────────────────────────────────────────
+      adminSubTab==="analytics"&&React.createElement(AnalyticsDashboard,{T:T,data:analyticsData,loading:analyticsLoading,onLoad:function(){
+        if(analyticsLoading)return;
+        setAnalyticsLoading(true);
+        loadAnalyticsData().then(function(d){setAnalyticsData(d);setAnalyticsLoading(false);});
+      }})
       )
     ),
 
