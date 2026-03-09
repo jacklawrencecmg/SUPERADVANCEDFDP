@@ -52,17 +52,19 @@ async function loadAnalyticsData() {
   try {
     const now = new Date();
     const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
-    const [r1, r2, r3, r4, r5, r6] = await Promise.all([
+    const [r1, r2, r3, r4, r5, r6, r7] = await Promise.all([
       rc.from("analytics_events").select("visitor_id, created_at").eq("event_type","page_view").gte("created_at",day14ago),
       rc.from("analytics_events").select("event_data").eq("event_type","tab_change").gte("created_at",day14ago),
       rc.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","trade_analyzed"),
-      rc.from("analytics_events").select("visitor_id, event_type, event_data, created_at").order("created_at",{ascending:false}).limit(50),
+      rc.from("analytics_events").select("visitor_id, event_type, event_data, created_at").order("created_at",{ascending:false}).limit(100),
       rc.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","page_view"),
       rc.from("analytics_events").select("id",{count:"exact",head:true}),
+      // All events where user_email is present — dedicated signed-in user feed
+      rc.from("analytics_events").select("visitor_id, event_type, event_data, created_at").not("event_data->>user_email","is","null").order("created_at",{ascending:false}).limit(200),
     ]);
     const firstError = r1.error||r2.error||r3.error||r4.error;
-    if (firstError) return { daily:[], features:[], trades:0, recent:[], totalVisitors:0, totalEvents:0, error: firstError.message };
-    return { daily: r1.data||[], features: r2.data||[], trades: r3.count||0, recent: r4.data||[], totalVisitors: r5.count||0, totalEvents: r6.count||0, error: null };
+    if (firstError) return { daily:[], features:[], trades:0, recent:[], userEvents:[], totalVisitors:0, totalEvents:0, error: firstError.message };
+    return { daily: r1.data||[], features: r2.data||[], trades: r3.count||0, recent: r4.data||[], userEvents: r7.data||[], totalVisitors: r5.count||0, totalEvents: r6.count||0, error: null };
   } catch(e:any) {
     return { daily:[], features:[], trades:0, recent:[], error: e?.message||"Unknown error" };
   }
@@ -1697,16 +1699,15 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
   var features=buildFeatureUsage(data.features);
   var maxFeat=Math.max(1,...features.map(function(f:any){return f[1];}));
 
-  // Build user list from all events that have user_email in event_data
-  var allEvents=(data.recent||[]).concat(data.daily||[]);
-  var userMap:Record<string,{email:string,lastSeen:string,events:number,trades:number}> = {};
-  (data.recent||[]).forEach(function(e:any){
+  // Build user list from dedicated signed-in user events feed
+  var userMap:Record<string,{email:string,lastSeen:string,events:number,trades:number,lastAction:string}> = {};
+  (data.userEvents||[]).forEach(function(e:any){
     var email=e.event_data?.user_email;
     if(!email) return;
-    if(!userMap[email]) userMap[email]={email,lastSeen:e.created_at,events:0,trades:0};
+    if(!userMap[email]) userMap[email]={email,lastSeen:e.created_at,events:0,trades:0,lastAction:e.event_type};
     userMap[email].events++;
-    if(e.event_type==="trade_analyzed") userMap[email].trades++;
-    if(e.created_at>userMap[email].lastSeen) userMap[email].lastSeen=e.created_at;
+    if(e.event_type==="trade_analyzed"){userMap[email].trades++;userMap[email].lastAction="trade_analyzed";}
+    if(e.created_at>userMap[email].lastSeen){userMap[email].lastSeen=e.created_at;userMap[email].lastAction=e.event_type;}
   });
   var userList=Object.values(userMap).sort(function(a,b){return b.lastSeen.localeCompare(a.lastSeen);});
 
@@ -1730,17 +1731,23 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
 
     // Signed-in Users
     React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"14px 12px",marginBottom:16}},
-      React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text,marginBottom:10}},"Signed-In Users"),
+      React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+        React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text}},"Signed-In Users"),
+        React.createElement("div",{style:{fontSize:11,color:T.textSub}},userList.length+" users")
+      ),
       userList.length===0
-        ? React.createElement("div",{style:{fontSize:12,color:T.textSub,textAlign:"center",padding:"12px 0"}},"No signed-in user activity in recent events yet.")
-        : userList.map(function(u,i){
+        ? React.createElement("div",{style:{fontSize:12,color:T.textSub,textAlign:"center",padding:"12px 0"}},"No signed-in user activity yet. Users must sign in before analyzing trades.")
+        : userList.map(function(u:any,i:number){
             var when=new Date(u.lastSeen);
-            return React.createElement("div",{key:u.email,style:{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<userList.length-1?"1px solid "+T.border:"none"}},
-              React.createElement("div",{style:{width:32,height:32,borderRadius:"50%",background:T.purpleDim,border:"1px solid "+T.borderPurple,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:T.purple,flexShrink:0}},u.email.charAt(0).toUpperCase()),
+            var actionLabel=u.lastAction==="trade_analyzed"?"⚖️ Analyzed trade":u.lastAction==="tab_change"?"🔀 Browsed":u.lastAction==="page_view"?"🌐 Visited":"📌 "+u.lastAction;
+            var isTrader=u.trades>0;
+            return React.createElement("div",{key:u.email,style:{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderBottom:i<userList.length-1?"1px solid "+T.border:"none"}},
+              React.createElement("div",{style:{width:34,height:34,borderRadius:"50%",background:isTrader?"linear-gradient(135deg,"+T.purple+",#5b21b6)":T.purpleDim,border:"1px solid "+T.borderPurple,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:"#fff",flexShrink:0}},u.email.charAt(0).toUpperCase()),
               React.createElement("div",{style:{flex:1,minWidth:0}},
                 React.createElement("div",{style:{fontSize:12,fontWeight:700,color:T.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},u.email),
-                React.createElement("div",{style:{fontSize:10,color:T.textSub,marginTop:1}},u.events+" events · "+u.trades+" trades · last seen "+when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
-              )
+                React.createElement("div",{style:{fontSize:10,color:T.textSub,marginTop:2}},actionLabel+" · "+u.trades+" trades · "+when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
+              ),
+              isTrader&&React.createElement("div",{style:{background:T.purple+"22",border:"1px solid "+T.purple+"44",borderRadius:6,padding:"2px 7px",fontSize:9,fontWeight:800,color:T.purple,flexShrink:0}},u.trades+" trades")
             );
           })
     ),
