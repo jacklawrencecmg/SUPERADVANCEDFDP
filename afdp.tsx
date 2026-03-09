@@ -2,8 +2,8 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 // ── Analytics (project: wizdxspglxpvvogiivsv) ──────────────────────────────
-const SUPA_URL = (import.meta as any).env?.VITE_SUPABASE_URL || "";
-const SUPA_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || "";
+const SUPA_URL = (import.meta as any).env?.VITE_SUPABASE_URL || "https://wizdxspglxpvvogiivsv.supabase.co";
+const SUPA_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || "sb_publishable_d8hlXb52bBoR65xl4owmSg_nW2UwoIg";
 const analyticsClient = SUPA_URL && SUPA_KEY ? createClient(SUPA_URL, SUPA_KEY) : null;
 
 function getVisitorId(): string {
