@@ -3600,11 +3600,13 @@ export default function App(){
         ),
         (function(){
           var posF=rankSubTab==="allrankings"?rankPos:rankSubTab==="qbs"?"QB":rankSubTab==="rbs"?"RB":rankSubTab==="wrs"?"WR":"TE";
-          return rankedPlayers.filter(function(p){
+          var filtered=rankedPlayers.filter(function(p){
             return p.pos===posF&&(!rankSearch||p.name.toLowerCase().includes(rankSearch.toLowerCase()))&&(rankTeamFilter==="All Teams"||p.team.toUpperCase()===rankTeamFilter.toUpperCase());
-          }).filter(function(p){return !user||user.isPro||p.posRank<=FREE_RANK_LIMIT;}).map(function(p){
+          });
+          filtered=filtered.slice().sort(function(a,b){return b.tradeVal-a.tradeVal;});
+          return filtered.filter(function(_,i){return !user||user.isPro||i<FREE_RANK_LIMIT;}).map(function(p,i){
             return React.createElement("div",{key:p.name,style:{display:"grid",gridTemplateColumns:"44px 1fr 52px",padding:"12px 16px",borderBottom:"1px solid "+T.border,alignItems:"center"}},
-              React.createElement("div",{style:{fontWeight:800,fontSize:13,color:T.textDim}},p.posRank),
+              React.createElement("div",{style:{fontWeight:800,fontSize:13,color:T.textDim}},i+1),
               React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10}},
                 React.createElement(Avatar,{name:p.name,pos:p.pos,size:36}),
                 React.createElement("div",null,
