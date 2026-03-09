@@ -1711,6 +1711,18 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
   });
   var userList=Object.values(userMap).sort(function(a,b){return b.lastSeen.localeCompare(a.lastSeen);});
 
+  // Build anonymous visitor list from recent events (no user_email)
+  var anonMap:Record<string,{vid:string,lastSeen:string,events:number,trades:number,lastAction:string}> = {};
+  (data.recent||[]).forEach(function(e:any){
+    var vid=e.visitor_id;
+    if(!vid||e.event_data?.user_email) return; // skip signed-in users
+    if(!anonMap[vid]) anonMap[vid]={vid,lastSeen:e.created_at,events:0,trades:0,lastAction:e.event_type};
+    anonMap[vid].events++;
+    if(e.event_type==="trade_analyzed"){anonMap[vid].trades++;anonMap[vid].lastAction="trade_analyzed";}
+    if(e.created_at>anonMap[vid].lastSeen){anonMap[vid].lastSeen=e.created_at;anonMap[vid].lastAction=e.event_type;}
+  });
+  var anonList=Object.values(anonMap).sort(function(a,b){return b.lastSeen.localeCompare(a.lastSeen);});
+
   return React.createElement("div",{style:{padding:16}},
     // Header
     React.createElement("div",{style:{marginBottom:16}},
@@ -1748,6 +1760,28 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
                 React.createElement("div",{style:{fontSize:10,color:T.textSub,marginTop:2}},actionLabel+" · "+u.trades+" trades · "+when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
               ),
               isTrader&&React.createElement("div",{style:{background:T.purple+"22",border:"1px solid "+T.purple+"44",borderRadius:6,padding:"2px 7px",fontSize:9,fontWeight:800,color:T.purple,flexShrink:0}},u.trades+" trades")
+            );
+          })
+    ),
+
+    // Anonymous Visitors
+    React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"14px 12px",marginBottom:16}},
+      React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+        React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text}},"Anonymous Visitors"),
+        React.createElement("div",{style:{fontSize:11,color:T.textSub}},anonList.length+" unique")
+      ),
+      anonList.length===0
+        ? React.createElement("div",{style:{fontSize:12,color:T.textSub,textAlign:"center",padding:"12px 0"}},"No recent anonymous activity.")
+        : anonList.slice(0,20).map(function(u:any,i:number){
+            var when=new Date(u.lastSeen);
+            var actionLabel=u.lastAction==="trade_analyzed"?"⚖️ Analyzed trade":u.lastAction==="tab_change"?"🔀 Browsed":"🌐 Visited";
+            return React.createElement("div",{key:u.vid,style:{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<Math.min(anonList.length,20)-1?"1px solid "+T.border:"none"}},
+              React.createElement("div",{style:{width:30,height:30,borderRadius:"50%",background:T.bgInput,border:"1px solid "+T.border,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:T.textDim,flexShrink:0}},"?"),
+              React.createElement("div",{style:{flex:1,minWidth:0}},
+                React.createElement("div",{style:{fontSize:11,color:T.textSub,fontFamily:"monospace",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},u.vid),
+                React.createElement("div",{style:{fontSize:10,color:T.textDim,marginTop:2}},actionLabel+" · "+u.events+" events"+(u.trades?" · "+u.trades+" trades":"")+" · "+when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
+              ),
+              u.trades>0&&React.createElement("div",{style:{background:T.green+"22",border:"1px solid "+T.green+"44",borderRadius:6,padding:"2px 7px",fontSize:9,fontWeight:800,color:T.green,flexShrink:0}},u.trades+" trades")
             );
           })
     ),
