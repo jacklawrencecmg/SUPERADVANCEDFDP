@@ -1975,7 +1975,8 @@ export default function App(){
         var formulaVal=p.pos!=="QB"?Math.max(rankVal,Math.min(3500,rawFloor)):rankVal;
         // KTC anchor + FDP age intelligence: apply dynastyBonus on top of KTC base
         // ab=1 for prime-age players (no change), youth gets slight boost, aging gets discount
-        p.tradeVal=p.ktcVal?Math.round(Math.min(9999,p.ktcVal*ab)):formulaVal;
+        var sfQbBoost=(isSF&&p.pos==="QB")?1.25:1;
+        p.tradeVal=p.ktcVal?Math.round(Math.min(9999,p.ktcVal*ab*sfQbBoost)):formulaVal;
       } else {
         // Redraft (PPR/Half/Standard/Superflex): VBD-based with position-rank floor
         // Floor prevents depth players from cliffing to 10 when below baseline
@@ -5018,7 +5019,7 @@ export default function App(){
       adminSubTab==="analytics"&&React.createElement(AnalyticsDashboard,{T:T,data:analyticsData,loading:analyticsLoading,onLoad:function(){
         if(analyticsLoading)return;
         setAnalyticsLoading(true);
-        loadAnalyticsData().then(function(d){setAnalyticsData(d);setAnalyticsLoading(false);});
+        loadAnalyticsData().then(function(d){setAnalyticsData(d);setAnalyticsLoading(false);}).catch(function(e){setAnalyticsData({error:e?.message||"Unknown error",daily:[],features:[],trades:0,recent:[]});setAnalyticsLoading(false);});
       }})
     ),
 
