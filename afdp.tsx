@@ -2452,11 +2452,11 @@ export default function App(){
 
     // BOTTOM TABS
     React.createElement("div",{style:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:T.bgCard,borderTop:"1px solid "+T.border,display:"flex",zIndex:100}},
-      [["trade","Trade","⚖️"],["league","League","🏈"],["rankings","Ranks","📊"],["reports","Reports","📈"],["admin","Admin","🔐"]].map(function(item){
+      [["trade","Trade","⚖️"],["league","League","🏈"],["rankings","Ranks","📊"],["reports","Reports","📈"]].concat(user&&user.isAdmin?[["admin","Admin","🔐"]]:[]).map(function(item){
         var active=tab===item[0];
         return React.createElement("button",{key:item[0],onClick:function(){
           if((item[0]==="league"||item[0]==="reports")&&!isPro){setAuthMode("signup");setShowAuth(true);return;}
-          if(item[0]==="admin"){if(!user){setAuthMode("signin");setShowAuth(true);return;}setTab("admin");trackEvent("tab_change",{tab:"admin"});return;}
+          if(item[0]==="admin"){if(!user||!user.isAdmin){return;}setTab("admin");trackEvent("tab_change",{tab:"admin"});return;}
           setTab(item[0]);trackEvent("tab_change",{tab:item[0]});
         },style:{flex:1,padding:"8px 4px 8px",minHeight:56,background:active?T.purple+"12":"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2,WebkitTapHighlightColor:"transparent"}},
           React.createElement("span",{style:{fontSize:18,lineHeight:1}},item[2]),
@@ -4536,13 +4536,13 @@ export default function App(){
     ),
 
     // ════ ADMIN TAB ════
-    tab==="admin"&&!user&&React.createElement("div",{style:{padding:"60px 24px",textAlign:"center",paddingBottom:100}},
+    tab==="admin"&&(!user||!user.isAdmin)&&React.createElement("div",{style:{padding:"60px 24px",textAlign:"center",paddingBottom:100}},
       React.createElement("div",{style:{width:72,height:72,borderRadius:20,background:T.purpleDim,border:"1px solid "+T.borderPurple,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,margin:"0 auto 20px"}},"🔒"),
-      React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.text,marginBottom:10}},"Admin Access Required"),
-      React.createElement("div",{style:{fontSize:14,color:T.textSub,lineHeight:1.6,marginBottom:28,maxWidth:280,margin:"0 auto 28px"}},"You must be signed in to access the Admin panel."),
-      React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"14px 32px",borderRadius:14,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer"}},"Sign In")
+      React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.text,marginBottom:10}},"Restricted Access"),
+      React.createElement("div",{style:{fontSize:14,color:T.textSub,lineHeight:1.6,marginBottom:28,maxWidth:280,margin:"0 auto 28px"}},"This area is restricted to authorized administrators only."),
+      React.createElement("button",{onClick:function(){setTab("trade");},style:{padding:"14px 32px",borderRadius:14,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer"}},"Back to Trade")
     ),
-    tab==="admin"&&user&&React.createElement("div",{style:{paddingBottom:80}},
+    tab==="admin"&&user&&user.isAdmin&&React.createElement("div",{style:{paddingBottom:80}},
       // sub-nav
       React.createElement("div",{style:{display:"flex",gap:6,padding:"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none",borderBottom:"1px solid "+T.border}},
         [["analytics","📊","Analytics"],["system","\u21BA","System"],["valuetuner","\u2AE5","Value Tuner"],["rbcontext","\u270E","RB Context"],["rbai","\u2728","RB AI"],["headshots","\uD83D\uDC64","Headshots"],["idpupload","\u2B06","IDP Upload"]].map(function(s){
