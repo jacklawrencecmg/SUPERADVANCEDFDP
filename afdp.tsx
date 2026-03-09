@@ -2564,7 +2564,7 @@ export default function App(){
         React.createElement("div",{style:{display:"inline-flex",alignItems:"center",gap:6,background:T.purpleDim,border:"1px solid "+T.purple+"44",borderRadius:30,padding:"5px 14px",fontSize:10,color:T.purpleLight,fontWeight:700,letterSpacing:0.5,marginBottom:14}},"#1 DYNASTY FANTASY FOOTBALL TRADE CALCULATOR - FREE"),
         React.createElement("div",{style:{fontWeight:900,fontSize:28,lineHeight:1.15,marginBottom:10}},React.createElement("span",{style:{color:T.purple}},"Win Every Trade."),React.createElement("br",null),"Dominate Your Dynasty."),
         React.createElement("div",{style:{fontSize:13,color:T.textSub,lineHeight:1.7,marginBottom:16}},"The free dynasty fantasy football trade analyzer trusted by thousands. Combines offensive players, IDP, FAAB budget, and draft picks — 9,000+ player values updated daily."),
-        publicStats&&React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:24,marginBottom:20}},
+        publicStats&&user&&user.isAdmin&&React.createElement("div",{style:{display:"flex",justifyContent:"center",gap:24,marginBottom:20}},
           React.createElement("div",{style:{textAlign:"center"}},
             React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.purple}},(publicStats.visitors||0).toLocaleString()),
             React.createElement("div",{style:{fontSize:10,color:T.textSub,fontWeight:600,letterSpacing:0.5,marginTop:2}},"VISITORS")
