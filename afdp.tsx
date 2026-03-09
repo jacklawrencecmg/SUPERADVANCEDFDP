@@ -30,39 +30,24 @@ async function trackEvent(type: string, data: Record<string, any> = {}) {
 
 async function loadAnalyticsData() {
   if (!analyticsClient) return null;
-  try {
-    const now = new Date();
-    const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
+  const now = new Date();
+  const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
 
-    // Daily unique visitors (last 14 days)
-    const { data: daily } = await analyticsClient
-      .from("analytics_events")
-      .select("visitor_id, created_at")
-      .eq("event_type", "page_view")
-      .gte("created_at", day14ago);
+  const [r1, r2, r3, r4] = await Promise.all([
+    analyticsClient.from("analytics_events").select("visitor_id, created_at").eq("event_type","page_view").gte("created_at",day14ago),
+    analyticsClient.from("analytics_events").select("event_data").eq("event_type","tab_change").gte("created_at",day14ago),
+    analyticsClient.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","trade_analyzed"),
+    analyticsClient.from("analytics_events").select("visitor_id, event_type, event_data, created_at").order("created_at",{ascending:false}).limit(50),
+  ]);
 
-    // Feature usage
-    const { data: features } = await analyticsClient
-      .from("analytics_events")
-      .select("event_data")
-      .eq("event_type", "tab_change")
-      .gte("created_at", day14ago);
-
-    // Trade count
-    const { count: trades } = await analyticsClient
-      .from("analytics_events")
-      .select("id", { count: "exact", head: true })
-      .eq("event_type", "trade_analyzed");
-
-    // Recent events
-    const { data: recent } = await analyticsClient
-      .from("analytics_events")
-      .select("visitor_id, event_type, event_data, created_at")
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    return { daily: daily || [], features: features || [], trades: trades || 0, recent: recent || [] };
-  } catch { return null; }
+  const firstError = r1.error||r2.error||r3.error||r4.error;
+  return {
+    daily: r1.data||[],
+    features: r2.data||[],
+    trades: r3.count||0,
+    recent: r4.data||[],
+    error: firstError ? firstError.message : null,
+  };
 }
 
 const DARK={bg:"#13111e",bgCard:"#1c1a2e",bgInput:"#0f0d1a",border:"#2e2a4a",borderPurple:"#5b3fd4",purple:"#7c4dff",purpleLight:"#9b72ff",purpleDim:"#3d2a7a",text:"#ffffff",textSub:"#9b96b8",textDim:"#5c5880",green:"#22c55e",red:"#ef4444",gold:"#f59e0b",cyan:"#06b6d4"};
@@ -1674,6 +1659,13 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
   );
 
   if(!data) return React.createElement("div",{style:{padding:16,textAlign:"center",color:T.textSub}},"No data yet — visit the site to start collecting.");
+  if(data.error) return React.createElement("div",{style:{padding:16}},
+    React.createElement("div",{style:{background:"#ef444418",border:"1px solid #ef4444",borderRadius:12,padding:16,marginBottom:12}},
+      React.createElement("div",{style:{fontWeight:800,fontSize:14,color:"#ef4444",marginBottom:6}},"Analytics Query Error"),
+      React.createElement("div",{style:{fontSize:12,color:T.textSub,fontFamily:"monospace",wordBreak:"break-all"}},(data.error))),
+    React.createElement("div",{style:{fontSize:12,color:T.textSub,lineHeight:1.7}},"This usually means the SELECT policy on ",React.createElement("code",null,"analytics_events")," doesn't allow the anon key. Run this in Supabase SQL editor:",React.createElement("pre",{style:{background:T.bgInput,borderRadius:8,padding:10,fontSize:11,marginTop:8,color:T.purple,overflowX:"auto"}},'DROP POLICY IF EXISTS "admin select" ON analytics_events;\nCREATE POLICY "anon select" ON analytics_events\n  FOR SELECT TO anon USING (true);')),
+    React.createElement("button",{onClick:onLoad,style:{marginTop:12,padding:"10px 20px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:13}},"\u21BB Retry")
+  );
 
   var daily=buildDailyBuckets(data.daily);
   var maxDay=Math.max(1,...daily.map(function(d:any){return d.count;}));
@@ -1694,8 +1686,8 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
     ),
 
     // Summary cards
-    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:20}},
-      [["Today",todayVisitors,"📅"],["7 Days",weekVisitors,"📆"],["14 Days",totalUnique,"🗓️"]].map(function(s){
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginBottom:20}},
+      [["Today",todayVisitors,"📅"],["7d",weekVisitors,"📆"],["14d",totalUnique,"🗓️"],["Trades",data.trades,"⚖️"]].map(function(s:any){
         return React.createElement("div",{key:s[0] as string,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 8px",textAlign:"center"}},
           React.createElement("div",{style:{fontSize:20,marginBottom:4}},s[2]),
           React.createElement("div",{style:{fontWeight:900,fontSize:22,color:T.purple}},s[1]),
