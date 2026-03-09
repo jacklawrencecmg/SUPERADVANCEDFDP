@@ -20,13 +20,16 @@ function getVisitorId(): string {
   } catch { return "anonymous"; }
 }
 
+let _trackedEmail = "";
+function setTrackedUser(email: string) { _trackedEmail = email || ""; }
+
 async function trackEvent(type: string, data: Record<string, any> = {}) {
   if (!analyticsClient) return;
   try {
     await analyticsClient.from("analytics_events").insert({
       visitor_id: getVisitorId(),
       event_type: type,
-      event_data: data,
+      event_data: _trackedEmail ? Object.assign({}, data, {user_email: _trackedEmail}) : data,
     });
   } catch { /* silent */ }
 }
@@ -1680,6 +1683,19 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
   var features=buildFeatureUsage(data.features);
   var maxFeat=Math.max(1,...features.map(function(f:any){return f[1];}));
 
+  // Build user list from all events that have user_email in event_data
+  var allEvents=(data.recent||[]).concat(data.daily||[]);
+  var userMap:Record<string,{email:string,lastSeen:string,events:number,trades:number}> = {};
+  (data.recent||[]).forEach(function(e:any){
+    var email=e.event_data?.user_email;
+    if(!email) return;
+    if(!userMap[email]) userMap[email]={email,lastSeen:e.created_at,events:0,trades:0};
+    userMap[email].events++;
+    if(e.event_type==="trade_analyzed") userMap[email].trades++;
+    if(e.created_at>userMap[email].lastSeen) userMap[email].lastSeen=e.created_at;
+  });
+  var userList=Object.values(userMap).sort(function(a,b){return b.lastSeen.localeCompare(a.lastSeen);});
+
   return React.createElement("div",{style:{padding:16}},
     // Header
     React.createElement("div",{style:{marginBottom:16}},
@@ -1696,6 +1712,23 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
           React.createElement("div",{style:{fontSize:10,color:T.textSub,fontWeight:600}},s[0])
         );
       })
+    ),
+
+    // Signed-in Users
+    React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"14px 12px",marginBottom:16}},
+      React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text,marginBottom:10}},"Signed-In Users"),
+      userList.length===0
+        ? React.createElement("div",{style:{fontSize:12,color:T.textSub,textAlign:"center",padding:"12px 0"}},"No signed-in user activity in recent events yet.")
+        : userList.map(function(u,i){
+            var when=new Date(u.lastSeen);
+            return React.createElement("div",{key:u.email,style:{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<userList.length-1?"1px solid "+T.border:"none"}},
+              React.createElement("div",{style:{width:32,height:32,borderRadius:"50%",background:T.purpleDim,border:"1px solid "+T.borderPurple,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:800,color:T.purple,flexShrink:0}},u.email.charAt(0).toUpperCase()),
+              React.createElement("div",{style:{flex:1,minWidth:0}},
+                React.createElement("div",{style:{fontSize:12,fontWeight:700,color:T.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},u.email),
+                React.createElement("div",{style:{fontSize:10,color:T.textSub,marginTop:1}},u.events+" events · "+u.trades+" trades · last seen "+when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
+              )
+            );
+          })
     ),
 
     // Daily bar chart
@@ -1749,9 +1782,13 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
       data.recent.slice(0,10).map(function(e:any,i:number){
         var when=new Date(e.created_at);
         var label=e.event_type==="page_view"?"🌐 Page View":e.event_type==="tab_change"?"🔀 Tab: "+e.event_data?.tab:e.event_type==="trade_analyzed"?"⚖️ Trade Analyzed":"📌 "+e.event_type;
-        return React.createElement("div",{key:i,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:i<9?"1px solid "+T.border:"none"}},
-          React.createElement("div",{style:{fontSize:12,color:T.text}},label),
-          React.createElement("div",{style:{fontSize:10,color:T.textSub}},when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
+        var userEmail=e.event_data?.user_email||"";
+        return React.createElement("div",{key:i,style:{padding:"7px 0",borderBottom:i<9?"1px solid "+T.border:"none"}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+            React.createElement("div",{style:{fontSize:12,color:T.text,fontWeight:600}},label),
+            React.createElement("div",{style:{fontSize:10,color:T.textSub}},when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
+          ),
+          userEmail&&React.createElement("div",{style:{fontSize:10,color:T.purple,marginTop:2}},userEmail)
         );
       })
     ),
@@ -1812,8 +1849,8 @@ export default function App(){
   var [contactSubject,setContactSubject]=useState("");
   var [contactMsg,setContactMsg]=useState("");
   var [contactSent,setContactSent]=useState(false);
-  var [user,setUser]=useState(function(){try{var s=localStorage.getItem('fdp_user_v1');return s?JSON.parse(s):null;}catch(e){return null;}});
-  function saveAndSetUser(u){try{if(u)localStorage.setItem('fdp_user_v1',JSON.stringify(u));else localStorage.removeItem('fdp_user_v1');}catch(e){}setUser(u);}
+  var [user,setUser]=useState(function(){try{var s=localStorage.getItem('fdp_user_v1');if(s){var u=JSON.parse(s);setTrackedUser(u?.email||"");return u;}return null;}catch(e){return null;}});
+  function saveAndSetUser(u){try{if(u)localStorage.setItem('fdp_user_v1',JSON.stringify(u));else localStorage.removeItem('fdp_user_v1');}catch(e){}setUser(u);setTrackedUser(u?.email||"");}
   var [showAuth,setShowAuth]=useState(false);
   var [authMode,setAuthMode]=useState("signup");
   var [showAdmin,setShowAdmin]=useState(false);
