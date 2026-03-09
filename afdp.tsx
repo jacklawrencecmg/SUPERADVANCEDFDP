@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// ── Analytics ──────────────────────────────────────────────────────────────
+// ── Analytics (project: wizdxspglxpvvogiivsv) ──────────────────────────────
 const SUPA_URL = (import.meta as any).env?.VITE_SUPABASE_URL || "";
 const SUPA_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || "";
 const analyticsClient = SUPA_URL && SUPA_KEY ? createClient(SUPA_URL, SUPA_KEY) : null;
