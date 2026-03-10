@@ -131,7 +131,21 @@ const SLEEPER_IDS={
 "Jaylon Johnson":"6839","Trevon Diggs":"6809","C.J. Gardner-Johnson":"5893",
 "Jordan Poyer":"1343","Darius Slay":"1518","Emmanuel Forbes":"10882",
 "Deommodore Lenoir":"7819","Derwin James":"4971","Kyle Hamilton":"8339",
-"Sauce Gardner":"8290"};
+"Sauce Gardner":"8290",
+"Aaron Rodgers":"96","Kirk Cousins":"1166",
+"Tyjae Spears":"9508","Jaylen Wright":"11643","Kendre Miller":"9757","Sean Tucker":"9506",
+"Kaleb Johnson":"12504","Ollie Gordon II":"12495","Isaiah Davis":"11571",
+"Chris Rodriguez Jr.":"10219","Kareem Hunt":"4098","Emanuel Wilson":"11435",
+"Jayden Reed":"10222","Rashid Shaheed":"8676","Keenan Allen":"1479","Adonai Mitchell":"11625",
+"John Metchie III":"8147","Devaughn Vele":"11834","Troy Franklin":"11627","Jaylin Noel":"12536",
+"Kyle Williams":"12547","Jack Bech":"12483","Elic Ayomanor":"12499","Isaac TeSlaa":"12535",
+"Jalen Coker":"11646","Tre' Harris":"12509","Tory Horton":"12497","Ryan Flournoy":"11783",
+"Konata Mumpfield":"12718",
+"Calvin Austin III":"8125","Treylon Burks":"8135","Nick Cross":"8392","Audric Estime":"11579","Isaiah Bond":"12503",
+"George Kittle":"4217","Colston Loveland":"12517","Mason Taylor":"12498","Kyle Pitts":"7553",
+"Evan Engram":"4066","Dalton Kincaid":"10236","Tucker Kraft":"9484","Isaiah Likely":"8131",
+"Juwan Johnson":"7002","Zach Ertz":"1339","Theo Johnson":"11597","Dalton Schultz":"5001",
+"Hunter Henry":"3214","Oronde Gadsden II":"12493","Terrance Ferguson":"12487","AJ Barner":"11603"};
 function headshot(n){var id=SLEEPER_IDS[n];return id?"https://sleepercdn.com/content/nfl/players/thumb/"+id+".jpg":null;}
 
 const PLAYERS=[
@@ -735,6 +749,9 @@ const PLAYERS=[
   {name:"Lynn Bowden Jr.",pos:"WR",age:28,team:"LV",proj:{PPR:82,Half:75,Standard:68},adp:46.8,note:"Versatile depth"},
   {name:"Davion Davis",pos:"WR",age:26,team:"PHI",proj:{PPR:75,Half:69,Standard:63},adp:48.0,note:"Physical depth WR"},
   {name:"Malachi Corley",pos:"WR",age:23,team:"NYJ",proj:{PPR:148,Half:136,Standard:124},adp:29.0,note:"2026 Year 2: 58 rec 650 yds YAC machine"},
+  {name:"Calvin Austin III",pos:"WR",age:26,team:"PIT",proj:{PPR:118,Half:108,Standard:98},adp:37.0,note:"Speed threat: 45 rec 560 yds deep ball"},
+  {name:"Treylon Burks",pos:"WR",age:25,team:"WAS",proj:{PPR:112,Half:103,Standard:94},adp:39.0,note:"Physical: 42 rec 500 yds reclamation candidate"},
+  {name:"Nick Cross",pos:"DB",age:25,team:"IND",proj:{PPR:0,Half:0,Standard:0},adp:99.0,note:"Safety: elite athleticism IDP LB2/DB1"},
   {name:"Ricky Pearsall",pos:"WR",age:24,team:"SF",proj:{PPR:165,Half:152,Standard:139},adp:26.0,ktcVal:3843,note:"2026 Year 2: 64 rec 760 yds"},
   {name:"Roman Wilson",pos:"WR",age:24,team:"PIT",proj:{PPR:142,Half:130,Standard:118},adp:31.2,note:"2026 Year 2 deep threat: 52 rec 660 yds"},
   {name:"Devaughn Vele",pos:"WR",age:25,team:"DEN",proj:{PPR:132,Half:121,Standard:110},adp:33.8,ktcVal:1993,note:"2026 Year 2: 50 rec 600 yds"},
@@ -1194,7 +1211,7 @@ const PLAYERS=[
   {name:"Marcus Epps",pos:"DB",age:29,team:"ARI",proj:{PPR:80,Half:80,Standard:80},adp:32.5,note:"FS: 72 tackles 2 INT"},
   {name:"Dean Marlowe",pos:"DB",age:33,team:"DET",proj:{PPR:62,Half:62,Standard:62},adp:45.0,note:"S depth: 55 tackles special teams"},
   // WR depth Wave 12
-  {name:"Isaiah Bond",pos:"WR",age:22,team:"NE",proj:{PPR:102,Half:94,Standard:86},adp:38.5,note:"Speed: 40 rec 480 yds 4 TD"},
+  {name:"Isaiah Bond",pos:"WR",age:22,team:"CLE",proj:{PPR:102,Half:94,Standard:86},adp:38.5,note:"Speed: 40 rec 480 yds 4 TD"},
   {name:"Malik Washington",pos:"WR",age:25,team:"DEN",proj:{PPR:88,Half:81,Standard:74},adp:44.0,note:"Slot depth: 36 rec 400 yds"},
   {name:"Devin Duvernay",pos:"WR",age:28,team:"JAX",proj:{PPR:95,Half:87,Standard:79},adp:41.5,note:"Returner/receiver: 38 rec 420 yds"},
   {name:"Bub Means",pos:"WR",age:24,team:"NO",proj:{PPR:92,Half:84,Standard:76},adp:43.0,note:"2024 gem: 38 rec 450 yds 4 TD"},
@@ -1383,7 +1400,7 @@ const PLAYERS=[
   {name:"Kelee Ringo",pos:"DB",age:23,team:"PHI",proj:{PPR:92,Half:92,Standard:92},adp:26.0,note:"Year 3 CB: 60 tackles 3 INT upside"},
   {name:"Joey Porter Jr.",pos:"DB",age:25,team:"PIT",proj:{PPR:98,Half:98,Standard:98},adp:21.5,note:"CB: 64 tackles 3 INT Year 3"},
   // Missing RBs
-  {name:"Audric Estime",pos:"RB",age:23,team:"DEN",proj:{PPR:162,Half:148,Standard:134},adp:21.5,note:"Year 2: 700 rush 5 TD power back"},
+  {name:"Audric Estime",pos:"RB",age:23,team:"NO",proj:{PPR:162,Half:148,Standard:134},adp:21.5,note:"Year 2: 700 rush 5 TD power back"},
   {name:"Alex Mattison",pos:"RB",age:28,team:"MIN",proj:{PPR:155,Half:142,Standard:129},adp:23.5,note:"Lead back if healthy"},
   {name:"Abram Smith",pos:"RB",age:26,team:"NO",proj:{PPR:108,Half:99,Standard:90},adp:36.8,note:"Committee depth back"},
   {name:"Latavius Murray",pos:"RB",age:34,team:"FA",proj:{PPR:82,Half:75,Standard:68},adp:47.5,note:"Veteran depth"},
