@@ -2217,7 +2217,7 @@ export default function App(){
         var sp=sleeperDb[id];
         var nm=sp.name||"";
         var match=rpByName[nm.toLowerCase()]||rpByNorm[normName(nm)]||null;
-        idMap[id]=match||{name:nm,pos:sp.pos||"?",team:sp.team||"FA",age:sp.age||0,rank:"—",vbd:0,tradeVal:1,posRank:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
+        idMap[id]=match||{name:nm,pos:sp.pos||"?",team:sp.team||"FA",age:sp.age||0,rank:"—",vbd:0,tradeVal:500,posRank:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
       });
       var userMap={};users.forEach(function(u){userMap[u.user_id]=u;});
       // FAAB: use actual league budget from lg.settings
@@ -2398,7 +2398,7 @@ export default function App(){
           setImpRoster(pls.map(function(pid){
             var f=sleeperIdToPlayer[pid]||rpByName[(sleeperIdToPlayer[pid]&&sleeperIdToPlayer[pid].name||"").toLowerCase()]||null;
             if(!f){var sp=sleeperIdToPlayer[pid];if(sp)f=rpByName[sp.name.toLowerCase()]||rpByNorm[normName(sp.name||"")];}
-            return f||{name:"Unknown ("+pid+")",pos:"?",team:"?",rank:"—",vbd:0,tradeVal:1,ag:{g:"?",c:"#888"},tier:{t:"?",c:"#888"}};
+            return f||{name:"Unknown ("+pid+")",pos:"?",team:"?",rank:"—",vbd:0,tradeVal:500,ag:{g:"?",c:"#888"},tier:{t:"?",c:"#888"}};
           }));
           setImpStatus("success");
         });
