@@ -2051,6 +2051,14 @@ export default function App(){
       var s=byPos[pos].slice().sort(function(a,b){return b.proj[sKey]-a.proj[sKey];});
       baseVal[pos]=s[Math.min((bl[pos]||teams)-1,s.length-1)]?s[Math.min((bl[pos]||teams)-1,s.length-1)].proj[sKey]:0;
     });
+    // Deeper baselines for auction values — accounts for bench spots (5 RB/WR slots, 2 QB/TE)
+    var abl={QB:isSF?teams*3:teams*2,RB:teams*5,WR:teams*5,TE:teams*2,K:teams,DST:teams,DL:teams*2,LB:teams*2,DB:teams*2};
+    var aBaseVal={};
+    Object.keys(byPos).forEach(function(pos){
+      var s=byPos[pos].slice().sort(function(a,b){return b.proj[sKey]-a.proj[sKey];});
+      var idx=Math.min((abl[pos]||teams*2)-1,s.length-1);
+      aBaseVal[pos]=s[idx]?s[idx].proj[sKey]:0;
+    });
     var list=UNQ.map(function(p){
       var pts=p.proj[sKey]||p.proj["PPR"]||0;
       // Blend live weekly projection into season projection (remaining weeks scale)
@@ -2068,17 +2076,21 @@ export default function App(){
       if(isDynasty&&p.ktcVal) pts=p.ktcVal*0.037;
       var raw=pts-(baseVal[p.pos]||0);
       var vbd=isSF&&p.pos==="QB"?raw*1.38:raw;
-      return Object.assign({},p,{pts:+pts.toFixed(1),vbd:+vbd.toFixed(1),ag:ageGrade(p.pos,p.age)});
+      // Auction VBD uses deeper baselines so more players share the pool
+      var aRaw=pts-(aBaseVal[p.pos]||0);
+      var aVbd=isSF&&p.pos==="QB"?aRaw*1.38:aRaw;
+      return Object.assign({},p,{pts:+pts.toFixed(1),vbd:+vbd.toFixed(1),aVbd:+Math.max(0,aVbd).toFixed(1),ag:ageGrade(p.pos,p.age)});
     });
     list.sort(function(a,b){return b.vbd-a.vbd;});
     var totVbd=list.reduce(function(s,p){return s+Math.max(0,p.vbd);},0)||1;
+    var aTotVbd=list.reduce(function(s,p){return s+(p.aVbd||0);},0)||1;
     var prc={};
     list.forEach(function(p,i){
       prc[p.pos]=(prc[p.pos]||0)+1;
       p.posRank=prc[p.pos];p.rank=i+1;
       p.tier=tierLabel(p.posRank,p.pos);
       p.scarcity=scarcityLabel(p.posRank,bl[p.pos]||teams);
-      p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.60)):1;
+      p.auction=p.aVbd>0?Math.max(1,Math.round((p.aVbd/aTotVbd)*(budget*teams-teams*15)*0.88+1)):1;
       if(p.pos==="K"||p.pos==="DST") p.auction=Math.min(p.auction,5);
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
       var baseTV=Math.round(p.vbd*adminTvMult);
