@@ -183,12 +183,12 @@ const PLAYERS=[
   {name:"Tyreek Hill",pos:"WR",age:33,team:"MIA",proj:{PPR:265,Half:245,Standard:225},adp:10.2,ktcVal:2342,note:"2026: 100 rec 1,150 yds 8 TD declining age"},
   {name:"DK Metcalf",pos:"WR",age:28,team:"SEA",proj:{PPR:268,Half:249,Standard:230},adp:10.5,ktcVal:3748,note:"2026: 90 rec 1,150 yds 10 TD"},
   {name:"Rome Odunze",pos:"WR",age:23,team:"CHI",proj:{PPR:262,Half:243,Standard:224},adp:11.2,ktcVal:5538,note:"2026 Year 2 leap: 95 rec 1,050 yds 9 TD"},
-  {name:"Brock Bowers",pos:"TE",age:24,team:"LV",proj:{PPR:252,Half:232,Standard:212},adp:2.8,note:"2026 Year 2: 125 rec 1,380 yds generational"},
-  {name:"Trey McBride",pos:"TE",age:26,team:"ARI",proj:{PPR:238,Half:219,Standard:200},adp:4.0,note:"2026: 115 rec 1,200 yds 8 TD"},
-  {name:"Tyler Warren",pos:"TE",age:24,team:"IND",proj:{PPR:232,Half:213,Standard:194},adp:5.2,note:"2026 Year 2 breakout: 95 rec 1,020 yds 10 TD dynasty TE2"},
-  {name:"Sam LaPorta",pos:"TE",age:25,team:"DET",proj:{PPR:222,Half:204,Standard:186},adp:6.2,note:"2026: 98 rec 1,050 yds 10 TD"},
-  {name:"Mark Andrews",pos:"TE",age:31,team:"BAL",proj:{PPR:212,Half:195,Standard:178},adp:7.5,note:"2026: 84 rec 920 yds 9 TD"},
-  {name:"Travis Kelce",pos:"TE",age:37,team:"KC",proj:{PPR:182,Half:167,Standard:152},adp:10.5,note:"2026: 78 rec 860 yds declining age"},
+  {name:"Brock Bowers",pos:"TE",age:24,team:"LV",proj:{PPR:252,Half:232,Standard:212},adp:2.8,ktcVal:7714,note:"2026 Year 2: 125 rec 1,380 yds generational"},
+  {name:"Trey McBride",pos:"TE",age:26,team:"ARI",proj:{PPR:238,Half:219,Standard:200},adp:4.0,ktcVal:7616,note:"2026: 115 rec 1,200 yds 8 TD"},
+  {name:"Tyler Warren",pos:"TE",age:24,team:"IND",proj:{PPR:232,Half:213,Standard:194},adp:5.2,ktcVal:5697,note:"2026 Year 2 breakout: 95 rec 1,020 yds 10 TD dynasty TE2"},
+  {name:"Sam LaPorta",pos:"TE",age:25,team:"DET",proj:{PPR:222,Half:204,Standard:186},adp:6.2,ktcVal:4650,note:"2026: 98 rec 1,050 yds 10 TD"},
+  {name:"Mark Andrews",pos:"TE",age:31,team:"BAL",proj:{PPR:212,Half:195,Standard:178},adp:7.5,ktcVal:2656,note:"2026: 84 rec 920 yds 9 TD"},
+  {name:"Travis Kelce",pos:"TE",age:37,team:"KC",proj:{PPR:182,Half:167,Standard:152},adp:10.5,ktcVal:2115,note:"2026: 78 rec 860 yds declining age"},
   {name:"Myles Garrett",pos:"DL",age:30,team:"CLE",proj:{PPR:148,Half:148,Standard:148},adp:7.8,note:"15 sacks 22 TFL"},
   {name:"Micah Parsons",pos:"DL",age:27,team:"DAL",proj:{PPR:145,Half:145,Standard:145},adp:8.1,note:"14 sacks 21 TFL"},
   {name:"Aidan Hutchinson",pos:"DL",age:26,team:"DET",proj:{PPR:142,Half:142,Standard:142},adp:8.5,note:"14 sacks 18 TFL"},
@@ -263,17 +263,17 @@ const PLAYERS=[
   {name:"Quentin Johnston",pos:"WR",age:24,team:"LAC",proj:{PPR:145,Half:133,Standard:121},adp:31.2,ktcVal:3477,note:"60 rec 700 yds 5 TD"},
   {name:"Stefon Diggs",pos:"WR",age:32,team:"NE",proj:{PPR:178,Half:164,Standard:150},adp:24.2,ktcVal:2523,note:"Veteran: 75 rec 820 yds"},
   // Additional TEs
-  {name:"Dallas Goedert",pos:"TE",age:30,team:"PHI",proj:{PPR:182,Half:167,Standard:152},adp:11.8,note:"72 rec 820 yds 7 TD"},
-  {name:"T.J. Hockenson",pos:"TE",age:28,team:"MIN",proj:{PPR:175,Half:160,Standard:145},adp:12.5,note:"70 rec 740 yds"},
-  {name:"David Njoku",pos:"TE",age:29,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:13.8,note:"65 rec 680 yds 6 TD"},
-  {name:"Jake Ferguson",pos:"TE",age:26,team:"DAL",proj:{PPR:162,Half:148,Standard:134},adp:15.0,note:"68 rec 700 yds 6 TD"},
-  {name:"Harold Fannin Jr.",pos:"TE",age:23,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:8.5,ktcVal:5522,note:"Year 2: 66 rec 700 yds 6 TD elite dynasty TE asset"},
+  {name:"Dallas Goedert",pos:"TE",age:30,team:"PHI",proj:{PPR:182,Half:167,Standard:152},adp:11.8,ktcVal:2627,note:"72 rec 820 yds 7 TD"},
+  {name:"T.J. Hockenson",pos:"TE",age:28,team:"MIN",proj:{PPR:175,Half:160,Standard:145},adp:12.5,ktcVal:2708,note:"70 rec 740 yds"},
+  {name:"David Njoku",pos:"TE",age:29,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:13.8,ktcVal:2729,note:"65 rec 680 yds 6 TD"},
+  {name:"Jake Ferguson",pos:"TE",age:26,team:"DAL",proj:{PPR:162,Half:148,Standard:134},adp:15.0,ktcVal:3392,note:"68 rec 700 yds 6 TD"},
+  {name:"Harold Fannin Jr.",pos:"TE",age:23,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:8.5,ktcVal:4892,note:"Year 2: 66 rec 700 yds 6 TD elite dynasty TE asset"},
   {name:"Cade Otton",pos:"TE",age:26,team:"TB",proj:{PPR:148,Half:135,Standard:122},adp:17.8,note:"55 rec 570 yds"},
   {name:"Cole Kmet",pos:"TE",age:26,team:"CHI",proj:{PPR:145,Half:133,Standard:121},adp:18.2,note:"55 rec 560 yds 5 TD"},
   {name:"Pat Freiermuth",pos:"TE",age:28,team:"PIT",proj:{PPR:138,Half:126,Standard:114},adp:19.5,note:"52 rec 540 yds 5 TD"},
-  {name:"Brenton Strange",pos:"TE",age:25,team:"JAX",proj:{PPR:125,Half:114,Standard:103},adp:22.5,note:"48 rec 470 yds"},
-  {name:"Michael Mayer",pos:"TE",age:24,team:"LV",proj:{PPR:118,Half:108,Standard:98},adp:25.0,note:"45 rec 440 yds"},
-  {name:"Chigoziem Okonkwo",pos:"TE",age:27,team:"TEN",proj:{PPR:115,Half:105,Standard:95},adp:26.2,note:"48 rec 460 yds"},
+  {name:"Brenton Strange",pos:"TE",age:25,team:"JAX",proj:{PPR:125,Half:114,Standard:103},adp:22.5,ktcVal:3200,note:"48 rec 470 yds"},
+  {name:"Michael Mayer",pos:"TE",age:24,team:"LV",proj:{PPR:118,Half:108,Standard:98},adp:25.0,ktcVal:2324,note:"45 rec 440 yds"},
+  {name:"Chigoziem Okonkwo",pos:"TE",age:27,team:"TEN",proj:{PPR:115,Half:105,Standard:95},adp:26.2,ktcVal:2301,note:"48 rec 460 yds"},
   {name:"Dawson Knox",pos:"TE",age:28,team:"BUF",proj:{PPR:108,Half:99,Standard:90},adp:28.8,note:"40 rec 410 yds 5 TD"},
   // Additional DLs
   {name:"T.J. Watt",pos:"DL",age:30,team:"PIT",proj:{PPR:155,Half:155,Standard:155},adp:7.2,note:"18 sacks 25 TFL elite pass rush"},
@@ -522,7 +522,7 @@ const PLAYERS=[
   {name:"Ihmir Smith-Marsette",pos:"WR",age:26,team:"DEN",proj:{PPR:105,Half:97,Standard:89},adp:38.5,note:"Speed depth"},
   // TE depth
   {name:"Noah Fant",pos:"TE",age:28,team:"SEA",proj:{PPR:118,Half:108,Standard:98},adp:23.5,note:"50 rec 520 yds 4 TD"},
-  {name:"Hunter Henry",pos:"TE",age:31,team:"NE",proj:{PPR:112,Half:103,Standard:94},adp:25.5,note:"48 rec 500 yds 5 TD"},
+  {name:"Hunter Henry",pos:"TE",age:31,team:"NE",proj:{PPR:112,Half:103,Standard:94},adp:25.5,ktcVal:2375,note:"48 rec 500 yds 5 TD"},
   {name:"Tyler Conklin",pos:"TE",age:30,team:"NYJ",proj:{PPR:105,Half:96,Standard:87},adp:27.8,note:"45 rec 460 yds"},
   {name:"Greg Dulcich",pos:"TE",age:26,team:"DEN",proj:{PPR:108,Half:99,Standard:90},adp:27.0,note:"Year 4: 44 rec 450 yds"},
   {name:"Robert Tonyan",pos:"TE",age:31,team:"MIN",proj:{PPR:102,Half:93,Standard:84},adp:29.5,note:"Red zone TE: 40 rec 420 yds 5 TD"},
@@ -574,16 +574,20 @@ const PLAYERS=[
   {name:"Velus Jones Jr.",pos:"WR",age:28,team:"CHI",proj:{PPR:105,Half:97,Standard:89},adp:39.5,note:"Speed: 38 rec 460 yds"},
   {name:"Elijah Higgins",pos:"WR",age:25,team:"SF",proj:{PPR:105,Half:97,Standard:89},adp:39.8,note:"Slot/TE hybrid depth"},
   // TE continued
-  {name:"Tucker Kraft",pos:"TE",age:25,team:"GB",proj:{PPR:118,Half:108,Standard:98},adp:24.2,note:"Year 3: 50 rec 530 yds 5 TD"},
+  {name:"Tucker Kraft",pos:"TE",age:25,team:"GB",proj:{PPR:118,Half:108,Standard:98},adp:24.2,ktcVal:4819,note:"Year 3: 50 rec 530 yds 5 TD"},
   {name:"Luke Musgrave",pos:"TE",age:25,team:"GB",proj:{PPR:105,Half:96,Standard:87},adp:28.2,note:"Athletic: 42 rec 440 yds"},
-  {name:"Isaiah Likely",pos:"TE",age:26,team:"BAL",proj:{PPR:115,Half:105,Standard:95},adp:25.8,note:"Handcuff to Andrews: 46 rec 480 yds"},
-  {name:"Juwan Johnson",pos:"TE",age:29,team:"NO",proj:{PPR:102,Half:93,Standard:84},adp:30.2,note:"Red zone: 38 rec 380 yds 6 TD"},
-  {name:"Zach Ertz",pos:"TE",age:35,team:"ARI",proj:{PPR:95,Half:87,Standard:79},adp:33.5,note:"Veteran: 40 rec 400 yds"},
+  {name:"Isaiah Likely",pos:"TE",age:26,team:"BAL",proj:{PPR:115,Half:105,Standard:95},adp:25.8,ktcVal:3386,note:"Handcuff to Andrews: 46 rec 480 yds"},
+  {name:"Juwan Johnson",pos:"TE",age:29,team:"NO",proj:{PPR:102,Half:93,Standard:84},adp:30.2,ktcVal:2428,note:"Red zone: 38 rec 380 yds 6 TD"},
+  {name:"Zach Ertz",pos:"TE",age:35,team:"ARI",proj:{PPR:95,Half:87,Standard:79},adp:33.5,ktcVal:1026,note:"Veteran: 40 rec 400 yds"},
+  {name:"George Kittle",pos:"TE",age:32,team:"SF",proj:{PPR:195,Half:179,Standard:163},adp:9.5,ktcVal:3295,note:"Elite blocker and receiver: 78 rec 880 yds 8 TD"},
+  {name:"Oronde Gadsden II",pos:"TE",age:23,team:"JAX",proj:{PPR:138,Half:126,Standard:114},adp:19.0,ktcVal:4005,note:"Year 2: 55 rec 600 yds 5 TD elite athletic profile"},
+  {name:"Terrance Ferguson",pos:"TE",age:23,team:"LAR",proj:{PPR:118,Half:108,Standard:98},adp:23.5,ktcVal:2869,note:"Year 2: 46 rec 490 yds 4 TD developing dynasty TE"},
+  {name:"AJ Barner",pos:"TE",age:23,team:"IND",proj:{PPR:108,Half:99,Standard:90},adp:27.0,ktcVal:2902,note:"Year 2: 42 rec 450 yds dynasty handcuff potential"},
   {name:"Gerald Everett",pos:"TE",age:32,team:"LAC",proj:{PPR:92,Half:84,Standard:76},adp:34.8,note:"Handcuff/depth: 38 rec 380 yds"},
   {name:"Foster Moreau",pos:"TE",age:29,team:"NO",proj:{PPR:88,Half:81,Standard:74},adp:36.5,note:"38 rec 360 yds 4 TD"},
   {name:"Ian Thomas",pos:"TE",age:29,team:"CAR",proj:{PPR:85,Half:78,Standard:71},adp:37.8,note:"Blocking/depth TE"},
   {name:"Austin Hooper",pos:"TE",age:32,team:"LV",proj:{PPR:88,Half:81,Standard:74},adp:36.2,note:"Veteran: 35 rec 350 yds"},
-  {name:"Theo Johnson",pos:"TE",age:24,team:"NYG",proj:{PPR:102,Half:93,Standard:84},adp:30.5,note:"Year 2: 40 rec 420 yds 4 TD"},
+  {name:"Theo Johnson",pos:"TE",age:24,team:"NYG",proj:{PPR:102,Half:93,Standard:84},adp:30.5,ktcVal:2641,note:"Year 2: 40 rec 420 yds 4 TD"},
   {name:"Brayden Willis",pos:"TE",age:26,team:"PHI",proj:{PPR:85,Half:78,Standard:71},adp:38.0,note:"Backup: 32 rec 320 yds"},
   {name:"Tommy Tremble",pos:"TE",age:26,team:"CAR",proj:{PPR:82,Half:75,Standard:68},adp:39.0,note:"Blocking/depth TE"},
   // QB continued
@@ -636,7 +640,7 @@ const PLAYERS=[
   {name:"Simi Fehoko",pos:"WR",age:26,team:"DAL",proj:{PPR:92,Half:84,Standard:76},adp:43.5,note:"Deep threat depth"},
   {name:"Russell Gage",pos:"WR",age:30,team:"TB",proj:{PPR:98,Half:90,Standard:82},adp:41.8,note:"Veteran slot depth"},
   // TE wave 3
-  {name:"Dalton Schultz",pos:"TE",age:29,team:"HOU",proj:{PPR:112,Half:103,Standard:94},adp:26.8,note:"Veteran: 46 rec 470 yds 4 TD"},
+  {name:"Dalton Schultz",pos:"TE",age:29,team:"HOU",proj:{PPR:112,Half:103,Standard:94},adp:26.8,ktcVal:2311,note:"Veteran: 46 rec 470 yds 4 TD"},
   {name:"Tyler Higbee",pos:"TE",age:31,team:"LAR",proj:{PPR:102,Half:93,Standard:84},adp:30.8,note:"42 rec 430 yds 4 TD"},
   {name:"Jonnu Smith",pos:"TE",age:30,team:"ATL",proj:{PPR:108,Half:99,Standard:90},adp:28.8,note:"42 rec 440 yds 5 TD"},
   {name:"Mo Alie-Cox",pos:"TE",age:31,team:"IND",proj:{PPR:88,Half:81,Standard:74},adp:36.8,note:"Blocking/red zone depth"},
@@ -669,8 +673,8 @@ const PLAYERS=[
   {name:"Savion Williams",pos:"WR",age:23,team:"GB",proj:{PPR:148,Half:136,Standard:124},adp:29.8,note:"2026 Year 2 big body: 55 rec 660 yds"},
   {name:"Chimere Dike",pos:"WR",age:24,team:"NYJ",proj:{PPR:138,Half:127,Standard:116},adp:32.0,ktcVal:2779,note:"2026 Year 2 slot: 52 rec 580 yds"},
   {name:"Jaylin Noel",pos:"WR",age:24,team:"HOU",proj:{PPR:128,Half:118,Standard:108},adp:34.8,note:"2026 Year 2: 46 rec 540 yds"},
-  {name:"Colston Loveland",pos:"TE",age:23,team:"CHI",proj:{PPR:195,Half:179,Standard:163},adp:7.0,ktcVal:6627,note:"2026 Year 2 breakout: 78 rec 820 yds 7 TD elite receiving TE"},
-  {name:"Mason Taylor",pos:"TE",age:23,team:"NYJ",proj:{PPR:158,Half:145,Standard:132},adp:16.5,note:"2026 Year 2: 65 rec 680 yds 5 TD elite receiving prospect"},
+  {name:"Colston Loveland",pos:"TE",age:23,team:"CHI",proj:{PPR:195,Half:179,Standard:163},adp:7.0,ktcVal:6070,note:"2026 Year 2 breakout: 78 rec 820 yds 7 TD elite receiving TE"},
+  {name:"Mason Taylor",pos:"TE",age:23,team:"NYJ",proj:{PPR:158,Half:145,Standard:132},adp:16.5,ktcVal:2807,note:"2026 Year 2: 65 rec 680 yds 5 TD elite receiving prospect"},
   // Veterans still missing
   {name:"Amari Cooper",pos:"WR",age:31,team:"CLE",proj:{PPR:172,Half:158,Standard:144},adp:25.5,note:"Veteran: 70 rec 820 yds 6 TD"},
   {name:"JuJu Smith-Schuster",pos:"WR",age:29,team:"NE",proj:{PPR:148,Half:136,Standard:124},adp:30.0,note:"Slot veteran: 58 rec 620 yds"},
@@ -819,7 +823,7 @@ const PLAYERS=[
   {name:"Marquise Brown",pos:"WR",age:28,team:"KC",proj:{PPR:112,Half:103,Standard:94},adp:35.5,note:"Speed slot: 45 rec 540 yds"},
   {name:"Mecole Hardman Jr.",pos:"WR",age:28,team:"KC",proj:{PPR:95,Half:87,Standard:79},adp:42.0,note:"Speed: 38 rec 450 yds 4 TD"},
   // TE Wave 7
-  {name:"Kyle Pitts",pos:"TE",age:25,team:"ATL",proj:{PPR:215,Half:198,Standard:181},adp:12.5,note:"Elite athletic TE: 84 rec 920 yds 7 TD breakout"},
+  {name:"Kyle Pitts",pos:"TE",age:25,team:"ATL",proj:{PPR:215,Half:198,Standard:181},adp:12.5,ktcVal:4481,note:"Elite athletic TE: 84 rec 920 yds 7 TD breakout"},
   {name:"Mike Gesicki",pos:"TE",age:30,team:"NE",proj:{PPR:115,Half:105,Standard:95},adp:24.5,note:"Receiving TE: 46 rec 490 yds 4 TD"},
   // Wave 10 — 2025 NFL Draft rookies: skill + IDP
   // 2025 RB Rookies
@@ -868,7 +872,7 @@ const PLAYERS=[
   // Wave 24 — missing starters + IDP depth sweep
   // Missing starters
   {name:"DeAndre Hopkins",pos:"WR",age:33,team:"KC",proj:{PPR:188,Half:173,Standard:158},adp:22.5,note:"Veteran: 72 rec 840 yds 7 TD jump-ball"},
-  {name:"Evan Engram",pos:"TE",age:31,team:"JAX",proj:{PPR:195,Half:179,Standard:163},adp:11.5,note:"Volume: 88 rec 950 yds 7 TD PPR monster"},
+  {name:"Evan Engram",pos:"TE",age:31,team:"JAX",proj:{PPR:195,Half:179,Standard:163},adp:11.5,ktcVal:1902,note:"Volume: 88 rec 950 yds 7 TD PPR monster"},
   // More notable WRs Wave 24
   {name:"Gabe Davis",pos:"WR",age:28,team:"JAX",proj:{PPR:148,Half:136,Standard:124},adp:29.0,note:"Big play: 52 rec 660 yds 6 TD"},
   {name:"Romeo Doubs",pos:"WR",age:26,team:"GB",proj:{PPR:162,Half:149,Standard:136},adp:25.5,ktcVal:3113,note:"GB slot: 65 rec 740 yds 6 TD"},
@@ -1387,7 +1391,7 @@ const PLAYERS=[
   {name:"Jalen Reagor",pos:"WR",age:27,team:"NE",proj:{PPR:108,Half:99,Standard:90},adp:39.0,note:"Return/depth role"},
   // Missing TEs
   {name:"Luke Schoonmaker",pos:"TE",age:26,team:"DAL",proj:{PPR:112,Half:103,Standard:94},adp:26.5,note:"Year 3: 44 rec 460 yds 4 TD"},
-  {name:"Dalton Kincaid",pos:"TE",age:26,team:"BUF",proj:{PPR:118,Half:108,Standard:98},adp:24.8,note:"Receiving TE: 48 rec 500 yds"},
+  {name:"Dalton Kincaid",pos:"TE",age:26,team:"BUF",proj:{PPR:118,Half:108,Standard:98},adp:24.8,ktcVal:3409,note:"Receiving TE: 48 rec 500 yds"},
   {name:"Nate Wieting",pos:"TE",age:28,team:"DET",proj:{PPR:75,Half:69,Standard:63},adp:45.0,note:"Blocking/depth"},
 ];
 
