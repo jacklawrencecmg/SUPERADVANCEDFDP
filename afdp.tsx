@@ -2079,6 +2079,7 @@ export default function App(){
       p.tier=tierLabel(p.posRank,p.pos);
       p.scarcity=scarcityLabel(p.posRank,bl[p.pos]||teams);
       p.auction=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*budget*teams*0.60)):1;
+      if(p.pos==="K"||p.pos==="DST") p.auction=Math.min(p.auction,5);
       p.ffabVal=p.vbd>0?Math.max(1,Math.round((p.vbd/totVbd)*ffab*4)):1;
       var baseTV=Math.round(p.vbd*adminTvMult);
       if(isDynasty){
