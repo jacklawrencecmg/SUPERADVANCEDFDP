@@ -3478,7 +3478,7 @@ export default function App(){
         // Roster size = teams setting treated as roster slots per team for single user
         var rosterSize=Math.max(1,auctionTeams);
         var slotsLeft=Math.max(0,rosterSize-mySlots);
-        var maxBid=slotsLeft>1?remaining-slotsLeft+1:remaining;
+        var maxBid=remaining;
         var bestAvail=rankedPlayers.filter(function(p){
           return !soldNames.has(p.name)&&(auctionPosFilter==="ALL"||p.pos===auctionPosFilter);
         }).sort(function(a,b){return (b.auction||0)-(a.auction||0);}).slice(0,20);
