@@ -2011,6 +2011,7 @@ export default function App(){
   var [tradeSaved,setTradeSaved]=useState(false);
   var [aiAnalysis,setAiAnalysis]=useState("");
   var [sleeperTrending,setSleeperTrending]=useState(null);
+  var [sleeperRawDb,setSleeperRawDb]=useState(function(){try{var c=localStorage.getItem('fdp_sp_v1');return c?JSON.parse(c):{};}catch(e){return{};}});
   var [leagueTrades,setLeagueTrades]=useState(null);
   var [leagueTradesLoading,setLeagueTradesLoading]=useState(false);
   var [auctionNoms,setAuctionNoms]=useState([]);
@@ -2124,9 +2125,15 @@ export default function App(){
 
   var sleeperIdToPlayer=useMemo(function(){
     var m={};
+    // Fill all Sleeper players from raw DB first (name only, tradeVal:0)
+    Object.keys(sleeperRawDb).forEach(function(id){
+      var sp=sleeperRawDb[id];
+      if(sp&&sp.name) m[id]={name:sp.name,pos:sp.pos||"?",team:sp.team||"FA",tradeVal:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
+    });
+    // Override with ranked players (full FDP values)
     rankedPlayers.forEach(function(p){var id=SLEEPER_IDS[p.name];if(id)m[id]=p;});
     return m;
-  },[rankedPlayers]);
+  },[rankedPlayers,sleeperRawDb]);
 
   var powerRankingTeams=useMemo(function(){
     if(!importedTeams) return null;
@@ -2235,6 +2242,7 @@ export default function App(){
       playersPromise
     ]).then(function(results){
       var rosters=results[0],users=results[1],tradedPicks=results[2]||[],sleeperDb=results[3]||{};
+      setSleeperRawDb(sleeperDb);
       // Build lookup maps from rankedPlayers — exact name and normalized name
       var rpByName={},rpByNorm={};
       rankedPlayers.forEach(function(p){rpByName[p.name.toLowerCase()]=p;rpByNorm[normName(p.name)]=p;});
