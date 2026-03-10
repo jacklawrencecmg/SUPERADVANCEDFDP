@@ -2020,6 +2020,9 @@ export default function App(){
   var [auctionSearch,setAuctionSearch]=useState("");
   var [auctionBidAmt,setAuctionBidAmt]=useState("");
   var [auctionBidPlayer,setAuctionBidPlayer]=useState(null);
+  var [auctionMine,setAuctionMine]=useState(false);
+  var [auctionPosFilter,setAuctionPosFilter]=useState("ALL");
+  var [auctionView,setAuctionView]=useState("board"); // "board" | "myroster"
   var [histSearch,setHistSearch]=useState("");
   var [showSettings,setShowSettings]=useState(false);
   var [tePremium,setTePremium]=useState(function(){try{var s=localStorage.getItem('fdp_tep_v1');return s?+s:0;}catch(e){return 0;}});
@@ -3453,96 +3456,180 @@ export default function App(){
         )
       ),
 
-      leagueSubTab==="auction"&&React.createElement("div",{style:{padding:"16px"}},
-        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:16}},
-          React.createElement("span",{style:{fontSize:28,color:T.gold}}),"$",
-          React.createElement("div",null,
-            React.createElement("div",{style:{fontWeight:900,fontSize:22}},"Auction Draft Assistant"),
-            React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Track live bids and budget in real time")
-          )
-        ),
-        React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}},
-          React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px"}},
-            React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:4,fontWeight:600}},"YOUR BUDGET"),
-            React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},
-              React.createElement("span",{style:{color:T.textSub,fontWeight:700,fontSize:14}},"$"),
-              React.createElement("input",{type:"number",value:auctionBudget,onChange:function(e){setAuctionBudget(+e.target.value||200);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"6px 10px",fontSize:16,fontWeight:800,width:"100%",outline:"none"}})
+      leagueSubTab==="auction"&&(function(){
+        var soldNames=new Set(auctionNoms.map(function(n){return n.name;}));
+        var myNoms=auctionNoms.filter(function(n){return n.mine;});
+        var spent=myNoms.reduce(function(s,n){return s+n.price;},0);
+        var remaining=auctionBudget-spent;
+        var mySlots=myNoms.length;
+        // Roster size = teams setting treated as roster slots per team for single user
+        var rosterSize=Math.max(1,auctionTeams);
+        var slotsLeft=Math.max(0,rosterSize-mySlots);
+        var maxBid=slotsLeft>1?remaining-slotsLeft+1:remaining;
+        var bestAvail=rankedPlayers.filter(function(p){
+          return !soldNames.has(p.name)&&(auctionPosFilter==="ALL"||p.pos===auctionPosFilter);
+        }).sort(function(a,b){return (b.auction||0)-(a.auction||0);}).slice(0,20);
+        var posFilters=["ALL","QB","RB","WR","TE"];
+        return React.createElement("div",{style:{padding:"16px"}},
+          // Header
+          React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}},
+            React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:900,fontSize:22}},"Auction Draft"),
+              React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Live budget tracker & value guide")
+            ),
+            React.createElement("button",{onClick:function(){if(window.confirm("Reset all auction data?"))setAuctionNoms([]);},style:{fontSize:11,color:T.red,background:"none",border:"none",cursor:"pointer",fontWeight:700}},"Reset")
+          ),
+          // Settings row
+          React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}},
+            React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 12px"}},
+              React.createElement("div",{style:{fontSize:9,color:T.textSub,fontWeight:700,marginBottom:4}},"YOUR BUDGET ($)"),
+              React.createElement("input",{type:"number",value:auctionBudget,onChange:function(e){setAuctionBudget(+e.target.value||200);},style:{background:"transparent",color:T.text,border:"none",fontSize:20,fontWeight:900,width:"100%",outline:"none"}})
+            ),
+            React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 12px"}},
+              React.createElement("div",{style:{fontSize:9,color:T.textSub,fontWeight:700,marginBottom:4}},"ROSTER SLOTS"),
+              React.createElement("input",{type:"number",value:auctionTeams,onChange:function(e){setAuctionTeams(+e.target.value||10);},style:{background:"transparent",color:T.text,border:"none",fontSize:20,fontWeight:900,width:"100%",outline:"none"}})
             )
           ),
-          React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px"}},
-            React.createElement("div",{style:{fontSize:10,color:T.textSub,marginBottom:4,fontWeight:600}},"TEAMS"),
-            React.createElement("input",{type:"number",value:auctionTeams,onChange:function(e){setAuctionTeams(+e.target.value||10);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"6px 10px",fontSize:16,fontWeight:800,width:"100%",outline:"none"}})
-          )
-        ),
-        (function(){
-          var spent=auctionNoms.filter(function(n){return n.mine;}).reduce(function(s,n){return s+n.price;},0);
-          var remaining=auctionBudget-spent;
-          var slots=auctionTeams-auctionNoms.filter(function(n){return n.mine;}).length;
-          var maxBid=slots>1?remaining-slots+1:remaining;
-          return React.createElement("div",{style:{background:T.purpleDim,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"14px",marginBottom:14,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
-            [["Spent","$"+spent,T.red],["Remaining","$"+remaining,T.green],["Max Next Bid","$"+Math.max(1,maxBid),T.gold]].map(function(s){
+          // Budget stats
+          React.createElement("div",{style:{background:T.purpleDim,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"12px 14px",marginBottom:12,display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:4}},
+            [["Spent","$"+spent,T.red],["Left","$"+remaining,remaining<20?T.red:T.green],["Max Bid","$"+Math.max(1,maxBid),T.gold],["Slots Left",slotsLeft,T.textSub]].map(function(s){
               return React.createElement("div",{key:s[0],style:{textAlign:"center"}},
-                React.createElement("div",{style:{fontSize:9,color:T.textSub,marginBottom:3,fontWeight:700,letterSpacing:0.5}},s[0]),
-                React.createElement("div",{style:{fontWeight:900,fontSize:18,color:s[2]}},s[1])
+                React.createElement("div",{style:{fontSize:8,color:T.textDim,fontWeight:700,letterSpacing:0.5,marginBottom:2}},s[0]),
+                React.createElement("div",{style:{fontWeight:900,fontSize:16,color:s[2]}},s[1])
               );
             })
-          );
-        })(),
-        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"14px",marginBottom:14}},
-          React.createElement("div",{style:{fontWeight:700,fontSize:13,marginBottom:10}},"Add Nomination"),
-          React.createElement("div",{style:{position:"relative",marginBottom:8}},
-            React.createElement("input",{value:auctionSearch,onChange:function(e){setAuctionSearch(e.target.value);},placeholder:"Search player...",style:Object.assign({},inpS,{paddingRight:36})}),
-            auctionSearch&&React.createElement("div",{style:{position:"absolute",top:"100%",left:0,right:0,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:10,zIndex:50,maxHeight:200,overflowY:"auto"}},
-              rankedPlayers.filter(function(p){return p.name.toLowerCase().includes(auctionSearch.toLowerCase());}).slice(0,6).map(function(p){
-                return React.createElement("div",{key:p.name,onClick:function(){setAuctionBidPlayer(p);setAuctionSearch(p.name);},style:{padding:"10px 14px",cursor:"pointer",borderBottom:"1px solid "+T.border,display:"flex",alignItems:"center",gap:8}},
-                  React.createElement(PBadge,{pos:p.pos}),
-                  React.createElement("span",{style:{flex:1,fontSize:13,fontWeight:600}},p.name),
-                  React.createElement("span",{style:{fontSize:11,color:T.purple,fontWeight:700}},"$"+(p.auction||1))
+          ),
+          // Add nomination
+          React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"14px",marginBottom:12}},
+            React.createElement("div",{style:{fontWeight:700,fontSize:13,marginBottom:8}},"Log Winning Bid"),
+            React.createElement("div",{style:{position:"relative",marginBottom:8}},
+              React.createElement("input",{value:auctionSearch,onChange:function(e){setAuctionSearch(e.target.value);setAuctionBidPlayer(null);},placeholder:"Search player...",style:Object.assign({},inpS)}),
+              auctionSearch&&!auctionBidPlayer&&React.createElement("div",{style:{position:"absolute",top:"100%",left:0,right:0,background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:10,zIndex:50,maxHeight:200,overflowY:"auto",marginTop:2}},
+                rankedPlayers.filter(function(p){return p.name.toLowerCase().includes(auctionSearch.toLowerCase())&&!soldNames.has(p.name);}).slice(0,8).map(function(p){
+                  return React.createElement("div",{key:p.name,onClick:function(){setAuctionBidPlayer(p);setAuctionSearch(p.name);},style:{padding:"9px 12px",cursor:"pointer",borderBottom:"1px solid "+T.border,display:"flex",alignItems:"center",gap:8}},
+                    React.createElement(PBadge,{pos:p.pos}),
+                    React.createElement("span",{style:{flex:1,fontSize:13,fontWeight:600}},p.name),
+                    React.createElement("span",{style:{fontSize:11,color:T.purple,fontWeight:700}},"FDP $"+(p.auction||1))
+                  );
+                })
+              )
+            ),
+            auctionBidPlayer&&React.createElement("div",{style:{background:T.purpleDim,borderRadius:8,padding:"6px 10px",marginBottom:8,display:"flex",alignItems:"center",gap:8,fontSize:12}},
+              React.createElement(PBadge,{pos:auctionBidPlayer.pos}),
+              React.createElement("span",{style:{flex:1,fontWeight:700}},auctionBidPlayer.name),
+              React.createElement("span",{style:{color:T.purple,fontWeight:800}},"FDP value: $"+(auctionBidPlayer.auction||1)),
+              React.createElement("span",{style:{cursor:"pointer",color:T.textDim,fontSize:16,marginLeft:4},onClick:function(){setAuctionBidPlayer(null);setAuctionSearch("");}},"×")
+            ),
+            React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center"}},
+              React.createElement("span",{style:{fontWeight:800,color:T.gold,fontSize:18}},"$"),
+              React.createElement("input",{type:"number",value:auctionBidAmt,onChange:function(e){setAuctionBidAmt(e.target.value);},placeholder:"Final price",min:1,style:Object.assign({},inpS,{flex:1})}),
+              React.createElement("button",{onClick:function(){setAuctionMine(function(v){return !v;});},style:{padding:"10px 14px",borderRadius:10,border:"2px solid "+(auctionMine?T.purple:T.border),background:auctionMine?T.purple:"transparent",color:auctionMine?"#fff":T.textSub,fontWeight:700,fontSize:11,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},auctionMine?"✓ Mine":"Mine?"),
+              React.createElement("button",{onClick:function(){
+                if(!auctionBidPlayer&&!auctionSearch.trim())return;
+                var name=auctionBidPlayer?auctionBidPlayer.name:auctionSearch.trim();
+                var pos=auctionBidPlayer?auctionBidPlayer.pos:"?";
+                var fdpVal=auctionBidPlayer?auctionBidPlayer.auction||1:null;
+                var price=parseInt(auctionBidAmt)||1;
+                setAuctionNoms(function(prev){return[{name,pos,price,fdpVal,mine:auctionMine,id:Date.now()}].concat(prev);});
+                setAuctionSearch("");setAuctionBidAmt("");setAuctionBidPlayer(null);setAuctionMine(false);
+              },style:{padding:"10px 16px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},"Add")
+            )
+          ),
+          // View toggle
+          React.createElement("div",{style:{display:"flex",gap:6,marginBottom:12}},
+            [["board","Draft Board"],["myroster","My Roster"]].map(function(v){
+              return React.createElement("button",{key:v[0],onClick:function(){setAuctionView(v[0]);},style:{padding:"7px 14px",borderRadius:20,border:"1px solid "+(auctionView===v[0]?T.purple:T.border),background:auctionView===v[0]?T.purple:"transparent",color:auctionView===v[0]?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer"}},v[1]);
+            })
+          ),
+          // BOARD VIEW
+          auctionView==="board"&&React.createElement("div",null,
+            // Best Available
+            React.createElement("div",{style:{marginBottom:16}},
+              React.createElement("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}},
+                React.createElement("div",{style:{fontWeight:800,fontSize:14}},"Best Available"),
+                React.createElement("div",{style:{display:"flex",gap:4}},
+                  posFilters.map(function(pf){
+                    return React.createElement("button",{key:pf,onClick:function(){setAuctionPosFilter(pf);},style:{padding:"4px 8px",borderRadius:10,border:"1px solid "+(auctionPosFilter===pf?T.purple:T.border),background:auctionPosFilter===pf?T.purple:"transparent",color:auctionPosFilter===pf?"#fff":T.textSub,fontWeight:700,fontSize:10,cursor:"pointer"}},pf);
+                  })
+                )
+              ),
+              bestAvail.length===0?React.createElement("div",{style:{textAlign:"center",padding:"20px",color:T.textSub,fontSize:13}},"All players rostered"):
+              bestAvail.map(function(p,i){
+                var fdpVal=p.auction||1;
+                return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:10,cursor:"pointer"},onClick:function(){setAuctionBidPlayer(p);setAuctionSearch(p.name);setAuctionView("board");}},
+                  React.createElement("div",{style:{fontSize:11,color:T.textDim,fontWeight:700,width:20,textAlign:"right"}},i+1),
+                  React.createElement(Avatar,{name:p.name,pos:p.pos,size:32}),
+                  React.createElement("div",{style:{flex:1}},
+                    React.createElement("div",{style:{fontWeight:700,fontSize:13}},p.name),
+                    React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.pos+" · "+p.team+(p.tier?" · Tier "+p.tier.t:""))
+                  ),
+                  React.createElement("div",{style:{textAlign:"right"}},
+                    React.createElement("div",{style:{fontWeight:900,fontSize:15,color:T.gold}},"$"+fdpVal),
+                    React.createElement("div",{style:{fontSize:9,color:T.textDim}},"FDP value")
+                  )
+                );
+              })
+            ),
+            // All nominations log
+            auctionNoms.length>0&&React.createElement("div",null,
+              React.createElement("div",{style:{fontWeight:800,fontSize:14,marginBottom:8}},"Bid Log ("+auctionNoms.length+")"),
+              auctionNoms.map(function(nom){
+                var diff=nom.fdpVal?nom.price-nom.fdpVal:null;
+                var badge=diff===null?null:diff<=-5?["STEAL",T.green]:diff>=5?["OVERPAY",T.red]:["FAIR",T.gold];
+                return React.createElement("div",{key:nom.id,style:{background:T.bgCard,border:"1px solid "+(nom.mine?T.borderPurple:T.border),borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:8}},
+                  React.createElement(PBadge,{pos:nom.pos}),
+                  React.createElement("div",{style:{flex:1}},
+                    React.createElement("div",{style:{fontWeight:700,fontSize:13,display:"flex",alignItems:"center",gap:6}},
+                      nom.name,
+                      nom.mine&&React.createElement("span",{style:{fontSize:9,background:T.purple,color:"#fff",borderRadius:4,padding:"1px 5px",fontWeight:700}},"MINE")
+                    ),
+                    nom.fdpVal&&React.createElement("div",{style:{fontSize:10,color:T.textSub}},"FDP value: $"+nom.fdpVal)
+                  ),
+                  badge&&React.createElement("span",{style:{fontSize:9,background:badge[1]+"22",color:badge[1],border:"1px solid "+badge[1]+"44",borderRadius:6,padding:"2px 6px",fontWeight:800}},badge[0]),
+                  React.createElement("div",{style:{fontWeight:900,fontSize:16,color:nom.mine?T.purple:T.text,minWidth:36,textAlign:"right"}},"$"+nom.price),
+                  React.createElement("button",{onClick:function(){setAuctionNoms(function(p){return p.filter(function(n){return n.id!==nom.id;});});},style:{background:"none",border:"none",cursor:"pointer",color:T.textDim,fontSize:16,padding:"0 2px"}},"×")
+                );
+              })
+            ),
+            auctionNoms.length===0&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"32px 20px",textAlign:"center"}},
+              React.createElement("div",{style:{fontSize:32,marginBottom:8}},"🏷"),
+              React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:4}},"No bids logged yet"),
+              React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Search a player, enter final price, and tap Add")
+            )
+          ),
+          // MY ROSTER VIEW
+          auctionView==="myroster"&&React.createElement("div",null,
+            myNoms.length===0?React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"32px 20px",textAlign:"center"}},
+              React.createElement("div",{style:{fontSize:32,marginBottom:8}},"👤"),
+              React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:4}},"Your roster is empty"),
+              React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Check \"Mine\" when adding bids to track your roster")
+            ):React.createElement("div",null,
+              React.createElement("div",{style:{background:T.purpleDim,border:"1px solid "+T.borderPurple,borderRadius:12,padding:"12px 14px",marginBottom:10,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}},
+                [["Players",myNoms.length],["Spent","$"+spent],["Avg/Player","$"+Math.round(spent/(myNoms.length||1))]].map(function(s){
+                  return React.createElement("div",{key:s[0],style:{textAlign:"center"}},
+                    React.createElement("div",{style:{fontSize:9,color:T.textDim,fontWeight:700,marginBottom:2}},s[0]),
+                    React.createElement("div",{style:{fontWeight:900,fontSize:16,color:T.purple}},s[1])
+                  );
+                })
+              ),
+              myNoms.slice().sort(function(a,b){return (b.fdpVal||0)-(a.fdpVal||0);}).map(function(nom){
+                var diff=nom.fdpVal?nom.price-nom.fdpVal:null;
+                var badge=diff===null?null:diff<=-5?["STEAL",T.green]:diff>=5?["OVERPAY",T.red]:["FAIR",T.gold];
+                return React.createElement("div",{key:nom.id,style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:10,padding:"10px 12px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
+                  React.createElement(Avatar,{name:nom.name,pos:nom.pos,size:36}),
+                  React.createElement("div",{style:{flex:1}},
+                    React.createElement("div",{style:{fontWeight:700,fontSize:13}},nom.name),
+                    React.createElement("div",{style:{fontSize:10,color:T.textSub}},nom.pos+(nom.fdpVal?" · FDP $"+nom.fdpVal:""))
+                  ),
+                  badge&&React.createElement("span",{style:{fontSize:9,background:badge[1]+"22",color:badge[1],border:"1px solid "+badge[1]+"44",borderRadius:6,padding:"2px 6px",fontWeight:800}},badge[0]),
+                  React.createElement("div",{style:{fontWeight:900,fontSize:18,color:T.purple}},"$"+nom.price),
+                  React.createElement("button",{onClick:function(){setAuctionNoms(function(p){return p.filter(function(n){return n.id!==nom.id;});});},style:{background:"none",border:"none",cursor:"pointer",color:T.textDim,fontSize:16}},"×")
                 );
               })
             )
-          ),
-          React.createElement("div",{style:{display:"flex",gap:8,alignItems:"center"}},
-            React.createElement("span",{style:{fontWeight:700,color:T.textSub}},"$"),
-            React.createElement("input",{type:"number",value:auctionBidAmt,onChange:function(e){setAuctionBidAmt(e.target.value);},placeholder:"Final price",min:1,style:Object.assign({},inpS,{flex:1})}),
-            React.createElement("label",{style:{display:"flex",alignItems:"center",gap:6,fontSize:12,color:T.textSub,whiteSpace:"nowrap",cursor:"pointer"}},
-              React.createElement("input",{type:"checkbox",id:"mine_cb",style:{accentColor:T.purple}}),
-              "My roster"
-            ),
-            React.createElement("button",{onClick:function(){
-              if(!auctionBidPlayer&&!auctionSearch.trim())return;
-              var name=auctionBidPlayer?auctionBidPlayer.name:auctionSearch.trim();
-              var pos=auctionBidPlayer?auctionBidPlayer.pos:"?";
-              var price=parseInt(auctionBidAmt)||1;
-              var mine=document.getElementById("mine_cb")&&document.getElementById("mine_cb").checked;
-              setAuctionNoms(function(prev){return[{name:name,pos:pos,price:price,mine:mine,id:Date.now()}].concat(prev);});
-              setAuctionSearch("");setAuctionBidAmt("");setAuctionBidPlayer(null);
-            },style:{padding:"10px 16px",borderRadius:10,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},"Add")
           )
-        ),
-        auctionNoms.length>0&&React.createElement("div",null,
-          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}},
-            React.createElement("div",{style:{fontWeight:700,fontSize:14}},"Nominations ("+auctionNoms.length+")"),
-            React.createElement("button",{onClick:function(){if(window.confirm("Clear all?"))setAuctionNoms([]);},style:{fontSize:11,color:T.red,background:"none",border:"none",cursor:"pointer",fontWeight:600}},"Clear All")
-          ),
-          auctionNoms.map(function(nom){
-            return React.createElement("div",{key:nom.id,style:{background:T.bgCard,border:"1px solid "+(nom.mine?T.borderPurple:T.border),borderRadius:10,padding:"10px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
-              React.createElement(PBadge,{pos:nom.pos}),
-              React.createElement("div",{style:{flex:1}},
-                React.createElement("div",{style:{fontWeight:700,fontSize:13}},nom.name),
-                nom.mine&&React.createElement("div",{style:{fontSize:10,color:T.purple,fontWeight:700}},"On your roster")
-              ),
-              React.createElement("div",{style:{fontWeight:900,fontSize:18,color:nom.mine?T.purple:T.text}},"$"+nom.price),
-              React.createElement("button",{onClick:function(){setAuctionNoms(function(p){return p.filter(function(n){return n.id!==nom.id;});});},style:{background:"none",border:"none",cursor:"pointer",color:T.textDim,fontSize:16,padding:"0 4px"}},"×")
-            );
-          })
-        ),
-        auctionNoms.length===0&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"40px 20px",textAlign:"center"}},
-          React.createElement("div",{style:{fontSize:36,marginBottom:10}},"🏷"),
-          React.createElement("div",{style:{fontWeight:700,fontSize:15,marginBottom:4}},"No Nominations Yet"),
-          React.createElement("div",{style:{fontSize:12,color:T.textSub}},"Add player nominations as the draft progresses to track spending")
-        )
-      ),
+        );
+      })(),
 
       leagueSubTab==="leagimport"&&React.createElement("div",{style:{padding:"16px"}},
         React.createElement("div",{style:{fontWeight:900,fontSize:22,marginBottom:4}},"Import League"),
