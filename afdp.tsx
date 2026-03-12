@@ -2218,7 +2218,7 @@ export default function App(){
       (data.members||[]).forEach(function(m){memberMap[m.id]=(m.displayName||(m.firstName+" "+m.lastName).trim()||"");});
       var teams=(data.teams||[]).map(function(t){
         var name=((t.location||"")+" "+(t.nickname||"")).trim()||("Team "+t.id);
-        var owner=t.primaryOwner?memberMap[t.primaryOwner]||"":(t.owners&&t.owners[0]?memberMap[t.owners[0]]||"");
+        var owner=t.primaryOwner?memberMap[t.primaryOwner]||"":(t.owners&&t.owners[0]?memberMap[t.owners[0]]||"":"");
         var players=(t.roster&&t.roster.entries||[])
           .filter(function(e){var pid=e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.defaultPositionId;return pid!==5&&pid!==16;})
           .map(function(e){
