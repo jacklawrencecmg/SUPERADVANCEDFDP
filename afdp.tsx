@@ -81,7 +81,7 @@ const ALL_POSITIONS=["ALL","QB","RB","WR","TE","K","DST","DL","LB","DB"];
 const PRIME={QB:[26,35],RB:[22,27],WR:[23,29],TE:[25,30],K:[25,38],DST:[0,99],DL:[23,30],LB:[23,30],DB:[23,29]};
 const FREE_RANK_LIMIT=20;
 const FREE_TRADE_LIMIT=20;
-const ADMIN_EMAILS=["jacklawrence713@gmail.com","theprez@yahoo.com","modgy28@hotmail.com"];
+const ADMIN_EMAILS=["jacklawrence713@gmail.com","theprez@yahoo.com","modgy28@hotmail.com","sbesk787@gmail.com"];
 function isAdminEmail(e){return ADMIN_EMAILS.indexOf((e||"").toLowerCase().trim())!==-1;}
 
 const SLEEPER_IDS={
