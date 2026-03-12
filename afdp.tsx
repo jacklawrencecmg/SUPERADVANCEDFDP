@@ -2187,35 +2187,48 @@ export default function App(){
     setLeagueImportStatus("loading");setLeagueImportErr("");
     var yr=espnYear||"2025";
     var apiUrl="https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+yr+"/segments/0/leagues/"+espnLeagueId.trim()+"?view=mRoster&view=mTeam";
-    var fetchUrl=apiUrl,fetchOpts={credentials:"omit"};
-    if(espnS2.trim()&&espnSWID.trim()){
-      fetchUrl="https://corsproxy.io/?"+encodeURIComponent(apiUrl);
-      fetchOpts={headers:{"Cookie":"espn_s2="+espnS2.trim()+"; SWID="+espnSWID.trim(),"x-requested-with":"XMLHttpRequest"}};
+    var hasCookies=espnS2.trim()&&espnSWID.trim();
+    // Try up to two proxies: corsproxy.io first, then allorigins fallback
+    var proxies=hasCookies?[
+      {url:"https://corsproxy.io/?"+encodeURIComponent(apiUrl),opts:{headers:{"x-cookie":"espn_s2="+espnS2.trim()+"; SWID="+espnSWID.trim()}}},
+      {url:"https://api.allorigins.win/get?url="+encodeURIComponent(apiUrl)+"&headers="+encodeURIComponent(JSON.stringify({"x-cookie":"espn_s2="+espnS2.trim()+"; SWID="+espnSWID.trim()})),opts:{}}
+    ]:[{url:apiUrl,opts:{credentials:"omit"}}];
+    function tryNext(proxies,idx){
+      if(idx>=proxies.length){setLeagueImportErr("ESPN private leagues cannot be imported from a browser — ESPN blocks cross-site cookie auth. Use Manual Import instead: copy your roster from ESPN and paste it in the Manual tab.");setLeagueImportStatus("error");return;}
+      var p=proxies[idx];
+      fetch(p.url,p.opts)
+        .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
+        .then(function(data){
+          // allorigins wraps response in {contents:"..."}
+          var json=data.contents?JSON.parse(data.contents):data;
+          return json;
+        })
+        .then(processEspnData)
+        .catch(function(){tryNext(proxies,idx+1);});
     }
-    fetch(fetchUrl,fetchOpts)
-      .then(function(r){if(!r.ok)throw new Error("League not found or access denied ("+r.status+"). Check your League ID and cookies.");return r.json();})
-      .then(function(data){
-        var teams=(data.teams||[]).map(function(t){
-          var name=((t.location||"")+" "+(t.nickname||"")).trim()||("Team "+t.id);
-          var players=(t.roster&&t.roster.entries||[])
-            .filter(function(e){var pid=e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.defaultPositionId;return pid!==5&&pid!==16;})
-            .map(function(e){
-              var fn=(e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.fullName)||"";
-              return rankedPlayers.find(function(p){return p.name.toLowerCase()===fn.toLowerCase();})
-                ||rankedPlayers.find(function(p){var parts=fn.toLowerCase().split(" ");return parts.length>1&&p.name.toLowerCase().includes(parts[parts.length-1]);});
-            }).filter(Boolean);
-          players.sort(function(a,b){return b.tradeVal-a.tradeVal;});
-          var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
-          var w=t.record&&t.record.overall&&t.record.overall.wins||0;
-          var l=t.record&&t.record.overall&&t.record.overall.losses||0;
-          return {name:name,owner:"",players:players,totalVal:totalVal,faab:null,picks:0,wins:w,losses:l};
-        });
-        teams.sort(function(a,b){return b.totalVal-a.totalVal;});
-        saveAndSetImportedTeams(teams);setLeagueRosters(null);setLeagueUsers(null);
-        saveAndSetActiveLeague({league_id:"espn_"+espnLeagueId,name:(data.settings&&data.settings.name)||"ESPN League"});
-        setLeagueImportStatus("connected");setLeagueSubTab("power");
-      })
-      .catch(function(e){setLeagueImportErr(e.message||"Import failed. This may be a private league or CORS restriction.");setLeagueImportStatus("error");});
+    function processEspnData(data){
+      var teams=(data.teams||[]).map(function(t){
+        var name=((t.location||"")+" "+(t.nickname||"")).trim()||("Team "+t.id);
+        var players=(t.roster&&t.roster.entries||[])
+          .filter(function(e){var pid=e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.defaultPositionId;return pid!==5&&pid!==16;})
+          .map(function(e){
+            var fn=(e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.fullName)||"";
+            return rankedPlayers.find(function(p){return p.name.toLowerCase()===fn.toLowerCase();})
+              ||rankedPlayers.find(function(p){var parts=fn.toLowerCase().split(" ");return parts.length>1&&p.name.toLowerCase().includes(parts[parts.length-1]);});
+          }).filter(Boolean);
+        players.sort(function(a,b){return b.tradeVal-a.tradeVal;});
+        var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
+        var w=t.record&&t.record.overall&&t.record.overall.wins||0;
+        var l=t.record&&t.record.overall&&t.record.overall.losses||0;
+        return {name:name,owner:"",players:players,totalVal:totalVal,faab:null,picks:0,wins:w,losses:l};
+      });
+      if(!teams.length){setLeagueImportErr("No teams found. If this is a private league, ESPN is blocking access — use Manual Import instead.");setLeagueImportStatus("error");return;}
+      teams.sort(function(a,b){return b.totalVal-a.totalVal;});
+      saveAndSetImportedTeams(teams);setLeagueRosters(null);setLeagueUsers(null);
+      saveAndSetActiveLeague({league_id:"espn_"+espnLeagueId,name:(data.settings&&data.settings.name)||"ESPN League"});
+      setLeagueImportStatus("connected");setLeagueSubTab("power");
+    }
+    tryNext(proxies,0);
   }
 
   function doManualImport(leagueName,teamsText){
@@ -3758,7 +3771,15 @@ export default function App(){
           ),
           React.createElement("button",{onClick:doEspnImport,style:{width:"100%",padding:"11px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginBottom:12}},"Import ESPN League"),
           leagueImportStatus==="loading"&&React.createElement("div",{style:{textAlign:"center",padding:"12px",color:T.textSub}},"Loading..."),
-          leagueImportStatus==="error"&&React.createElement("div",{style:{padding:"10px 14px",background:T.red+"15",borderRadius:10,color:T.red,fontSize:12,lineHeight:1.5}},leagueImportErr,React.createElement("div",{style:{marginTop:8,color:T.textSub}},"For private leagues, add your espn_s2 and SWID cookies above. Find them in Chrome DevTools → Application → Cookies while on ESPN."))
+          leagueImportStatus==="error"&&React.createElement("div",{style:{padding:"12px 14px",background:T.red+"15",borderRadius:10,fontSize:12,lineHeight:1.6}},
+            React.createElement("div",{style:{color:T.red,fontWeight:700,marginBottom:6}},leagueImportErr),
+            React.createElement("div",{style:{color:T.textSub,marginBottom:8}},"ESPN blocks browser-based cookie auth for private leagues. The most reliable option is Manual Import:"),
+            React.createElement("ol",{style:{color:T.textSub,margin:"0 0 0 16px",padding:0,lineHeight:2}},
+              React.createElement("li",null,"Go to your ESPN league → My Team → Roster"),
+              React.createElement("li",null,"Copy all player names"),
+              React.createElement("li",null,'Switch to the "Manual" tab and paste them in')
+            )
+          )
         ),
         // Yahoo / NFL.com / Fleaflicker / MFL — Coming Soon
         (importPlatform==="yahoo"||importPlatform==="nfl"||importPlatform==="fleaflicker"||importPlatform==="mfl")&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:24,textAlign:"center"}},
