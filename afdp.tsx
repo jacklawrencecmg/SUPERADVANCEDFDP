@@ -3075,7 +3075,7 @@ export default function App(){
                     React.createElement("div",{style:{fontSize:13,color:"#fff",opacity:0.9,lineHeight:1.4}},modeDesc)
                   )
                 ),
-                React.createElement("button",{style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+modeColor+"44",background:modeColor+"22",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:4,flexShrink:0}},
+                React.createElement("button",{onClick:function(){if(activeLeague){if(activeLeague.league_id.startsWith("espn_"))doEspnImport();else connectLeague(activeLeague);}},style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+modeColor+"44",background:modeColor+"22",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:4,flexShrink:0}},
                   React.createElement("span",null,"↻")," Refresh"
                 )
               ),
