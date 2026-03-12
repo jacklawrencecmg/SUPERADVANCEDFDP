@@ -1965,8 +1965,9 @@ export default function App(){
   var [importPlatform,setImportPlatform]=useState("sleeper");
   var [espnLeagueId,setEspnLeagueId]=useState("");
   var [espnYear,setEspnYear]=useState("2025");
-  var [espnS2,setEspnS2]=useState("");
-  var [espnSWID,setEspnSWID]=useState("");
+  var [espnS2,setEspnS2]=useState(function(){try{return localStorage.getItem('fdp_espn_s2')||"";}catch(e){return "";}});
+  var [espnSWID,setEspnSWID]=useState(function(){try{return localStorage.getItem('fdp_espn_swid')||"";}catch(e){return "";}});
+  var [espnWorkerUrl,setEspnWorkerUrl]=useState(function(){try{return localStorage.getItem('fdp_espn_worker')||"";}catch(e){return "";}});
   var [manualRosterText,setManualRosterText]=useState("");
   var [importedTeams,setImportedTeams]=useState(function(){try{var s=localStorage.getItem('fdp_teams_v1');return s?JSON.parse(s):null;}catch(e){return null;}});
   function saveAndSetImportedTeams(teams){try{if(teams)localStorage.setItem('fdp_teams_v1',JSON.stringify(teams));else localStorage.removeItem('fdp_teams_v1');}catch(e){}setImportedTeams(teams);}
@@ -2187,24 +2188,29 @@ export default function App(){
     setLeagueImportStatus("loading");setLeagueImportErr("");
     var yr=espnYear||"2025";
     var apiUrl="https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+yr+"/segments/0/leagues/"+espnLeagueId.trim()+"?view=mRoster&view=mTeam";
+    var workerUrl=espnWorkerUrl.trim();
     var hasCookies=espnS2.trim()&&espnSWID.trim();
-    // Try up to two proxies: corsproxy.io first, then allorigins fallback
-    var proxies=hasCookies?[
-      {url:"https://corsproxy.io/?"+encodeURIComponent(apiUrl),opts:{headers:{"x-cookie":"espn_s2="+espnS2.trim()+"; SWID="+espnSWID.trim()}}},
-      {url:"https://api.allorigins.win/get?url="+encodeURIComponent(apiUrl)+"&headers="+encodeURIComponent(JSON.stringify({"x-cookie":"espn_s2="+espnS2.trim()+"; SWID="+espnSWID.trim()})),opts:{}}
-    ]:[{url:apiUrl,opts:{credentials:"omit"}}];
+    // Save cookies for next time
+    try{if(espnS2.trim())localStorage.setItem('fdp_espn_s2',espnS2.trim());if(espnSWID.trim())localStorage.setItem('fdp_espn_swid',espnSWID.trim());}catch(e){}
     function tryNext(proxies,idx){
-      if(idx>=proxies.length){setLeagueImportErr("ESPN private leagues cannot be imported from a browser — ESPN blocks cross-site cookie auth. Use Manual Import instead: copy your roster from ESPN and paste it in the Manual tab.");setLeagueImportStatus("error");return;}
+      if(idx>=proxies.length){setLeagueImportErr("Import failed. If using a private league, make sure your Worker URL is set and your espn_s2 / SWID cookies are correct.");setLeagueImportStatus("error");return;}
       var p=proxies[idx];
       fetch(p.url,p.opts)
         .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
-        .then(function(data){
-          // allorigins wraps response in {contents:"..."}
-          var json=data.contents?JSON.parse(data.contents):data;
-          return json;
-        })
+        .then(function(data){if(data.error)throw new Error(data.error);return data;})
         .then(processEspnData)
         .catch(function(){tryNext(proxies,idx+1);});
+    }
+    var proxies;
+    if(workerUrl&&hasCookies){
+      // Use deployed Cloudflare Worker — server-side cookie auth, most reliable
+      proxies=[{
+        url:workerUrl.replace(/\/$/,""),
+        opts:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({leagueId:espnLeagueId.trim(),year:yr,espn_s2:espnS2.trim(),swid:espnSWID.trim()})}
+      }];
+    } else {
+      // Public league — direct fetch
+      proxies=[{url:apiUrl,opts:{credentials:"omit"}}];
     }
     function processEspnData(data){
       var teams=(data.teams||[]).map(function(t){
@@ -3764,10 +3770,15 @@ export default function App(){
             )
           ),
           React.createElement("div",{style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px",marginBottom:12}},
-            React.createElement("div",{style:{fontWeight:700,fontSize:12,marginBottom:4,color:T.purpleLight}},"Private League? Add ESPN Cookies"),
-            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:10,lineHeight:1.5}},"In Chrome: go to ESPN Fantasy → open DevTools (F12) → Application → Cookies → copy espn_s2 and SWID values."),
-            React.createElement("input",{value:espnS2,onChange:function(e){setEspnS2(e.target.value);},placeholder:"espn_s2 cookie value",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",marginBottom:8,fontSize:11,fontFamily:"monospace"})}),
-            React.createElement("input",{value:espnSWID,onChange:function(e){setEspnSWID(e.target.value);},placeholder:"SWID cookie value  (e.g. {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX})",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",fontSize:11,fontFamily:"monospace"})})
+            React.createElement("div",{style:{fontWeight:700,fontSize:12,marginBottom:2,color:T.purpleLight}},"Private League Setup"),
+            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:10,lineHeight:1.6}},
+              "Step 1: ",React.createElement("a",{href:"https://developers.cloudflare.com/workers/get-started/guide/",target:"_blank",rel:"noopener",style:{color:T.purpleLight}},"Deploy the ESPN proxy worker"),
+              " (free). Step 2: Paste your Worker URL below. Step 3: Add your ESPN cookies."
+            ),
+            React.createElement("input",{value:espnWorkerUrl,onChange:function(e){setEspnWorkerUrl(e.target.value);try{localStorage.setItem('fdp_espn_worker',e.target.value);}catch(ex){}},placeholder:"Worker URL  (e.g. https://espn-proxy.yourname.workers.dev)",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",marginBottom:8,fontSize:11,fontFamily:"monospace"})}),
+            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:6,marginTop:4}},"ESPN Cookies — Chrome DevTools (F12) → Application → Cookies → fantasy.espn.com"),
+            React.createElement("input",{value:espnS2,onChange:function(e){setEspnS2(e.target.value);},placeholder:"espn_s2",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",marginBottom:8,fontSize:11,fontFamily:"monospace"})}),
+            React.createElement("input",{value:espnSWID,onChange:function(e){setEspnSWID(e.target.value);},placeholder:"SWID  (e.g. {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX})",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",fontSize:11,fontFamily:"monospace"})})
           ),
           React.createElement("button",{onClick:doEspnImport,style:{width:"100%",padding:"11px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginBottom:12}},"Import ESPN League"),
           leagueImportStatus==="loading"&&React.createElement("div",{style:{textAlign:"center",padding:"12px",color:T.textSub}},"Loading..."),
