@@ -2241,6 +2241,7 @@ export default function App(){
         var l=t.record&&t.record.overall&&t.record.overall.losses||0;
         return {name:name,owner:owner,players:players,totalVal:totalVal,faab:null,picks:0,wins:w,losses:l};
       });
+      if(data._debug) setLeagueImportErr("DEBUG: "+JSON.stringify(data._debug));
       if(!teams.length){setLeagueImportErr("No teams found. If this is a private league, ESPN is blocking access — use Manual Import instead.");setLeagueImportStatus("error");return;}
       teams.sort(function(a,b){return b.totalVal-a.totalVal;});
       saveAndSetImportedTeams(teams);setLeagueRosters(null);setLeagueUsers(null);

@@ -69,6 +69,18 @@ async function handleRequest(request) {
 
   const data = await espnRes.json();
 
+  // Attach debug info — first team's keys and first member's keys
+  const t0 = data.teams && data.teams[0];
+  const m0 = data.members && data.members[0];
+  data._debug = {
+    teamKeys: t0 ? Object.keys(t0) : [],
+    team0: t0 ? { id: t0.id, location: t0.location, nickname: t0.nickname, name: t0.name, abbrev: t0.abbrev, primaryOwner: t0.primaryOwner, owners: t0.owners } : null,
+    memberKeys: m0 ? Object.keys(m0) : [],
+    member0: m0 || null,
+    teamCount: (data.teams||[]).length,
+    memberCount: (data.members||[]).length,
+  };
+
   return new Response(JSON.stringify(data), {
     headers: {
       "Content-Type": "application/json",
