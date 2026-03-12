@@ -1967,7 +1967,7 @@ export default function App(){
   var [espnYear,setEspnYear]=useState("2025");
   var [espnS2,setEspnS2]=useState(function(){try{return localStorage.getItem('fdp_espn_s2')||"";}catch(e){return "";}});
   var [espnSWID,setEspnSWID]=useState(function(){try{return localStorage.getItem('fdp_espn_swid')||"";}catch(e){return "";}});
-  var [espnWorkerUrl,setEspnWorkerUrl]=useState(function(){try{return localStorage.getItem('fdp_espn_worker')||"";}catch(e){return "";}});
+  var [espnWorkerUrl,setEspnWorkerUrl]=useState("https://espn-proxy.fantasydraftpros.workers.dev");
   var [manualRosterText,setManualRosterText]=useState("");
   var [importedTeams,setImportedTeams]=useState(function(){try{var s=localStorage.getItem('fdp_teams_v1');return s?JSON.parse(s):null;}catch(e){return null;}});
   function saveAndSetImportedTeams(teams){try{if(teams)localStorage.setItem('fdp_teams_v1',JSON.stringify(teams));else localStorage.removeItem('fdp_teams_v1');}catch(e){}setImportedTeams(teams);}
@@ -3771,12 +3771,7 @@ export default function App(){
           ),
           React.createElement("div",{style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px",marginBottom:12}},
             React.createElement("div",{style:{fontWeight:700,fontSize:12,marginBottom:2,color:T.purpleLight}},"Private League Setup"),
-            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:10,lineHeight:1.6}},
-              "Step 1: ",React.createElement("a",{href:"https://developers.cloudflare.com/workers/get-started/guide/",target:"_blank",rel:"noopener",style:{color:T.purpleLight}},"Deploy the ESPN proxy worker"),
-              " (free). Step 2: Paste your Worker URL below. Step 3: Add your ESPN cookies."
-            ),
-            React.createElement("input",{value:espnWorkerUrl,onChange:function(e){setEspnWorkerUrl(e.target.value);try{localStorage.setItem('fdp_espn_worker',e.target.value);}catch(ex){}},placeholder:"Worker URL  (e.g. https://espn-proxy.yourname.workers.dev)",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",marginBottom:8,fontSize:11,fontFamily:"monospace"})}),
-            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:6,marginTop:4}},"ESPN Cookies — Chrome DevTools (F12) → Application → Cookies → fantasy.espn.com"),
+            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:10,lineHeight:1.6}},"Find these in Chrome: open ESPN Fantasy → DevTools (F12) → Application → Cookies → fantasy.espn.com"),
             React.createElement("input",{value:espnS2,onChange:function(e){setEspnS2(e.target.value);},placeholder:"espn_s2",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",marginBottom:8,fontSize:11,fontFamily:"monospace"})}),
             React.createElement("input",{value:espnSWID,onChange:function(e){setEspnSWID(e.target.value);},placeholder:"SWID  (e.g. {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX})",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",fontSize:11,fontFamily:"monospace"})})
           ),
