@@ -2213,12 +2213,21 @@ export default function App(){
       proxies=[{url:apiUrl,opts:{credentials:"omit"}}];
     }
     function processEspnData(data){
+      // Debug: log first team object to inspect field names
+      if(data.teams&&data.teams[0]) console.log("[ESPN] team[0]:",JSON.stringify(data.teams[0]).slice(0,500));
+      if(data.members&&data.members[0]) console.log("[ESPN] member[0]:",JSON.stringify(data.members[0]));
       // Build member ID → display name map
       var memberMap={};
-      (data.members||[]).forEach(function(m){memberMap[m.id]=(m.displayName||(m.firstName+" "+m.lastName).trim()||"");});
+      (data.members||[]).forEach(function(m){
+        var display=m.displayName||(((m.firstName||"")+" "+(m.lastName||"")).trim())||m.id||"";
+        memberMap[m.id]=display;
+      });
       var teams=(data.teams||[]).map(function(t){
-        var name=((t.location||"")+" "+(t.nickname||"")).trim()||("Team "+t.id);
-        var owner=t.primaryOwner?memberMap[t.primaryOwner]||"":(t.owners&&t.owners[0]?memberMap[t.owners[0]]||"":"");
+        // Try every known ESPN field for team name
+        var name=t.name||((t.location||"")+" "+(t.nickname||"")).trim()||t.abbrev||("Team "+t.id);
+        // Try every known ESPN field for owner
+        var ownerId=t.primaryOwner||(t.owners&&t.owners[0])||"";
+        var owner=ownerId?memberMap[ownerId]||ownerId:"";
         var players=(t.roster&&t.roster.entries||[])
           .filter(function(e){var pid=e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.defaultPositionId;return pid!==5&&pid!==16;})
           .map(function(e){
