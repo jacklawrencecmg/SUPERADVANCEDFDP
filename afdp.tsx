@@ -1965,6 +1965,8 @@ export default function App(){
   var [importPlatform,setImportPlatform]=useState("sleeper");
   var [espnLeagueId,setEspnLeagueId]=useState("");
   var [espnYear,setEspnYear]=useState("2025");
+  var [espnS2,setEspnS2]=useState("");
+  var [espnSWID,setEspnSWID]=useState("");
   var [manualRosterText,setManualRosterText]=useState("");
   var [importedTeams,setImportedTeams]=useState(function(){try{var s=localStorage.getItem('fdp_teams_v1');return s?JSON.parse(s):null;}catch(e){return null;}});
   function saveAndSetImportedTeams(teams){try{if(teams)localStorage.setItem('fdp_teams_v1',JSON.stringify(teams));else localStorage.removeItem('fdp_teams_v1');}catch(e){}setImportedTeams(teams);}
@@ -2184,8 +2186,14 @@ export default function App(){
     if(!espnLeagueId.trim())return;
     setLeagueImportStatus("loading");setLeagueImportErr("");
     var yr=espnYear||"2025";
-    fetch("https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+yr+"/segments/0/leagues/"+espnLeagueId.trim()+"?view=mRoster&view=mTeam",{credentials:"omit"})
-      .then(function(r){if(!r.ok)throw new Error("League not found or private ("+r.status+"). Private leagues require ESPN cookie auth.");return r.json();})
+    var apiUrl="https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+yr+"/segments/0/leagues/"+espnLeagueId.trim()+"?view=mRoster&view=mTeam";
+    var fetchUrl=apiUrl,fetchOpts={credentials:"omit"};
+    if(espnS2.trim()&&espnSWID.trim()){
+      fetchUrl="https://corsproxy.io/?"+encodeURIComponent(apiUrl);
+      fetchOpts={headers:{"Cookie":"espn_s2="+espnS2.trim()+"; SWID="+espnSWID.trim(),"x-requested-with":"XMLHttpRequest"}};
+    }
+    fetch(fetchUrl,fetchOpts)
+      .then(function(r){if(!r.ok)throw new Error("League not found or access denied ("+r.status+"). Check your League ID and cookies.");return r.json();})
       .then(function(data){
         var teams=(data.teams||[]).map(function(t){
           var name=((t.location||"")+" "+(t.nickname||"")).trim()||("Team "+t.id);
@@ -3736,15 +3744,21 @@ export default function App(){
         // ESPN
         importPlatform==="espn"&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:16,padding:20}},
           React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12}},"Enter your ESPN Fantasy league ID (found in the URL: /leagues/{id})"),
-          React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
+          React.createElement("div",{style:{display:"flex",gap:8,marginBottom:12}},
             React.createElement("input",{value:espnLeagueId,onChange:function(e){setEspnLeagueId(e.target.value);},placeholder:"League ID",style:Object.assign({},inpS,{flex:1})}),
             React.createElement("select",{value:espnYear,onChange:function(e){setEspnYear(e.target.value);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 12px",fontSize:13,outline:"none"}},
               ["2025","2024","2023"].map(function(y){return React.createElement("option",{key:y},y);})
             )
           ),
+          React.createElement("div",{style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px",marginBottom:12}},
+            React.createElement("div",{style:{fontWeight:700,fontSize:12,marginBottom:4,color:T.purpleLight}},"Private League? Add ESPN Cookies"),
+            React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:10,lineHeight:1.5}},"In Chrome: go to ESPN Fantasy → open DevTools (F12) → Application → Cookies → copy espn_s2 and SWID values."),
+            React.createElement("input",{value:espnS2,onChange:function(e){setEspnS2(e.target.value);},placeholder:"espn_s2 cookie value",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",marginBottom:8,fontSize:11,fontFamily:"monospace"})}),
+            React.createElement("input",{value:espnSWID,onChange:function(e){setEspnSWID(e.target.value);},placeholder:"SWID cookie value  (e.g. {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX})",style:Object.assign({},inpS,{width:"100%",boxSizing:"border-box",fontSize:11,fontFamily:"monospace"})})
+          ),
           React.createElement("button",{onClick:doEspnImport,style:{width:"100%",padding:"11px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginBottom:12}},"Import ESPN League"),
           leagueImportStatus==="loading"&&React.createElement("div",{style:{textAlign:"center",padding:"12px",color:T.textSub}},"Loading..."),
-          leagueImportStatus==="error"&&React.createElement("div",{style:{padding:"10px 14px",background:T.red+"15",borderRadius:10,color:T.red,fontSize:12,lineHeight:1.5}},leagueImportErr,React.createElement("div",{style:{marginTop:8,color:T.textSub}},"Private leagues are not supported without ESPN authentication. Try Manual import instead."))
+          leagueImportStatus==="error"&&React.createElement("div",{style:{padding:"10px 14px",background:T.red+"15",borderRadius:10,color:T.red,fontSize:12,lineHeight:1.5}},leagueImportErr,React.createElement("div",{style:{marginTop:8,color:T.textSub}},"For private leagues, add your espn_s2 and SWID cookies above. Find them in Chrome DevTools → Application → Cookies while on ESPN."))
         ),
         // Yahoo / NFL.com / Fleaflicker / MFL — Coming Soon
         (importPlatform==="yahoo"||importPlatform==="nfl"||importPlatform==="fleaflicker"||importPlatform==="mfl")&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:24,textAlign:"center"}},
