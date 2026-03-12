@@ -41,7 +41,7 @@ async function handleRequest(request) {
   }
 
   const url =
-    `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/0/leagues/${leagueId}?view=mRoster&view=mTeam`;
+    `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/0/leagues/${leagueId}?view=mRoster&view=mTeam&view=mSettings&view=mMembers`;
 
   const headers = {
     "User-Agent":

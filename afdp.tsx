@@ -2187,7 +2187,7 @@ export default function App(){
     if(!espnLeagueId.trim())return;
     setLeagueImportStatus("loading");setLeagueImportErr("");
     var yr=espnYear||"2025";
-    var apiUrl="https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+yr+"/segments/0/leagues/"+espnLeagueId.trim()+"?view=mRoster&view=mTeam";
+    var apiUrl="https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/"+yr+"/segments/0/leagues/"+espnLeagueId.trim()+"?view=mRoster&view=mTeam&view=mSettings&view=mMembers";
     var workerUrl=espnWorkerUrl.trim();
     var hasCookies=espnS2.trim()&&espnSWID.trim();
     // Save cookies for next time
@@ -2213,8 +2213,12 @@ export default function App(){
       proxies=[{url:apiUrl,opts:{credentials:"omit"}}];
     }
     function processEspnData(data){
+      // Build member ID → display name map
+      var memberMap={};
+      (data.members||[]).forEach(function(m){memberMap[m.id]=(m.displayName||(m.firstName+" "+m.lastName).trim()||"");});
       var teams=(data.teams||[]).map(function(t){
         var name=((t.location||"")+" "+(t.nickname||"")).trim()||("Team "+t.id);
+        var owner=t.primaryOwner?memberMap[t.primaryOwner]||"":(t.owners&&t.owners[0]?memberMap[t.owners[0]]||"");
         var players=(t.roster&&t.roster.entries||[])
           .filter(function(e){var pid=e.playerPoolEntry&&e.playerPoolEntry.player&&e.playerPoolEntry.player.defaultPositionId;return pid!==5&&pid!==16;})
           .map(function(e){
@@ -2226,7 +2230,7 @@ export default function App(){
         var totalVal=players.reduce(function(s,p){return s+p.tradeVal;},0);
         var w=t.record&&t.record.overall&&t.record.overall.wins||0;
         var l=t.record&&t.record.overall&&t.record.overall.losses||0;
-        return {name:name,owner:"",players:players,totalVal:totalVal,faab:null,picks:0,wins:w,losses:l};
+        return {name:name,owner:owner,players:players,totalVal:totalVal,faab:null,picks:0,wins:w,losses:l};
       });
       if(!teams.length){setLeagueImportErr("No teams found. If this is a private league, ESPN is blocking access — use Manual Import instead.");setLeagueImportStatus("error");return;}
       teams.sort(function(a,b){return b.totalVal-a.totalVal;});
