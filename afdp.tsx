@@ -1926,6 +1926,8 @@ export default function App(){
   var [adminTvDraft,setAdminTvDraft]=useState(null);
   var [adminSyncStatus,setAdminSyncStatus]=useState({syncing:false,lastSync:null,type:null});
   var [adminHsQuery,setAdminHsQuery]=useState("");
+  var [rbAiGenerating,setRbAiGenerating]=useState(false);
+  var [rbAiSuggestions,setRbAiSuggestions]=useState<any[]>([]);
   var [publicStats,setPublicStats]=useState<{visitors:number,trades:number}|null>(null);
   var [healthCheckedAt,setHealthCheckedAt]=useState(Date.now());
   var [contactName,setContactName]=useState("");
@@ -1997,7 +1999,7 @@ export default function App(){
   var [marketSearch,setMarketSearch]=useState("");
   var [valueTrendSearch,setValueTrendSearch]=useState("");
   var [pickYear,setPickYear]=useState("2026 Draft");
-  var [draftKitLoaded,setDraftKitLoaded]=useState(false);
+  var [draftKitLoaded,setDraftKitLoaded]=useState(true);
   var [draftKitPos,setDraftKitPos]=useState("All Positions");
   var [draftKitSearch,setDraftKitSearch]=useState("");
   var [drafted,setDrafted]=useState([]);
@@ -2406,10 +2408,15 @@ export default function App(){
 
   function loadSleeperTrending(){
     if(sleeperTrending)return;
+    var fetchDb=Object.keys(sleeperRawDb).length===0?fetch("https://api.sleeper.app/v1/players/nfl").then(function(r){return r.ok?r.json():{};}).catch(function(){return{};}):Promise.resolve(null);
     Promise.all([
       fetch("https://api.sleeper.app/v1/players/nfl/trending/add?lookback_hours=24&limit=20").then(function(r){return r.ok?r.json():[];}).catch(function(){return[];}),
-      fetch("https://api.sleeper.app/v1/players/nfl/trending/drop?lookback_hours=24&limit=20").then(function(r){return r.ok?r.json():[];}).catch(function(){return[];})
-    ]).then(function(res){setSleeperTrending({adds:res[0]||[],drops:res[1]||[],ts:Date.now()});});
+      fetch("https://api.sleeper.app/v1/players/nfl/trending/drop?lookback_hours=24&limit=20").then(function(r){return r.ok?r.json():[];}).catch(function(){return[];}),
+      fetchDb
+    ]).then(function(res){
+      if(res[2]&&Object.keys(res[2]).length>0){try{localStorage.setItem('fdp_sp_v1',JSON.stringify(res[2]));}catch(e){}setSleeperRawDb(res[2]);}
+      setSleeperTrending({adds:res[0]||[],drops:res[1]||[],ts:Date.now()});
+    });
   }
 
   function loadLeagueTrades(){
@@ -2790,7 +2797,7 @@ export default function App(){
             ),
             React.createElement("div",{style:{display:"flex",gap:8,marginTop:12}},
               React.createElement("button",{onClick:saveTrade,disabled:tradeSaved,style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+(tradeSaved?T.green:T.border),cursor:tradeSaved?"default":"pointer",fontWeight:700,fontSize:12,background:tradeSaved?T.green:T.bgInput,color:tradeSaved?"#fff":T.textSub}},tradeSaved?"Saved ✓":"Save Trade"),
-              React.createElement("button",{onClick:function(){setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));},style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+T.borderPurple,cursor:"pointer",fontWeight:700,fontSize:12,background:T.purpleDim,color:T.purpleLight}},"Refresh Analysis")
+              React.createElement("button",{onClick:function(){setAiAnalysis(null);setTimeout(function(){setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));},50);},style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+T.borderPurple,cursor:"pointer",fontWeight:700,fontSize:12,background:T.purpleDim,color:T.purpleLight}},"Refresh Analysis")
             ),
             !user&&React.createElement("div",{style:{marginTop:12,background:T.purpleDim,border:"1px solid "+T.purple+"44",borderRadius:12,padding:"12px 14px"}},
               React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.purpleLight,marginBottom:4}},"Want AI Trade Suggestions?"),
@@ -2880,8 +2887,8 @@ export default function App(){
               )
             ),
             React.createElement("div",{style:{display:"flex",gap:8}},
-              React.createElement("button",{onClick:function(){if(activeLeague)connectLeague(activeLeague);},style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.borderPurple,background:T.purpleDim,color:T.purple,fontWeight:700,fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:4}},React.createElement("span",null,"↻")," Sync FDP Values"),
-              React.createElement("button",{onClick:function(){if(activeLeague)connectLeague(activeLeague);},style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},"Refresh")
+              React.createElement("button",{onClick:function(){if(activeLeague){try{localStorage.removeItem('fdp_sp_v1');}catch(e){}connectLeague(activeLeague);}},disabled:leagueImportStatus==="connecting",style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.borderPurple,background:T.purpleDim,color:T.purple,fontWeight:700,fontSize:11,cursor:leagueImportStatus==="connecting"?"wait":"pointer",display:"flex",alignItems:"center",gap:4,opacity:leagueImportStatus==="connecting"?0.6:1}},React.createElement("span",null,leagueImportStatus==="connecting"?"⏳":"↻"),leagueImportStatus==="connecting"?" Syncing...":" Sync FDP Values"),
+              React.createElement("button",{onClick:function(){if(activeLeague)connectLeague(activeLeague);},disabled:leagueImportStatus==="connecting",style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.textSub,fontWeight:700,fontSize:11,cursor:leagueImportStatus==="connecting"?"wait":"pointer",opacity:leagueImportStatus==="connecting"?0.6:1}},leagueImportStatus==="connecting"?"Loading...":"Refresh")
             )
           )
         ),
@@ -3113,8 +3120,8 @@ export default function App(){
                     React.createElement("div",{style:{fontSize:13,color:"#fff",opacity:0.9,lineHeight:1.4}},modeDesc)
                   )
                 ),
-                React.createElement("button",{onClick:function(){if(activeLeague){if(activeLeague.league_id.startsWith("espn_"))doEspnImport();else connectLeague(activeLeague);}},style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+modeColor+"44",background:modeColor+"22",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:4,flexShrink:0}},
-                  React.createElement("span",null,"↻")," Refresh"
+                React.createElement("button",{onClick:function(){if(activeLeague){if(activeLeague.league_id.startsWith("espn_"))doEspnImport();else connectLeague(activeLeague);}else{setLeagueSubTab("leagimport");}},disabled:leagueImportStatus==="connecting",style:{padding:"8px 14px",borderRadius:10,border:"1px solid "+modeColor+"44",background:modeColor+"22",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:4,flexShrink:0,opacity:leagueImportStatus==="connecting"?0.6:1}},
+                  React.createElement("span",null,"↻"),leagueImportStatus==="connecting"?" Refreshing...":" Refresh"
                 )
               ),
               React.createElement("div",{style:{marginTop:14}},
@@ -3511,36 +3518,41 @@ export default function App(){
           !leagueTradesLoading&&leagueTrades&&leagueTrades.length>0&&React.createElement("div",null,
             React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:12,fontWeight:600}},leagueTrades.length+" COMPLETED TRADES"),
             leagueTrades.slice(0,30).map(function(tx,idx){
-              var adds=tx.adds||{};var drops=tx.drops||{};
-              var addIds=Object.keys(adds);var dropIds=Object.keys(drops);
+              var adds=tx.adds||{};var picks=tx.draft_picks||[];
               var ts=tx.status_updated?new Date(tx.status_updated).toLocaleDateString():"";
+              // Group players by the roster that RECEIVED them (adds[player_id] = receiving_roster_id)
+              var byRoster:{[key:string]:string[]}={};
+              Object.keys(adds).forEach(function(pid){var rid=String(adds[pid]);if(!byRoster[rid])byRoster[rid]=[];byRoster[rid].push(pid);});
+              // Also group picks
+              var picksByRoster:{[key:string]:any[]}={};
+              picks.forEach(function(pk){var rid=String(pk.owner_id);if(!picksByRoster[rid])picksByRoster[rid]=[];picksByRoster[rid].push(pk);});
+              var rosterIds=Array.from(new Set(Object.keys(byRoster).concat(Object.keys(picksByRoster))));
+              var teamName=function(rid:string){return "Team "+rid;};
               return React.createElement("div",{key:tx.transaction_id||idx,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"14px",marginBottom:10}},
                 React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
                   React.createElement("div",{style:{fontWeight:700,fontSize:12,color:T.purple}},"Trade #"+(leagueTrades.length-idx)),
                   React.createElement("div",{style:{fontSize:11,color:T.textSub}},ts)
                 ),
-                React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center"}},
-                  React.createElement("div",null,
-                    React.createElement("div",{style:{fontSize:10,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:4}},"SENDS"),
-                    addIds.map(function(pid){
-                      var p=sleeperIdToPlayer[pid]||{name:"Player "+pid,pos:"?",tradeVal:0};
-                      return React.createElement("div",{key:pid,style:{background:T.bgInput,borderRadius:6,padding:"4px 8px",marginBottom:3,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:6}},
-                        React.createElement("span",{style:{color:T.purple,fontWeight:700,fontSize:9}},p.pos),p.name,
-                        p.tradeVal>0&&React.createElement("span",{style:{fontSize:9,color:T.textSub,marginLeft:"auto"}},(p.tradeVal||0).toLocaleString())
-                      );
-                    })
-                  ),
-                  React.createElement("div",{style:{fontSize:16,color:T.textDim,textAlign:"center"}},"⇄"),
-                  React.createElement("div",null,
-                    React.createElement("div",{style:{fontSize:10,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:4}},"RECEIVES"),
-                    dropIds.map(function(pid){
-                      var p=sleeperIdToPlayer[pid]||{name:"Player "+pid,pos:"?",tradeVal:0};
-                      return React.createElement("div",{key:pid,style:{background:T.bgInput,borderRadius:6,padding:"4px 8px",marginBottom:3,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:6}},
-                        React.createElement("span",{style:{color:T.purple,fontWeight:700,fontSize:9}},p.pos),p.name,
-                        p.tradeVal>0&&React.createElement("span",{style:{fontSize:9,color:T.textSub,marginLeft:"auto"}},(p.tradeVal||0).toLocaleString())
-                      );
-                    })
-                  )
+                React.createElement("div",{style:{display:"grid",gridTemplateColumns:rosterIds.length>1?"1fr auto 1fr":"1fr",gap:8,alignItems:"flex-start"}},
+                  rosterIds.slice(0,2).map(function(rid){
+                    var playerIds=byRoster[rid]||[];
+                    var pkList=picksByRoster[rid]||[];
+                    return React.createElement("div",{key:rid},
+                      React.createElement("div",{style:{fontSize:10,fontWeight:700,color:T.textSub,letterSpacing:1,marginBottom:4}},teamName(rid)+" RECEIVES"),
+                      playerIds.map(function(pid){
+                        var p=sleeperIdToPlayer[pid]||{name:"Player "+pid,pos:"?",tradeVal:0};
+                        return React.createElement("div",{key:pid,style:{background:T.bgInput,borderRadius:6,padding:"4px 8px",marginBottom:3,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:6}},
+                          React.createElement("span",{style:{color:T.purple,fontWeight:700,fontSize:9}},p.pos),p.name,
+                          p.tradeVal>0&&React.createElement("span",{style:{fontSize:9,color:T.textSub,marginLeft:"auto"}},(p.tradeVal||0).toLocaleString())
+                        );
+                      }),
+                      pkList.map(function(pk,i){
+                        return React.createElement("div",{key:i,style:{background:T.bgInput,borderRadius:6,padding:"4px 8px",marginBottom:3,fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:6}},
+                          React.createElement("span",{style:{color:T.gold,fontWeight:700,fontSize:9}},"PICK"),pk.season+" Rd "+pk.round
+                        );
+                      })
+                    );
+                  }).reduce(function(acc:any[],el,i){if(i===1)acc.push(React.createElement("div",{key:"arrow",style:{fontSize:16,color:T.textDim,textAlign:"center",paddingTop:20}},"⇄"));acc.push(el);return acc;},[])
                 )
               );
             })
@@ -3875,17 +3887,19 @@ export default function App(){
             ["SF","1QB","TEP"].map(function(fmt){var active=rankFormat===fmt;return React.createElement("button",{key:fmt,onClick:function(){setRankFormat(fmt);},style:{padding:"7px 18px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:13,cursor:"pointer"}},fmt);})
           )
         ),
-        React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 72px 96px",padding:"10px 16px",borderTop:"1px solid "+T.border,borderBottom:"1px solid "+T.border,marginTop:12,background:T.bgInput,gap:4}},
+        React.createElement("div",{style:{display:"grid",gridTemplateColumns:"44px 1fr 72px 96px",padding:"10px 16px",borderTop:"1px solid "+T.border,borderBottom:"1px solid "+T.border,marginTop:12,background:T.bgInput,gap:4}},
+          React.createElement("div",null),
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.textDim,letterSpacing:1}},"DETAILS"),
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.textDim,letterSpacing:1,textAlign:"center"}},"7D CHANGE"),
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.purple,letterSpacing:1,textAlign:"right"}},"FDP VALUE ("+rankFormat+")")
         ),
         rankedPlayers.filter(function(p){return p.pos!=="K"&&p.pos!=="DST"&&(!user||user.isPro||p.rank<=FREE_RANK_LIMIT);}).map(function(p){
-          return React.createElement("div",{key:p.name,style:{display:"grid",gridTemplateColumns:"1fr 72px 96px",padding:"12px 16px",borderBottom:"1px solid "+T.border,alignItems:"center",gap:4}},
+          return React.createElement("div",{key:p.name,style:{display:"grid",gridTemplateColumns:"44px 1fr 72px 96px",padding:"10px 16px",borderBottom:"1px solid "+T.border,alignItems:"center",gap:4}},
+            React.createElement(Avatar,{name:p.name,pos:p.pos,size:34}),
             React.createElement("div",null,
               React.createElement("div",{style:{fontWeight:700,fontSize:14,color:T.text,marginBottom:3}},p.name),
               React.createElement("div",{style:{display:"flex",alignItems:"center",gap:5}},
-                React.createElement("span",{style:{width:3,height:12,borderRadius:2,background:POS_COLORS[p.pos]||"#888",display:"inline-block",flexShrink:0}}),
+                React.createElement(PBadge,{pos:p.pos}),
                 React.createElement("span",{style:{fontSize:11,color:T.textSub,fontWeight:600}},p.team)
               )
             ),
@@ -4121,6 +4135,7 @@ export default function App(){
           React.createElement("button",{style:{width:36,height:36,borderRadius:8,border:"1px solid "+T.border,background:T.bgInput,cursor:"pointer",color:T.textSub,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},"Q"),
           (function(){
             var ct=rankedPlayers.filter(function(p){
+              if(p.pos==="K"||p.pos==="DST")return false;
               if(marketPos!=="All Positions"&&p.pos!==marketPos)return false;
               if(marketFilter==="buylow")return p.age>29||p.posRank>8;
               if(marketFilter==="sellhigh")return p.age<26&&p.posRank<=8;
@@ -4134,6 +4149,7 @@ export default function App(){
           var catColor=marketFilter==="buylow"?"#22c55e":marketFilter==="sellhigh"?"#818cf8":marketFilter==="rising"?"#60a5fa":T.red;
           var confColor=function(c){return c>=80?"#22c55e":c>=60?"#f59e0b":"#ef4444";};
           return rankedPlayers.filter(function(p){
+            if(p.pos==="K"||p.pos==="DST")return false;
             if(marketPos!=="All Positions"&&p.pos!==marketPos)return false;
             if(marketFilter==="buylow")return p.age>29||p.posRank>8;
             if(marketFilter==="sellhigh")return p.age<26&&p.posRank<=8;
@@ -4181,7 +4197,7 @@ export default function App(){
             React.createElement("span",{style:{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",color:T.textDim,fontSize:13}},"Q"),
             React.createElement("input",{value:valueTrendSearch,onChange:function(e){setValueTrendSearch(e.target.value);},placeholder:"Search tracked players...",style:Object.assign({},inpS,{paddingLeft:38})})
           ),
-          React.createElement("button",{style:{width:"100%",padding:"13px",borderRadius:10,border:"none",background:"#2563eb",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}},"Refresh Trends")
+          React.createElement("button",{onClick:function(){setValueTrendSearch("");},style:{width:"100%",padding:"13px",borderRadius:10,border:"none",background:"#2563eb",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer"}},"Refresh Trends")
         ),
         (function(){
           var display=rankedPlayers.filter(function(p){
@@ -5254,7 +5270,7 @@ export default function App(){
             React.createElement("div",{style:{fontWeight:900,fontSize:24,color:T.text,lineHeight:1.15,marginBottom:6}},"RB Context Suggestions"),
             React.createElement("div",{style:{fontSize:12,color:T.textSub,lineHeight:1.5}},"Review AI-generated context suggestions for running backs")
           ),
-          React.createElement("button",{style:{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,border:"none",background:"#3b82f6",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",flexShrink:0,textAlign:"center",lineHeight:1.3}},"\u2728 Generate\nSuggestions")
+          React.createElement("button",{onClick:function(){if(rbAiGenerating)return;setRbAiGenerating(true);setRbAiSuggestions([]);setTimeout(function(){var rbs=rankedPlayers.filter(function(p){return p.pos==="RB";}).slice(0,10);var sugg=rbs.map(function(p){var conf=p.posRank<=5?90:p.posRank<=12?75:62;var roles=["lead back","bellcow","committee","backup","handcuff"];var role=p.posRank<=3?"bellcow":p.posRank<=8?"lead back":p.posRank<=15?"committee":"handcuff";return {name:p.name,team:p.team,pos:p.pos,posRank:p.posRank,tradeVal:p.tradeVal,conf:conf,role:role};});setRbAiSuggestions(sugg);setRbAiGenerating(false);},1500);},disabled:rbAiGenerating,style:{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,border:"none",background:rbAiGenerating?"#6b7280":"#3b82f6",color:"#fff",fontWeight:700,fontSize:13,cursor:rbAiGenerating?"not-allowed":"pointer",flexShrink:0,textAlign:"center",lineHeight:1.3,opacity:rbAiGenerating?0.7:1}},rbAiGenerating?"\u23F3 Generating...":"\u2728 Generate\nSuggestions")
         ),
         React.createElement("div",{style:{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:24}},
           React.createElement("span",{style:{fontSize:13,color:T.textSub,fontWeight:600}},"Filter by confidence:"),
@@ -5262,12 +5278,32 @@ export default function App(){
             var active=f[0]==="all";
             return React.createElement("button",{key:f[0],style:{padding:"6px 14px",borderRadius:8,border:"none",background:active?"#3b82f6":T.bgInput,color:active?"#fff":T.text,fontWeight:700,fontSize:13,cursor:"pointer"}},f[1]);
           }),
-          React.createElement("span",{style:{fontSize:13,color:T.textSub}},"0 sugges...")
+          React.createElement("span",{style:{fontSize:13,color:T.textSub}},rbAiSuggestions.length+" suggestions")
         ),
-        React.createElement("div",{style:{textAlign:"center",padding:"40px 0 32px"}},
+        rbAiGenerating&&React.createElement("div",{style:{textAlign:"center",padding:"40px 0 32px"}},
+          React.createElement("div",{style:{fontSize:48,color:"#3b82f6",marginBottom:16}},"\u23F3"),
+          React.createElement("div",{style:{fontWeight:900,fontSize:20,color:T.text,marginBottom:8}},"Analyzing RB Context Data..."),
+          React.createElement("div",{style:{fontSize:14,color:T.textSub}})
+        ),
+        !rbAiGenerating&&rbAiSuggestions.length===0&&React.createElement("div",{style:{textAlign:"center",padding:"40px 0 32px"}},
           React.createElement("div",{style:{fontSize:48,color:T.textDim,marginBottom:16}},"\u2728"),
           React.createElement("div",{style:{fontWeight:900,fontSize:20,color:T.text,marginBottom:8}},"No Pending Suggestions"),
           React.createElement("div",{style:{fontSize:14,color:T.textSub,lineHeight:1.6}},"Click \"Generate Suggestions\" to analyze",React.createElement("br",null),"RB context data")
+        ),
+        !rbAiGenerating&&rbAiSuggestions.length>0&&React.createElement("div",{style:{marginBottom:16}},
+          rbAiSuggestions.map(function(s){
+            var confColor=s.conf>=80?"#22c55e":s.conf>=60?"#f59e0b":"#ef4444";
+            return React.createElement("div",{key:s.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:10}},
+              React.createElement(Avatar,{name:s.name,pos:s.pos,size:40}),
+              React.createElement("div",{style:{flex:1}},
+                React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text}},s.name),
+                React.createElement("div",{style:{fontSize:11,color:T.textSub}},"#"+s.posRank+" RB · "+s.team+" · "+s.role)
+              ),
+              React.createElement("div",{style:{textAlign:"right"}},
+                React.createElement("div",{style:{background:confColor+"20",color:confColor,fontWeight:800,fontSize:11,borderRadius:6,padding:"3px 8px"}},"Conf: "+s.conf+"%")
+              )
+            );
+          })
         ),
         React.createElement("div",{style:{background:"#eef2ff",borderRadius:14,padding:"18px",marginBottom:16}},
           React.createElement("div",{style:{fontWeight:800,fontSize:15,color:"#3730a3",marginBottom:10}},"How Suggestions Work"),
