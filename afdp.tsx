@@ -3232,10 +3232,10 @@ export default function App(){
           React.createElement("select",{value:waiverPos,onChange:function(e){setWaiverPos(e.target.value);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",fontSize:13,outline:"none",width:"100%",marginBottom:10}},
             ["All Positions","QB","RB","WR","TE","DL","LB","DB"].map(function(p){return React.createElement("option",{key:p},p);})
           ),
-          React.createElement("select",{style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",fontSize:13,outline:"none",width:"100%",marginBottom:10}},
-            React.createElement("option",null,"Sort by Dynasty Value"),
-            React.createElement("option",null,"Sort by Projected Points"),
-            React.createElement("option",null,"Sort by Age")
+          React.createElement("select",{value:sortBy,onChange:function(e){setSortBy(e.target.value);},style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",fontSize:13,outline:"none",width:"100%",marginBottom:10}},
+            React.createElement("option",{value:"rank"},"Sort by Dynasty Value"),
+            React.createElement("option",{value:"pts"},"Sort by Projected Points"),
+            React.createElement("option",{value:"age"},"Sort by Age")
           ),
           !waiverLoaded&&React.createElement("button",{onClick:function(){setWaiverLoaded(true);},style:{padding:"10px 20px",borderRadius:10,border:"none",background:"#2563eb",color:"#ffffffaa",fontWeight:700,fontSize:13,cursor:"pointer"}},"Loading...")
         ),
@@ -3243,7 +3243,7 @@ export default function App(){
           return (waiverPos==="All Positions"||p.pos===waiverPos)&&
                  (!waiverSearch||p.name.toLowerCase().includes(waiverSearch.toLowerCase()))&&
                  p.rank>20;
-        }).slice(0,15).map(function(p){
+        }).slice().sort(function(a,b){return sortBy==="pts"?b.pts-a.pts:sortBy==="age"?a.age-b.age:b.tradeVal-a.tradeVal;}).slice(0,15).map(function(p){
           return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:10}},
             React.createElement(Avatar,{name:p.name,pos:p.pos,size:40}),
             React.createElement("div",{style:{flex:1}},
