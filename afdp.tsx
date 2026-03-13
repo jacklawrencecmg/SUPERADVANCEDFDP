@@ -1988,6 +1988,7 @@ export default function App(){
   var [rankSubTab,setRankSubTab]=useState("allrankings");
   var [rankPos,setRankPos]=useState("QB");
   var [rankFormat,setRankFormat]=useState("SF");
+  var [pvPos,setPvPos]=useState("All");
   var [rankSearch,setRankSearch]=useState("");
   var [rankTeamFilter,setRankTeamFilter]=useState("All Teams");
   var [rankIdpPos,setRankIdpPos]=useState("DL");
@@ -3885,6 +3886,9 @@ export default function App(){
           React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12}},"Fantasy Draft Pros dynasty values"),
           React.createElement("div",{style:{display:"flex",gap:6}},
             ["SF","1QB","TEP"].map(function(fmt){var active=rankFormat===fmt;return React.createElement("button",{key:fmt,onClick:function(){setRankFormat(fmt);},style:{padding:"7px 18px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:13,cursor:"pointer"}},fmt);})
+          ),
+          React.createElement("div",{style:{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}},
+            ["All","QB","RB","WR","TE","DL","LB","DB"].map(function(pos){var active=pvPos===pos;return React.createElement("button",{key:pos,onClick:function(){setPvPos(pos);},style:{padding:"5px 12px",borderRadius:8,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:11,cursor:"pointer"}},pos);})
           )
         ),
         React.createElement("div",{style:{display:"grid",gridTemplateColumns:"44px 1fr 72px 96px",padding:"10px 16px",borderTop:"1px solid "+T.border,borderBottom:"1px solid "+T.border,marginTop:12,background:T.bgInput,gap:4}},
@@ -3893,7 +3897,7 @@ export default function App(){
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.textDim,letterSpacing:1,textAlign:"center"}},"7D CHANGE"),
           React.createElement("div",{style:{fontSize:9,fontWeight:700,color:T.purple,letterSpacing:1,textAlign:"right"}},"FDP VALUE ("+rankFormat+")")
         ),
-        rankedPlayers.filter(function(p){return p.pos!=="K"&&p.pos!=="DST"&&(!user||user.isPro||p.rank<=FREE_RANK_LIMIT);}).map(function(p){
+        rankedPlayers.filter(function(p){return p.pos!=="K"&&p.pos!=="DST"&&(pvPos==="All"||p.pos===pvPos)&&(!user||user.isPro||p.rank<=FREE_RANK_LIMIT);}).slice().sort(function(a,b){return b.tradeVal-a.tradeVal;}).map(function(p){
           return React.createElement("div",{key:p.name,style:{display:"grid",gridTemplateColumns:"44px 1fr 72px 96px",padding:"10px 16px",borderBottom:"1px solid "+T.border,alignItems:"center",gap:4}},
             React.createElement(Avatar,{name:p.name,pos:p.pos,size:34}),
             React.createElement("div",null,
