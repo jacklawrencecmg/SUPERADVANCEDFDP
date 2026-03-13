@@ -279,7 +279,7 @@ const PLAYERS=[
   // Additional TEs
   {name:"Dallas Goedert",pos:"TE",age:30,team:"PHI",proj:{PPR:182,Half:167,Standard:152},adp:11.8,ktcVal:2627,note:"72 rec 820 yds 7 TD"},
   {name:"T.J. Hockenson",pos:"TE",age:28,team:"MIN",proj:{PPR:175,Half:160,Standard:145},adp:12.5,ktcVal:2708,note:"70 rec 740 yds"},
-  {name:"David Njoku",pos:"TE",age:29,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:13.8,ktcVal:2729,note:"65 rec 680 yds 6 TD"},
+  {name:"David Njoku",pos:"TE",age:29,team:"FA",proj:{PPR:168,Half:154,Standard:140},adp:13.8,ktcVal:2729,note:"65 rec 680 yds 6 TD"},
   {name:"Jake Ferguson",pos:"TE",age:26,team:"DAL",proj:{PPR:162,Half:148,Standard:134},adp:15.0,ktcVal:3392,note:"68 rec 700 yds 6 TD"},
   {name:"Harold Fannin Jr.",pos:"TE",age:23,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:8.5,ktcVal:4892,note:"Year 2: 66 rec 700 yds 6 TD elite dynasty TE asset"},
   {name:"Cade Otton",pos:"TE",age:26,team:"TB",proj:{PPR:148,Half:135,Standard:122},adp:17.8,note:"55 rec 570 yds"},
@@ -535,9 +535,9 @@ const PLAYERS=[
   {name:"Chase Claypool",pos:"WR",age:27,team:"FA",proj:{PPR:108,Half:99,Standard:90},adp:37.2,note:"Physical WR reclamation"},
   {name:"Ihmir Smith-Marsette",pos:"WR",age:26,team:"DEN",proj:{PPR:105,Half:97,Standard:89},adp:38.5,note:"Speed depth"},
   // TE depth
-  {name:"Noah Fant",pos:"TE",age:28,team:"SEA",proj:{PPR:118,Half:108,Standard:98},adp:23.5,note:"50 rec 520 yds 4 TD"},
+  {name:"Noah Fant",pos:"TE",age:28,team:"NO",proj:{PPR:118,Half:108,Standard:98},adp:23.5,note:"50 rec 520 yds 4 TD"},
   {name:"Hunter Henry",pos:"TE",age:31,team:"NE",proj:{PPR:112,Half:103,Standard:94},adp:25.5,ktcVal:2375,note:"48 rec 500 yds 5 TD"},
-  {name:"Tyler Conklin",pos:"TE",age:30,team:"NYJ",proj:{PPR:105,Half:96,Standard:87},adp:27.8,note:"45 rec 460 yds"},
+  {name:"Tyler Conklin",pos:"TE",age:30,team:"LAC",proj:{PPR:105,Half:96,Standard:87},adp:27.8,note:"45 rec 460 yds"},
   {name:"Greg Dulcich",pos:"TE",age:26,team:"DEN",proj:{PPR:108,Half:99,Standard:90},adp:27.0,note:"Year 4: 44 rec 450 yds"},
   {name:"Robert Tonyan",pos:"TE",age:31,team:"MIN",proj:{PPR:102,Half:93,Standard:84},adp:29.5,note:"Red zone TE: 40 rec 420 yds 5 TD"},
   {name:"Charlie Kolar",pos:"TE",age:26,team:"BAL",proj:{PPR:105,Half:96,Standard:87},adp:28.5,note:"Handcuff to Andrews"},
@@ -656,7 +656,7 @@ const PLAYERS=[
   // TE wave 3
   {name:"Dalton Schultz",pos:"TE",age:29,team:"HOU",proj:{PPR:112,Half:103,Standard:94},adp:26.8,ktcVal:2311,note:"Veteran: 46 rec 470 yds 4 TD"},
   {name:"Tyler Higbee",pos:"TE",age:31,team:"LAR",proj:{PPR:102,Half:93,Standard:84},adp:30.8,note:"42 rec 430 yds 4 TD"},
-  {name:"Jonnu Smith",pos:"TE",age:30,team:"ATL",proj:{PPR:108,Half:99,Standard:90},adp:28.8,note:"42 rec 440 yds 5 TD"},
+  {name:"Jonnu Smith",pos:"TE",age:30,team:"FA",proj:{PPR:108,Half:99,Standard:90},adp:28.8,note:"42 rec 440 yds 5 TD"},
   {name:"Mo Alie-Cox",pos:"TE",age:31,team:"IND",proj:{PPR:88,Half:81,Standard:74},adp:36.8,note:"Blocking/red zone depth"},
   {name:"Marcedes Lewis",pos:"TE",age:40,team:"GB",proj:{PPR:75,Half:69,Standard:63},adp:42.0,note:"Veteran blocker"},
   {name:"CJ Uzomah",pos:"TE",age:33,team:"NYJ",proj:{PPR:82,Half:75,Standard:68},adp:38.5,note:"Veteran blocking TE"},
@@ -847,7 +847,7 @@ const PLAYERS=[
   {name:"Mecole Hardman Jr.",pos:"WR",age:28,team:"KC",proj:{PPR:95,Half:87,Standard:79},adp:42.0,note:"Speed: 38 rec 450 yds 4 TD"},
   // TE Wave 7
   {name:"Kyle Pitts",pos:"TE",age:25,team:"ATL",proj:{PPR:215,Half:198,Standard:181},adp:12.5,ktcVal:4481,note:"Elite athletic TE: 84 rec 920 yds 7 TD breakout"},
-  {name:"Mike Gesicki",pos:"TE",age:30,team:"NE",proj:{PPR:115,Half:105,Standard:95},adp:24.5,note:"Receiving TE: 46 rec 490 yds 4 TD"},
+  {name:"Mike Gesicki",pos:"TE",age:30,team:"CIN",proj:{PPR:115,Half:105,Standard:95},adp:24.5,note:"Receiving TE: 46 rec 490 yds 4 TD"},
   // Wave 10 — 2025 NFL Draft rookies: skill + IDP
   // 2025 RB Rookies
   {name:"Trevor Etienne",pos:"RB",age:22,team:"JAX",proj:{PPR:182,Half:167,Standard:152},adp:15.0,note:"2025 draft: pass-catching 800 rush 55 rec"},
@@ -1368,7 +1368,7 @@ const PLAYERS=[
   {name:"Calvin Ridley",pos:"WR",age:30,team:"TEN",proj:{PPR:205,Half:189,Standard:173},adp:19.5,ktcVal:1792,note:"Veteran: 78 rec 900 yds 8 TD bounce-back"},
   {name:"JK Dobbins",pos:"RB",age:26,team:"DEN",proj:{PPR:195,Half:179,Standard:163},adp:16.5,ktcVal:2736,note:"Comeback: 850 rush 8 TD explosive"},
   {name:"Donovan Peoples-Jones",pos:"WR",age:27,team:"CLE",proj:{PPR:162,Half:149,Standard:136},adp:26.5,note:"62 rec 780 yds 6 TD deep threat"},
-  {name:"Jelani Woods",pos:"TE",age:26,team:"IND",proj:{PPR:115,Half:105,Standard:95},adp:25.5,note:"Athletic: 44 rec 480 yds 5 TD"},
+  {name:"Jelani Woods",pos:"TE",age:26,team:"NYJ",proj:{PPR:115,Half:105,Standard:95},adp:25.5,note:"Athletic: 44 rec 480 yds 5 TD"},
   {name:"Connor Heyward",pos:"TE",age:32,team:"PIT",proj:{PPR:88,Half:81,Standard:74},adp:38.0,note:"Utility: 35 rec 350 yds"},
   {name:"Irv Smith Jr.",pos:"TE",age:28,team:"CIN",proj:{PPR:98,Half:90,Standard:82},adp:32.5,note:"Backup: 40 rec 410 yds"},
   {name:"Tyler Kroft",pos:"TE",age:32,team:"FA",proj:{PPR:68,Half:62,Standard:56},adp:50.0,note:"Veteran blocker/depth"},
