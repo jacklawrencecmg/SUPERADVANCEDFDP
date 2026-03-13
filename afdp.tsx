@@ -251,7 +251,7 @@ const PLAYERS=[
   // Additional WRs
   {name:"Jaylen Waddle",pos:"WR",age:28,team:"MIA",proj:{PPR:265,Half:245,Standard:225},adp:10.4,ktcVal:4566,note:"Year 5: 100 rec 1,050 yds"},
   {name:"Chris Olave",pos:"WR",age:26,team:"NO",proj:{PPR:258,Half:238,Standard:218},adp:11.4,ktcVal:5724,note:"95 rec 1,120 yds 7 TD"},
-  {name:"George Pickens",pos:"WR",age:24,team:"PIT",proj:{PPR:252,Half:233,Standard:214},adp:12.2,ktcVal:6126,note:"85 rec 1,080 yds 9 TD"},
+  {name:"George Pickens",pos:"WR",age:24,team:"DAL",proj:{PPR:252,Half:233,Standard:214},adp:12.2,ktcVal:6126,note:"85 rec 1,080 yds 9 TD"},
   {name:"Jaxon Smith-Njigba",pos:"WR",age:23,team:"SEA",proj:{PPR:268,Half:248,Standard:228},adp:1.8,ktcVal:9794,note:"Year 3: 108 rec 1,200 yds 9 TD dynasty WR1"},
   {name:"Malik Nabers",pos:"WR",age:22,team:"NYG",proj:{PPR:262,Half:242,Standard:222},adp:8.5,ktcVal:7712,note:"Year 2: 98 rec 1,050 yds 9 TD ascending"},
   {name:"Zay Flowers",pos:"WR",age:25,team:"BAL",proj:{PPR:242,Half:224,Standard:206},adp:13.8,ktcVal:4721,note:"88 rec 1,000 yds 8 TD"},
@@ -260,8 +260,8 @@ const PLAYERS=[
   {name:"Ladd McConkey",pos:"WR",age:25,team:"LAC",proj:{PPR:232,Half:214,Standard:196},adp:15.5,ktcVal:5361,note:"88 rec 940 yds"},
   {name:"DeVonta Smith",pos:"WR",age:29,team:"PHI",proj:{PPR:228,Half:211,Standard:194},adp:16.0,ktcVal:4845,note:"88 rec 1,000 yds 7 TD"},
   {name:"Mike Evans",pos:"WR",age:32,team:"TB",proj:{PPR:225,Half:208,Standard:191},adp:16.5,ktcVal:3100,note:"84 rec 1,050 yds 12 TD"},
-  {name:"Michael Pittman Jr.",pos:"WR",age:28,team:"IND",proj:{PPR:218,Half:201,Standard:184},adp:17.8,ktcVal:3550,note:"88 rec 950 yds 7 TD"},
-  {name:"D.J. Moore",pos:"WR",age:28,team:"CHI",proj:{PPR:215,Half:199,Standard:183},adp:18.2,ktcVal:4086,note:"80 rec 920 yds"},
+  {name:"Michael Pittman Jr.",pos:"WR",age:28,team:"PIT",proj:{PPR:218,Half:201,Standard:184},adp:17.8,ktcVal:3550,note:"88 rec 950 yds 7 TD"},
+  {name:"D.J. Moore",pos:"WR",age:28,team:"BUF",proj:{PPR:215,Half:199,Standard:183},adp:18.2,ktcVal:4086,note:"80 rec 920 yds"},
   {name:"Xavier Worthy",pos:"WR",age:23,team:"KC",proj:{PPR:210,Half:194,Standard:178},adp:19.0,ktcVal:3437,note:"Year 2: 72 rec 890 yds 9 TD"},
   {name:"Tank Dell",pos:"WR",age:25,team:"HOU",proj:{PPR:205,Half:189,Standard:173},adp:19.8,ktcVal:2486,note:"75 rec 850 yds 7 TD"},
   {name:"Davante Adams",pos:"WR",age:33,team:"LAR",proj:{PPR:195,Half:180,Standard:165},adp:20.8,ktcVal:3629,note:"Veteran: 80 rec 880 yds"},
@@ -690,7 +690,7 @@ const PLAYERS=[
   {name:"Colston Loveland",pos:"TE",age:23,team:"CHI",proj:{PPR:195,Half:179,Standard:163},adp:7.0,ktcVal:6070,note:"2026 Year 2 breakout: 78 rec 820 yds 7 TD elite receiving TE"},
   {name:"Mason Taylor",pos:"TE",age:23,team:"NYJ",proj:{PPR:158,Half:145,Standard:132},adp:16.5,ktcVal:2807,note:"2026 Year 2: 65 rec 680 yds 5 TD elite receiving prospect"},
   // Veterans still missing
-  {name:"Amari Cooper",pos:"WR",age:31,team:"CLE",proj:{PPR:172,Half:158,Standard:144},adp:25.5,note:"Veteran: 70 rec 820 yds 6 TD"},
+  {name:"Amari Cooper",pos:"WR",age:31,team:"FA",proj:{PPR:172,Half:158,Standard:144},adp:25.5,note:"Veteran: 70 rec 820 yds 6 TD"},
   {name:"JuJu Smith-Schuster",pos:"WR",age:29,team:"NE",proj:{PPR:148,Half:136,Standard:124},adp:30.0,note:"Slot veteran: 58 rec 620 yds"},
   {name:"Van Jefferson",pos:"WR",age:29,team:"ATL",proj:{PPR:128,Half:118,Standard:108},adp:34.2,note:"Deep threat depth: 48 rec 580 yds"},
   {name:"Greg Dortch",pos:"WR",age:27,team:"ARI",proj:{PPR:132,Half:121,Standard:110},adp:33.2,note:"Slot depth: 52 rec 560 yds"},
@@ -731,7 +731,7 @@ const PLAYERS=[
   {name:"Michael Bandy",pos:"WR",age:28,team:"LAC",proj:{PPR:82,Half:75,Standard:68},adp:45.2,note:"Speed depth WR"},
   {name:"Nsimba Webster",pos:"WR",age:28,team:"ARI",proj:{PPR:78,Half:72,Standard:66},adp:46.8,note:"Return/depth WR"},
   // Major missing vets
-  {name:"Cooper Kupp",pos:"WR",age:32,team:"LAR",proj:{PPR:218,Half:201,Standard:184},adp:17.2,note:"Elite route runner: 88 rec 1,020 yds if healthy"},
+  {name:"Cooper Kupp",pos:"WR",age:32,team:"SEA",proj:{PPR:218,Half:201,Standard:184},adp:17.2,note:"Elite route runner: 88 rec 1,020 yds if healthy"},
   {name:"Chris Godwin",pos:"WR",age:30,team:"TB",proj:{PPR:195,Half:180,Standard:165},adp:20.5,ktcVal:2808,note:"Return from injury: 76 rec 880 yds"},
   {name:"Michael Thomas",pos:"WR",age:32,team:"NO",proj:{PPR:148,Half:136,Standard:124},adp:29.5,note:"Injury reclamation: 55 rec 620 yds if healthy"},
   {name:"Robert Woods",pos:"WR",age:33,team:"HOU",proj:{PPR:92,Half:84,Standard:76},adp:43.0,note:"Veteran slot depth"},
@@ -898,7 +898,7 @@ const PLAYERS=[
   {name:"Evan Engram",pos:"TE",age:31,team:"DEN",proj:{PPR:195,Half:179,Standard:163},adp:11.5,ktcVal:1902,note:"Volume: 88 rec 950 yds 7 TD PPR monster"},
   // More notable WRs Wave 24
   {name:"Gabe Davis",pos:"WR",age:28,team:"JAX",proj:{PPR:148,Half:136,Standard:124},adp:29.0,note:"Big play: 52 rec 660 yds 6 TD"},
-  {name:"Romeo Doubs",pos:"WR",age:26,team:"GB",proj:{PPR:162,Half:149,Standard:136},adp:25.5,ktcVal:3113,note:"GB slot: 65 rec 740 yds 6 TD"},
+  {name:"Romeo Doubs",pos:"WR",age:26,team:"NE",proj:{PPR:162,Half:149,Standard:136},adp:25.5,ktcVal:3113,note:"GB slot: 65 rec 740 yds 6 TD"},
   // More RB Wave 24
   {name:"Sean Tucker",pos:"RB",age:25,team:"TB",proj:{PPR:135,Half:124,Standard:113},adp:29.5,ktcVal:3179,note:"TB committee: 520 rush 48 rec"},
   // More TE Wave 24
@@ -1320,7 +1320,7 @@ const PLAYERS=[
   {name:"Malik Heath",pos:"WR",age:26,team:"DET",proj:{PPR:82,Half:75,Standard:68},adp:47.0,note:"Physical receiver depth"},
   {name:"Shedrick Jackson",pos:"WR",age:25,team:"SF",proj:{PPR:85,Half:78,Standard:71},adp:45.5,note:"Speed deep threat"},
   // Wave 6 — additional skill + IDP depth
-  {name:"Mike Williams",pos:"WR",age:30,team:"NYJ",proj:{PPR:168,Half:155,Standard:142},adp:26.0,note:"Big-play threat: 58 rec 780 yds 7 TD"},
+  {name:"Mike Williams",pos:"WR",age:30,team:"PIT",proj:{PPR:168,Half:155,Standard:142},adp:26.0,note:"Big-play threat: 58 rec 780 yds 7 TD"},
   {name:"Seth Williams",pos:"WR",age:26,team:"DEN",proj:{PPR:128,Half:118,Standard:108},adp:34.0,note:"Physical receiver: 48 rec 580 yds"},
   {name:"Emmanuel Sanders",pos:"WR",age:38,team:"FA",proj:{PPR:82,Half:75,Standard:68},adp:48.0,note:"Veteran FA depth"},
   {name:"Chris Moore",pos:"WR",age:32,team:"HOU",proj:{PPR:88,Half:81,Standard:74},adp:45.5,note:"Depth receiver"},
