@@ -216,12 +216,12 @@ const PLAYERS=[
   // Additional QBs
   {name:"Justin Herbert",pos:"QB",age:28,team:"LAC",proj:{PPR:348,Half:348,Standard:348},adp:7.2,ktcVal:6826,note:"4,200 yds 30 TD"},
   {name:"Trevor Lawrence",pos:"QB",age:27,team:"JAX",proj:{PPR:355,Half:355,Standard:355},adp:6.5,ktcVal:6343,note:"4,100 yds 30 TD"},
-  {name:"Tua Tagovailoa",pos:"QB",age:28,team:"MIA",proj:{PPR:342,Half:342,Standard:342},adp:8.1,ktcVal:2645,note:"3,900 yds 28 TD"},
+  {name:"Tua Tagovailoa",pos:"QB",age:28,team:"FA",proj:{PPR:342,Half:342,Standard:342},adp:8.1,ktcVal:2645,note:"3,900 yds 28 TD"},
   {name:"J.J. McCarthy",pos:"QB",age:23,team:"MIN",proj:{PPR:315,Half:315,Standard:315},adp:10.5,ktcVal:3198,note:"2026 Year 2: 3,600 yds 27 TD post-injury"},
   {name:"Brock Purdy",pos:"QB",age:27,team:"SF",proj:{PPR:338,Half:338,Standard:338},adp:8.6,ktcVal:6016,note:"4,000 yds 27 TD"},
   {name:"Matthew Stafford",pos:"QB",age:38,team:"LAR",proj:{PPR:316,Half:316,Standard:316},adp:13.8,ktcVal:3747,note:"3,600 yds 24 TD aging"},
-  {name:"Kirk Cousins",pos:"QB",age:38,team:"ATL",proj:{PPR:305,Half:305,Standard:305},adp:16.5,ktcVal:944,note:"3,400 yds 22 TD"},
-  {name:"Geno Smith",pos:"QB",age:35,team:"NYJ",proj:{PPR:308,Half:308,Standard:308},adp:15.9,note:"3,500 yds 22 TD"},
+  {name:"Kirk Cousins",pos:"QB",age:38,team:"FA",proj:{PPR:305,Half:305,Standard:305},adp:16.5,ktcVal:944,note:"3,400 yds 22 TD"},
+  {name:"Geno Smith",pos:"QB",age:35,team:"LV",proj:{PPR:308,Half:308,Standard:308},adp:15.9,note:"3,500 yds 22 TD"},
   {name:"Bryce Young",pos:"QB",age:24,team:"CAR",proj:{PPR:295,Half:295,Standard:295},adp:18.8,ktcVal:4499,note:"Year 3: 3,200 yds rebound"},
   // Additional RBs
   {name:"Kenneth Walker III",pos:"RB",age:25,team:"KC",proj:{PPR:272,Half:250,Standard:228},adp:7.5,ktcVal:5199,note:"1,250 rush 9 TD"},
@@ -474,7 +474,7 @@ const PLAYERS=[
   // QB depth
   {name:"Dak Prescott",pos:"QB",age:32,team:"DAL",proj:{PPR:298,Half:298,Standard:298},adp:13.5,ktcVal:5027,note:"3,400 yds 25 TD comeback"},
   {name:"Sam Darnold",pos:"QB",age:28,team:"SEA",proj:{PPR:302,Half:302,Standard:302},adp:14.2,ktcVal:4812,note:"3,600 yds 26 TD"},
-  {name:"Will Levis",pos:"QB",age:26,team:"JAX",proj:{PPR:285,Half:285,Standard:285},adp:16.5,note:"New starter: 3,100 yds 22 TD"},
+  {name:"Will Levis",pos:"QB",age:26,team:"TEN",proj:{PPR:285,Half:285,Standard:285},adp:16.5,note:"New starter: 3,100 yds 22 TD"},
   {name:"Michael Penix Jr.",pos:"QB",age:25,team:"ATL",proj:{PPR:308,Half:308,Standard:308},adp:14.5,ktcVal:3506,note:"2026 starter: 3,600 yds 27 TD Year 2"},
   {name:"Aaron Rodgers",pos:"QB",age:42,team:"PIT",proj:{PPR:268,Half:268,Standard:268},adp:18.5,ktcVal:1773,note:"Veteran: 3,400 yds 24 TD"},
   {name:"Sam Howell",pos:"QB",age:25,team:"PHI",proj:{PPR:262,Half:262,Standard:262},adp:19.8,note:"Backup/handcuff"},
@@ -605,7 +605,7 @@ const PLAYERS=[
   {name:"Brayden Willis",pos:"TE",age:26,team:"PHI",proj:{PPR:85,Half:78,Standard:71},adp:38.0,note:"Backup: 32 rec 320 yds"},
   {name:"Tommy Tremble",pos:"TE",age:26,team:"CAR",proj:{PPR:82,Half:75,Standard:68},adp:39.0,note:"Blocking/depth TE"},
   // QB continued
-  {name:"Gardner Minshew",pos:"QB",age:29,team:"LV",proj:{PPR:248,Half:248,Standard:248},adp:22.5,note:"3,000 yds 20 TD spot start"},
+  {name:"Gardner Minshew",pos:"QB",age:29,team:"KC",proj:{PPR:248,Half:248,Standard:248},adp:22.5,note:"3,000 yds 20 TD spot start"},
   {name:"Kenny Pickett",pos:"QB",age:28,team:"PHI",proj:{PPR:242,Half:242,Standard:242},adp:23.8,note:"Backup/handcuff to Hurts"},
   {name:"Tyson Bagent",pos:"QB",age:26,team:"CHI",proj:{PPR:235,Half:235,Standard:235},adp:25.5,note:"Handcuff to Williams"},
   {name:"Tommy DeVito",pos:"QB",age:27,team:"NYG",proj:{PPR:228,Half:228,Standard:228},adp:26.8,note:"Backup: 2,400 yds 16 TD"},
@@ -795,7 +795,7 @@ const PLAYERS=[
   {name:"Mac Jones",pos:"QB",age:27,team:"SF",proj:{PPR:228,Half:228,Standard:228},adp:26.5,ktcVal:3017,note:"Backup: 2,600 yds 18 TD"},
   {name:"Davis Mills",pos:"QB",age:27,team:"HOU",proj:{PPR:218,Half:218,Standard:218},adp:28.5,note:"Handcuff backup"},
   {name:"Bailey Zappe",pos:"QB",age:26,team:"NE",proj:{PPR:222,Half:222,Standard:222},adp:27.8,note:"Backup to Maye"},
-  {name:"Malik Willis",pos:"QB",age:27,team:"MIA",proj:{PPR:215,Half:215,Standard:215},adp:29.5,ktcVal:4036,note:"Athletic backup: 2,200 yds 500 rush"},
+  {name:"Malik Willis",pos:"QB",age:27,team:"GB",proj:{PPR:215,Half:215,Standard:215},adp:29.5,ktcVal:4036,note:"Athletic backup: 2,200 yds 500 rush"},
   {name:"Josh Dobbs",pos:"QB",age:30,team:"SF",proj:{PPR:208,Half:208,Standard:208},adp:31.2,note:"Handcuff: mobile backup"},
   {name:"Easton Stick",pos:"QB",age:29,team:"LAC",proj:{PPR:205,Half:205,Standard:205},adp:32.0,note:"Backup to Herbert"},
   {name:"Joe Flacco",pos:"QB",age:41,team:"IND",proj:{PPR:195,Half:195,Standard:195},adp:34.0,note:"Veteran backup"},
@@ -837,7 +837,7 @@ const PLAYERS=[
   {name:"Ivan Pace Jr.",pos:"LB",age:24,team:"MIN",proj:{PPR:98,Half:98,Standard:98},adp:21.5,note:"Thumper: 100 tackles 3 sacks"},
   {name:"Mykal Walker",pos:"LB",age:29,team:"ATL",proj:{PPR:82,Half:82,Standard:82},adp:31.5,note:"Coverage: 72 tackles 2 INT"},
   // QB Wave 7
-  {name:"Trey Lance",pos:"QB",age:26,team:"DAL",proj:{PPR:235,Half:235,Standard:235},adp:25.5,note:"Mobile backup: upside arm"},
+  {name:"Trey Lance",pos:"QB",age:26,team:"LAC",proj:{PPR:235,Half:235,Standard:235},adp:25.5,note:"Mobile backup: upside arm"},
   {name:"Marcus Mariota",pos:"QB",age:32,team:"FA",proj:{PPR:218,Half:218,Standard:218},adp:29.5,note:"Veteran FA: dual-threat"},
   {name:"Carson Wentz",pos:"QB",age:34,team:"FA",proj:{PPR:225,Half:225,Standard:225},adp:28.0,note:"Veteran FA: 3,000 yds 22 TD"},
   // WR Wave 7
