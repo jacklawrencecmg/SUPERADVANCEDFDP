@@ -1898,6 +1898,8 @@ export default function App(){
   var [tradeB,setTradeB]=useState([]);
   var [tSrchA,setTSrchA]=useState("");
   var [tSrchB,setTSrchB]=useState("");
+  var [tradeRosterSide,setTradeRosterSide]=useState<"A"|"B"|null>(null);
+  var [tradeRosterTeam,setTradeRosterTeam]=useState(0);
   var [faabA,setFaabA]=useState(0);
   var [faabB,setFaabB]=useState(0);
   var [analyzed,setAnalyzed]=useState(false);
@@ -2108,13 +2110,16 @@ export default function App(){
         var cfg=p.pos==="QB"?(isSF?{pk:7660,dc:0.927}:{pk:5800,dc:0.912})
           :p.pos==="RB"?{pk:9987,dc:0.921}
           :p.pos==="TE"?{pk:8756,dc:0.833}
-          :isIDP?{pk:5200,dc:0.935}
+          :p.pos==="DL"?{pk:5500,dc:0.940}
+          :p.pos==="LB"?{pk:4500,dc:0.935}
+          :p.pos==="DB"?{pk:4200,dc:0.930}
           :{pk:9950,dc:0.927}; // WR
         var rv=cfg.pk*Math.pow(cfg.dc,p.posRank-1);
         var ab=dynastyBonus(p.pos,p.age);
         // Linear age factor (not squared) — derived from KTC data
         var rankVal=Math.round(Math.max(100,(isSF&&p.pos==="QB")?rv*ab:Math.min(9500,rv*ab)));
-        var rawFloor=p.pos!=="QB"?Math.round((p.proj[sKey]||0)*15*ab):0;
+        // IDP proj values are smaller in absolute terms than offensive players — use lower multiplier
+        var rawFloor=p.pos!=="QB"?Math.round((p.proj[sKey]||0)*(isIDP?5:15)*ab):0;
         var formulaVal=p.pos!=="QB"?Math.max(rankVal,Math.min(3500,rawFloor)):rankVal;
         // KTC anchor + FDP age intelligence: apply dynastyBonus on top of KTC base
         // ab=1 for prime-age players (no change), youth gets slight boost, aging gets discount
@@ -2130,7 +2135,9 @@ export default function App(){
           :p.pos==="RB"?8000
           :p.pos==="TE"?5000
           :p.pos==="K"||p.pos==="DST"?2500
-          :isIDPrd?3500
+          :p.pos==="DL"?4000
+          :p.pos==="LB"?3000
+          :p.pos==="DB"?2800
           :7500; // WR
         var rdDc=p.pos==="TE"?0.850:0.900;
         var rdFloor=Math.round(Math.max(100,rdPk*Math.pow(rdDc,p.posRank-1)));
@@ -2303,13 +2310,17 @@ export default function App(){
       // Build lookup maps from rankedPlayers — exact name and normalized name
       var rpByName={},rpByNorm={};
       rankedPlayers.forEach(function(p){rpByName[p.name.toLowerCase()]=p;rpByNorm[normName(p.name)]=p;});
+      // Map Sleeper position codes to our IDP positions
+      function mapSleeperPos(sp){var p=sp||"?";if(p==="DE"||p==="DT"||p==="EDGE"||p==="NT")return "DL";if(p==="LB"||p==="ILB"||p==="OLB"||p==="MLB")return "LB";if(p==="CB"||p==="S"||p==="FS"||p==="SS"||p==="DB")return "DB";return p;}
       // Map every Sleeper player ID to our player object (or a stub)
       var idMap={};
       Object.keys(sleeperDb).forEach(function(id){
         var sp=sleeperDb[id];
         var nm=sp.name||"";
         var match=rpByName[nm.toLowerCase()]||rpByNorm[normName(nm)]||null;
-        idMap[id]=match||{name:nm,pos:sp.pos||"?",team:sp.team||"FA",age:sp.age||0,rank:"—",vbd:0,tradeVal:500,posRank:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
+        var mappedPos=mapSleeperPos(sp.pos);
+        var stubVal=mappedPos==="DL"?300:mappedPos==="LB"?250:mappedPos==="DB"?230:200;
+        idMap[id]=match||{name:nm,pos:mappedPos,team:sp.team||"FA",age:sp.age||0,rank:"—",vbd:0,tradeVal:stubVal,posRank:0,ag:{g:"—",c:"#888"},tier:{t:"—",c:"#888"}};
       });
       var userMap={};users.forEach(function(u){userMap[u.user_id]=u;});
       // FAAB: use actual league budget from lg.settings
@@ -2698,7 +2709,22 @@ export default function App(){
           React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Your Team Gives"),
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
             React.createElement(SrchDrop,{T:T,pool:tradePool,value:tSrchA,onChange:setTSrchA,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeA(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
-            React.createElement("button",{onClick:function(){var pk=DRAFT_PICKS[0];if(!tradeA.find(function(x){return x.name===pk.name;}))setTradeA(function(prev){return prev.concat([makePick(pk)]);});},style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"0 12px",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Pick")
+            user&&React.createElement("button",{onClick:function(){setTradeRosterSide(tradeRosterSide==="A"?null:"A");},style:{background:tradeRosterSide==="A"?T.purple+"33":T.bgInput,border:"1px solid "+(tradeRosterSide==="A"?T.purple:T.border),borderRadius:10,padding:"0 12px",color:tradeRosterSide==="A"?T.purpleLight:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Roster")
+          ),
+          tradeRosterSide==="A"&&React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:10,marginBottom:8,border:"1px solid "+T.borderPurple}},
+            !powerRankingTeams&&React.createElement("div",{style:{textAlign:"center",padding:"16px 8px",color:T.textSub,fontSize:12}},"Connect a league in the League tab to pick from rosters"),
+            powerRankingTeams&&React.createElement(React.Fragment,null,
+              React.createElement("select",{value:tradeRosterTeam,onChange:function(e){setTradeRosterTeam(+e.target.value);},style:{width:"100%",background:T.bgCard,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"7px 10px",fontSize:12,marginBottom:8,outline:"none"}},
+                powerRankingTeams.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})),
+              React.createElement("div",{style:{maxHeight:200,overflowY:"auto",display:"flex",flexDirection:"column",gap:4}},
+                (powerRankingTeams[tradeRosterTeam]||powerRankingTeams[0]).players.filter(function(p){return !tradeA.find(function(x){return x.name===p.name;})&&!tradeB.find(function(x){return x.name===p.name;});}).map(function(p){
+                  return React.createElement("button",{key:p.name,onClick:function(){setTradeA(function(prev){return prev.concat([p]);});setAnalyzed(false);setTradeRosterSide(null);},style:{display:"flex",justifyContent:"space-between",alignItems:"center",background:T.bgCard,border:"1px solid "+T.border,borderRadius:8,padding:"6px 10px",cursor:"pointer",textAlign:"left",width:"100%"}},
+                    React.createElement("span",{style:{fontSize:12,fontWeight:600,color:T.text}},p.name),
+                    React.createElement("span",{style:{fontSize:11,color:T.textSub}},React.createElement("span",{style:{color:POS_COLORS[p.pos]||T.textSub,marginRight:4,fontWeight:700,fontSize:10}},p.pos),(p.tradeVal||0).toLocaleString())
+                  );
+                })
+              )
+            )
           ),
           tradeA.map(function(item){return React.createElement(TradeItem,{T:T,key:item.name,item:item,onRemove:function(){setTradeA(function(p){return p.filter(function(x){return x.name!==item.name;});});setAnalyzed(false);}});}),
           React.createElement("div",{style:{marginTop:8}},
@@ -2711,7 +2737,22 @@ export default function App(){
           React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Your Team Gets"),
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
             React.createElement(SrchDrop,{T:T,pool:tradePool,value:tSrchB,onChange:setTSrchB,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeB(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
-            React.createElement("button",{onClick:function(){var pk=DRAFT_PICKS[1];if(!tradeB.find(function(x){return x.name===pk.name;}))setTradeB(function(prev){return prev.concat([makePick(pk)]);});},style:{background:T.bgInput,border:"1px solid "+T.border,borderRadius:10,padding:"0 12px",color:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Pick")
+            user&&React.createElement("button",{onClick:function(){setTradeRosterSide(tradeRosterSide==="B"?null:"B");},style:{background:tradeRosterSide==="B"?T.purple+"33":T.bgInput,border:"1px solid "+(tradeRosterSide==="B"?T.purple:T.border),borderRadius:10,padding:"0 12px",color:tradeRosterSide==="B"?T.purpleLight:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Roster")
+          ),
+          tradeRosterSide==="B"&&React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:10,marginBottom:8,border:"1px solid "+T.borderPurple}},
+            !powerRankingTeams&&React.createElement("div",{style:{textAlign:"center",padding:"16px 8px",color:T.textSub,fontSize:12}},"Connect a league in the League tab to pick from rosters"),
+            powerRankingTeams&&React.createElement(React.Fragment,null,
+              React.createElement("select",{value:tradeRosterTeam,onChange:function(e){setTradeRosterTeam(+e.target.value);},style:{width:"100%",background:T.bgCard,color:T.text,border:"1px solid "+T.border,borderRadius:8,padding:"7px 10px",fontSize:12,marginBottom:8,outline:"none"}},
+                powerRankingTeams.map(function(t,i){return React.createElement("option",{key:i,value:i},t.name);})),
+              React.createElement("div",{style:{maxHeight:200,overflowY:"auto",display:"flex",flexDirection:"column",gap:4}},
+                (powerRankingTeams[tradeRosterTeam]||powerRankingTeams[0]).players.filter(function(p){return !tradeA.find(function(x){return x.name===p.name;})&&!tradeB.find(function(x){return x.name===p.name;});}).map(function(p){
+                  return React.createElement("button",{key:p.name,onClick:function(){setTradeB(function(prev){return prev.concat([p]);});setAnalyzed(false);setTradeRosterSide(null);},style:{display:"flex",justifyContent:"space-between",alignItems:"center",background:T.bgCard,border:"1px solid "+T.border,borderRadius:8,padding:"6px 10px",cursor:"pointer",textAlign:"left",width:"100%"}},
+                    React.createElement("span",{style:{fontSize:12,fontWeight:600,color:T.text}},p.name),
+                    React.createElement("span",{style:{fontSize:11,color:T.textSub}},React.createElement("span",{style:{color:POS_COLORS[p.pos]||T.textSub,marginRight:4,fontWeight:700,fontSize:10}},p.pos),(p.tradeVal||0).toLocaleString())
+                  );
+                })
+              )
+            )
           ),
           tradeB.map(function(item){return React.createElement(TradeItem,{T:T,key:item.name,item:item,onRemove:function(){setTradeB(function(p){return p.filter(function(x){return x.name!==item.name;});});setAnalyzed(false);}});}),
           React.createElement("div",{style:{marginTop:8}},
