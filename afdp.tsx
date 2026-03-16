@@ -230,7 +230,7 @@ const PLAYERS=[
   {name:"Travis Etienne Jr.",pos:"RB",age:27,team:"NO",proj:{PPR:235,Half:215,Standard:195},adp:11.8,ktcVal:4563,note:"1,000 rush 45 rec"},
   {name:"Isiah Pacheco",pos:"RB",age:26,team:"DET",proj:{PPR:228,Half:209,Standard:190},adp:12.9,ktcVal:2079,note:"950 rush 8 TD"},
   {name:"Joe Mixon",pos:"RB",age:30,team:"HOU",proj:{PPR:222,Half:204,Standard:186},adp:13.5,ktcVal:1532,note:"1,000 rush 8 TD"},
-  {name:"David Montgomery",pos:"RB",age:29,team:"HOU",proj:{PPR:215,Half:198,Standard:181},adp:14.2,ktcVal:3553,note:"1,050 rush 9 TD tandem"},
+  {name:"David Montgomery",pos:"RB",age:29,team:"HOU",proj:{PPR:215,Half:198,Standard:181},adp:14.2,ktcVal:3488,note:"1,050 rush 9 TD tandem"},
   {name:"Tony Pollard",pos:"RB",age:28,team:"TEN",proj:{PPR:210,Half:193,Standard:176},adp:14.8,ktcVal:2700,note:"800 rush 50 rec 7 TD"},
   {name:"Rachaad White",pos:"RB",age:27,team:"WAS",proj:{PPR:208,Half:191,Standard:174},adp:15.5,ktcVal:2626,note:"700 rush 72 rec"},
   {name:"Jaylen Warren",pos:"RB",age:26,team:"PIT",proj:{PPR:195,Half:179,Standard:163},adp:17.2,ktcVal:3418,note:"800 rush 40 rec"},
