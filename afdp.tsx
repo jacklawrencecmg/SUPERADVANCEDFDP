@@ -221,7 +221,7 @@ const PLAYERS=[
   {name:"Brock Purdy",pos:"QB",age:27,team:"SF",proj:{PPR:338,Half:338,Standard:338},adp:8.6,ktcVal:6016,note:"4,000 yds 27 TD"},
   {name:"Matthew Stafford",pos:"QB",age:38,team:"LAR",proj:{PPR:316,Half:316,Standard:316},adp:13.8,ktcVal:3747,note:"3,600 yds 24 TD aging"},
   {name:"Kirk Cousins",pos:"QB",age:38,team:"FA",proj:{PPR:305,Half:305,Standard:305},adp:16.5,ktcVal:944,note:"3,400 yds 22 TD"},
-  {name:"Geno Smith",pos:"QB",age:35,team:"LV",proj:{PPR:308,Half:308,Standard:308},adp:15.9,note:"3,500 yds 22 TD"},
+  {name:"Geno Smith",pos:"QB",age:35,team:"LV",proj:{PPR:308,Half:308,Standard:308},adp:15.9,ktcVal:2053,note:"3,500 yds 22 TD"},
   {name:"Bryce Young",pos:"QB",age:24,team:"CAR",proj:{PPR:295,Half:295,Standard:295},adp:18.8,ktcVal:4499,note:"Year 3: 3,200 yds rebound"},
   // Additional RBs
   {name:"Kenneth Walker III",pos:"RB",age:25,team:"KC",proj:{PPR:272,Half:250,Standard:228},adp:7.5,ktcVal:5199,note:"1,250 rush 9 TD"},
