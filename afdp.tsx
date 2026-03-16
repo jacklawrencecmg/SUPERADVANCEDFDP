@@ -162,7 +162,7 @@ const PLAYERS=[
   {name:"Bo Nix",pos:"QB",age:26,team:"DEN",proj:{PPR:352,Half:352,Standard:352},adp:7.8,ktcVal:6121,note:"2026 Year 2: 4,000 yds 32 TD"},
   {name:"Anthony Richardson",pos:"QB",age:24,team:"IND",proj:{PPR:338,Half:338,Standard:338},adp:9.5,ktcVal:2159,note:"2026: 3,600 yds 27 TD 600 rush"},
   {name:"Kyler Murray",pos:"QB",age:28,team:"ARI",proj:{PPR:335,Half:335,Standard:335},adp:11.2,ktcVal:3778,note:"2026: 3,800 yds 28 TD 500 rush"},
-  {name:"Justin Fields",pos:"QB",age:27,team:"NYJ",proj:{PPR:328,Half:328,Standard:328},adp:11.8,note:"2026: 3,500 yds 24 TD 700 rush"},
+  {name:"Justin Fields",pos:"QB",age:27,team:"NYJ",proj:{PPR:328,Half:328,Standard:328},adp:11.8,ktcVal:2065,note:"2026: 3,500 yds 24 TD 700 rush"},
   {name:"Jared Goff",pos:"QB",age:32,team:"DET",proj:{PPR:345,Half:345,Standard:345},adp:10.5,ktcVal:4577,note:"2026: 4,300 yds 33 TD elite system"},
   {name:"Baker Mayfield",pos:"QB",age:32,team:"TB",proj:{PPR:322,Half:322,Standard:322},adp:12.5,ktcVal:4806,note:"2026: 3,800 yds 29 TD"},
   {name:"Cam Ward",pos:"QB",age:23,team:"TEN",proj:{PPR:335,Half:335,Standard:335},adp:11.0,ktcVal:5039,note:"2026 Year 2 breakout: 3,800 yds 29 TD"},
