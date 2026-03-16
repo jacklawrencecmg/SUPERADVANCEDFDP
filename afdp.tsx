@@ -4392,10 +4392,10 @@ export default function App(){
               ),
               rankedPlayers.filter(function(p){
                 return (draftKitPos==="All Positions"||p.pos===draftKitPos)&&(!draftKitSearch||p.name.toLowerCase().includes(draftKitSearch.toLowerCase()));
-              }).slice(0,40).map(function(p){
+              }).slice().sort(function(a,b){return b.tradeVal-a.tradeVal;}).slice(0,40).map(function(p){
                 var isDrafted=drafted.indexOf(p.name)!==-1;
                 return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",marginBottom:5,margin:"0 16px 6px",display:"flex",alignItems:"center",gap:10,opacity:isDrafted?0.4:1}},
-                  React.createElement("span",{style:{fontWeight:700,fontSize:11,color:T.textDim,width:24,flexShrink:0}},"#"+p.rank),
+                  React.createElement("span",{style:{fontWeight:700,fontSize:11,color:T.textDim,width:24,flexShrink:0}},"#"+p.posRank),
                   React.createElement(Avatar,{name:p.name,pos:p.pos,size:30}),
                   React.createElement(PBadge,{pos:p.pos,rank:p.posRank}),
                   React.createElement("div",{style:{flex:1,minWidth:0}},
