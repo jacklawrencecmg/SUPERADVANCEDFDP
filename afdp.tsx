@@ -1889,6 +1889,10 @@ export default function App(){
     window.addEventListener("resize",onResize);
     return function(){window.removeEventListener("resize",onResize);};
   },[]);
+  var leagueTabsRef=React.useRef<HTMLDivElement>(null);
+  var rankingTabsRef=React.useRef<HTMLDivElement>(null);
+  var reportsTabsRef=React.useRef<HTMLDivElement>(null);
+  var adminTabsRef=React.useRef<HTMLDivElement>(null);
   var [leagueType,setLeagueType]=useState("Dynasty");
   var [format,setFormat]=useState("PPR");
   var [teams,setTeams]=useState(12);
@@ -2751,7 +2755,7 @@ export default function App(){
           )
         ),
         React.createElement("div",{style:{marginBottom:12}},
-          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Your Team Gives"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Team A"),
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
             React.createElement(SrchDrop,{T:T,pool:tradePool,value:tSrchA,onChange:setTSrchA,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeA(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
             user&&React.createElement("button",{onClick:function(){setTradeRosterSide(tradeRosterSide==="A"?null:"A");},style:{background:tradeRosterSide==="A"?T.purple+"33":T.bgInput,border:"1px solid "+(tradeRosterSide==="A"?T.purple:T.border),borderRadius:10,padding:"0 12px",color:tradeRosterSide==="A"?T.purpleLight:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Roster")
@@ -2779,7 +2783,7 @@ export default function App(){
         ),
         React.createElement("div",{style:{textAlign:"center",color:T.textDim,fontSize:11,fontWeight:700,letterSpacing:2,margin:"4px 0 12px"}},"VS"),
         React.createElement("div",{style:{marginBottom:16}},
-          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Your Team Gets"),
+          React.createElement("div",{style:{fontWeight:700,fontSize:14,marginBottom:8}},"Team B"),
           React.createElement("div",{style:{display:"flex",gap:8,marginBottom:8}},
             React.createElement(SrchDrop,{T:T,pool:tradePool,value:tSrchB,onChange:setTSrchB,exclude:[].concat(tradeA,tradeB),onSelect:function(p){setTradeB(function(prev){return prev.concat([p]);});setAnalyzed(false);}}),
             user&&React.createElement("button",{onClick:function(){setTradeRosterSide(tradeRosterSide==="B"?null:"B");},style:{background:tradeRosterSide==="B"?T.purple+"33":T.bgInput,border:"1px solid "+(tradeRosterSide==="B"?T.purple:T.border),borderRadius:10,padding:"0 12px",color:tradeRosterSide==="B"?T.purpleLight:T.textSub,cursor:"pointer",fontWeight:600,fontSize:11,whiteSpace:"nowrap",flexShrink:0}},"+ Roster")
@@ -2906,14 +2910,18 @@ export default function App(){
 
     // ════ MY LEAGUE TAB ════
     tab==="league"&&React.createElement("div",{style:{paddingBottom:80}},
-      React.createElement("div",{style:{display:"flex",gap:8,overflowX:"auto",padding:"12px 16px",borderBottom:"1px solid "+T.border,scrollbarWidth:"none"}},
-        [["power","Power Rankings"],["playoff","Playoff Odds"],["champ","Championship"],["advice","Team Advice"],["roster","Roster Health"],["waiver","Waiver Wire"],["lineup","Lineup"],["trades","League Trades"],["auction","Auction"],["rivalry","Rivalry"],["recap","Recap"],["chat","Chat"],["alerts","Alerts"],["leagimport","Import"]].map(function(st){
-          var active=leagueSubTab===st[0];
-          return React.createElement("button",{key:st[0],onClick:function(){
-            setLeagueSubTab(st[0]);
-            if(st[0]==="waiver"&&!waiverLoaded){setTimeout(function(){setWaiverLoaded(true);},1400);}
-          },style:{padding:"7px 16px",borderRadius:20,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},st[1]);
-        })
+      React.createElement("div",{style:{position:"relative",borderBottom:"1px solid "+T.border}},
+        isDesktop&&React.createElement("button",{onClick:function(){leagueTabsRef.current&&leagueTabsRef.current.scrollBy({left:-200,behavior:"smooth"});},style:{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"‹"),
+        React.createElement("div",{ref:leagueTabsRef,style:{display:"flex",gap:8,overflowX:"auto",padding:isDesktop?"12px 36px":"12px 16px",scrollbarWidth:"none"}},
+          [["power","Power Rankings"],["playoff","Playoff Odds"],["champ","Championship"],["advice","Team Advice"],["roster","Roster Health"],["waiver","Waiver Wire"],["lineup","Lineup"],["trades","League Trades"],["auction","Auction"],["rivalry","Rivalry"],["recap","Recap"],["chat","Chat"],["alerts","Alerts"],["leagimport","Import"]].map(function(st){
+            var active=leagueSubTab===st[0];
+            return React.createElement("button",{key:st[0],onClick:function(){
+              setLeagueSubTab(st[0]);
+              if(st[0]==="waiver"&&!waiverLoaded){setTimeout(function(){setWaiverLoaded(true);},1400);}
+            },style:{padding:"7px 16px",borderRadius:20,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},st[1]);
+          })
+        ),
+        isDesktop&&React.createElement("button",{onClick:function(){leagueTabsRef.current&&leagueTabsRef.current.scrollBy({left:200,behavior:"smooth"});},style:{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"›")
       ),
 
       // POWER RANKINGS
@@ -3892,11 +3900,30 @@ export default function App(){
             )
           )
         ),
-        // Yahoo / NFL.com / Fleaflicker / MFL — Coming Soon
-        (importPlatform==="yahoo"||importPlatform==="nfl"||importPlatform==="fleaflicker"||importPlatform==="mfl")&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:24,textAlign:"center"}},
+        // Yahoo import
+        importPlatform==="yahoo"&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:20}},
+          React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:12}},
+            React.createElement("span",{style:{fontSize:24}},"🏈"),
+            React.createElement("div",{style:{fontWeight:800,fontSize:16}},"Yahoo Fantasy Import")
+          ),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12,lineHeight:1.6}},"Yahoo requires sign-in through their app. Follow these steps to copy your roster:"),
+          React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:"14px 16px",marginBottom:14}},
+            React.createElement("ol",{style:{color:T.text,margin:0,padding:"0 0 0 18px",lineHeight:2.2,fontSize:12}},
+              React.createElement("li",null,"Open ",React.createElement("b",null,"Yahoo Fantasy")," → tap your league"),
+              React.createElement("li",null,"Go to ",React.createElement("b",null,"My Team")),
+              React.createElement("li",null,"Copy each player name from your roster"),
+              React.createElement("li",null,"Paste into the text box below — one player per line"),
+              React.createElement("li",null,'Click ',React.createElement("b",null,"Import Roster"))
+            )
+          ),
+          React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:8,fontWeight:600}},"PASTE YOUR YAHOO ROSTER"),
+          React.createElement("textarea",{value:manualRosterText,onChange:function(e){setManualRosterText(e.target.value);},placeholder:"Patrick Mahomes\nJa'Marr Chase\nSaquon Barkley\n...",rows:8,style:Object.assign({},inpS,{fontFamily:"monospace",fontSize:12,lineHeight:1.6,resize:"vertical",marginBottom:10})}),
+          React.createElement("button",{onClick:function(){doManualImport("My Yahoo League",manualRosterText);},style:{width:"100%",padding:"11px",borderRadius:12,border:"none",background:"#6001D2",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Import Yahoo Roster")
+        ),
+        // NFL.com / Fleaflicker / MFL — Coming Soon
+        (importPlatform==="nfl"||importPlatform==="fleaflicker"||importPlatform==="mfl")&&React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:24,textAlign:"center"}},
           React.createElement("div",{style:{fontSize:28,marginBottom:8}},"🔜"),
-          React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:6}}),
-          React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:6}},{yahoo:"Yahoo Fantasy",nfl:"NFL.com Fantasy",fleaflicker:"Fleaflicker",mfl:"MyFantasyLeague"}[importPlatform]+" — Coming Soon"),
+          React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:6}},{nfl:"NFL.com Fantasy",fleaflicker:"Fleaflicker",mfl:"MyFantasyLeague"}[importPlatform as string]+" — Coming Soon"),
           React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:14,lineHeight:1.6}},"This platform requires OAuth authentication. Full integration is in development."),
           React.createElement("button",{onClick:function(){setImportPlatform("manual");},style:{padding:"10px 20px",borderRadius:12,border:"none",background:T.purple,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Use Manual Import Instead")
         ),
@@ -3912,11 +3939,15 @@ export default function App(){
 
     // ════ RANKINGS TAB ════
     tab==="rankings"&&React.createElement("div",{style:{paddingBottom:80}},
-      React.createElement("div",{style:{display:"flex",gap:6,overflowX:"auto",padding:"10px 12px",borderBottom:"1px solid "+T.border,scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}},
-        [["playervalues","$ Player Values"],["allrankings","All Rankings"],["qbs","QBs"],["rbs","RBs"],["wrs","WRs"],["tes","TEs"],["idp","IDP"],["rookie","Rookie Picks"],["trending","Trending"],["market","Market"],["valuetrends","Value Trends"],["pickcalc","Pick Calculator"],["watchlist","Watchlist"],["draft","Draft Kit"],["keeper","Keeper Calc"],["compare","Compare"],["history","Trade History"]].map(function(st){
-          var active=rankSubTab===st[0];
-          return React.createElement("button",{key:st[0],onClick:function(){setRankSubTab(st[0]);},style:{padding:"7px 14px",borderRadius:20,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},st[1]);
-        })
+      React.createElement("div",{style:{position:"relative",borderBottom:"1px solid "+T.border}},
+        isDesktop&&React.createElement("button",{onClick:function(){rankingTabsRef.current&&rankingTabsRef.current.scrollBy({left:-200,behavior:"smooth"});},style:{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"‹"),
+        React.createElement("div",{ref:rankingTabsRef,style:{display:"flex",gap:6,overflowX:"auto",padding:isDesktop?"10px 36px":"10px 12px",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}},
+          [["playervalues","$ Player Values"],["allrankings","All Rankings"],["qbs","QBs"],["rbs","RBs"],["wrs","WRs"],["tes","TEs"],["idp","IDP"],["rookie","Rookie Picks"],["trending","Trending"],["market","Market"],["valuetrends","Value Trends"],["pickcalc","Pick Calculator"],["watchlist","Watchlist"],["draft","Draft Kit"],["keeper","Keeper Calc"],["compare","Compare"],["history","Trade History"]].map(function(st){
+            var active=rankSubTab===st[0];
+            return React.createElement("button",{key:st[0],onClick:function(){setRankSubTab(st[0]);},style:{padding:"7px 14px",borderRadius:20,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0}},st[1]);
+          })
+        ),
+        isDesktop&&React.createElement("button",{onClick:function(){rankingTabsRef.current&&rankingTabsRef.current.scrollBy({left:200,behavior:"smooth"});},style:{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"›")
       ),
 
       // PLAYER VALUES (image 1 — FDP Value table with 7D Change)
@@ -4658,14 +4689,18 @@ export default function App(){
     // ════ REPORTS TAB ════
     tab==="reports"&&React.createElement("div",{style:{paddingBottom:80}},
       // sub-nav pills
-      React.createElement("div",{style:{display:"flex",gap:6,padding:"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none"}},
-        [["dynasty","\uD83D\uDCC4","Dynasty Reports"],["news","\uD83D\uDCF0","Trending"],["stats","\uD83D\uDCCA","Live Stats"],["export","\uD83D\uDD17","Export & Share"],["upgrade","\u2728","Upgrade"],["contact","\u2709","Contact"]].map(function(s){
-          var active=reportSubTab===s[0];
-          var isUpgrade=s[0]==="upgrade";
-          return React.createElement("button",{key:s[0],onClick:function(){setReportSubTab(s[0]);},style:{whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:10,border:"1px solid "+(active?T.purple:(isUpgrade?T.purple:T.border)),background:active?T.purple:(isUpgrade?"linear-gradient(135deg,"+T.purple+",#5b21b6)":"transparent"),color:(active||isUpgrade)?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},
-            React.createElement("span",{style:{fontSize:13}},s[1]),s[2]
-          );
-        })
+      React.createElement("div",{style:{position:"relative",borderBottom:"1px solid "+T.border}},
+        isDesktop&&React.createElement("button",{onClick:function(){reportsTabsRef.current&&reportsTabsRef.current.scrollBy({left:-200,behavior:"smooth"});},style:{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"‹"),
+        React.createElement("div",{ref:reportsTabsRef,style:{display:"flex",gap:6,padding:isDesktop?"12px 36px":"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none"}},
+          [["dynasty","\uD83D\uDCC4","Dynasty Reports"],["news","\uD83D\uDCF0","Trending"],["stats","\uD83D\uDCCA","Live Stats"],["export","\uD83D\uDD17","Export & Share"],["upgrade","\u2728","Upgrade"],["contact","\u2709","Contact"]].map(function(s){
+            var active=reportSubTab===s[0];
+            var isUpgrade=s[0]==="upgrade";
+            return React.createElement("button",{key:s[0],onClick:function(){setReportSubTab(s[0]);},style:{whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:10,border:"1px solid "+(active?T.purple:(isUpgrade?T.purple:T.border)),background:active?T.purple:(isUpgrade?"linear-gradient(135deg,"+T.purple+",#5b21b6)":"transparent"),color:(active||isUpgrade)?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},
+              React.createElement("span",{style:{fontSize:13}},s[1]),s[2]
+            );
+          })
+        ),
+        isDesktop&&React.createElement("button",{onClick:function(){reportsTabsRef.current&&reportsTabsRef.current.scrollBy({left:200,behavior:"smooth"});},style:{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"›")
       ),
       // Dynasty Reports
       reportSubTab==="dynasty"&&React.createElement("div",{style:{padding:"20px 16px"}},
@@ -4994,13 +5029,17 @@ export default function App(){
     ),
     tab==="admin"&&user&&user.isAdmin&&React.createElement("div",{style:{paddingBottom:80}},
       // sub-nav
-      React.createElement("div",{style:{display:"flex",gap:6,padding:"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none",borderBottom:"1px solid "+T.border}},
-        [["analytics","📊","Analytics"],["system","\u21BA","System"],["valuetuner","\u2AE5","Value Tuner"],["rbcontext","\u270E","RB Context"],["rbai","\u2728","RB AI"],["headshots","\uD83D\uDC64","Headshots"],["idpupload","\u2B06","IDP Upload"]].map(function(s){
-          var active=adminSubTab===s[0];
-          return React.createElement("button",{key:s[0],onClick:function(){setAdminSubTab(s[0]);},style:{whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,padding:"8px 12px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},
-            React.createElement("span",null,s[1]),s[2]
-          );
-        })
+      React.createElement("div",{style:{position:"relative",borderBottom:"1px solid "+T.border}},
+        isDesktop&&React.createElement("button",{onClick:function(){adminTabsRef.current&&adminTabsRef.current.scrollBy({left:-200,behavior:"smooth"});},style:{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"‹"),
+        React.createElement("div",{ref:adminTabsRef,style:{display:"flex",gap:6,padding:isDesktop?"12px 36px":"12px 16px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none"}},
+          [["analytics","📊","Analytics"],["system","\u21BA","System"],["valuetuner","\u2AE5","Value Tuner"],["rbcontext","\u270E","RB Context"],["rbai","\u2728","RB AI"],["headshots","\uD83D\uDC64","Headshots"],["idpupload","\u2B06","IDP Upload"]].map(function(s){
+            var active=adminSubTab===s[0];
+            return React.createElement("button",{key:s[0],onClick:function(){setAdminSubTab(s[0]);},style:{whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:5,padding:"8px 12px",borderRadius:10,border:"1px solid "+(active?T.purple:T.border),background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:12,cursor:"pointer",flexShrink:0}},
+              React.createElement("span",null,s[1]),s[2]
+            );
+          })
+        ),
+        isDesktop&&React.createElement("button",{onClick:function(){adminTabsRef.current&&adminTabsRef.current.scrollBy({left:200,behavior:"smooth"});},style:{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",zIndex:2,background:T.bgCard,border:"1px solid "+T.border,borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.text,fontSize:14,padding:0}},"›")
       ),
       // SYSTEM sub-tab
       adminSubTab==="system"&&React.createElement("div",{style:{padding:"16px"}},
@@ -5525,7 +5564,51 @@ export default function App(){
           )
         )
       ),
-      (impTab==="espn"||impTab==="yahoo"||impTab==="mfl")&&React.createElement("div",null,
+      impTab==="yahoo"&&React.createElement("div",null,
+        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:20}},
+          React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:12}},
+            React.createElement("span",{style:{fontSize:24}},"🏈"),
+            React.createElement("div",{style:{fontWeight:800,fontSize:16}},"Yahoo Fantasy Import")
+          ),
+          React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:12,lineHeight:1.6}},"Yahoo requires sign-in through their app. Follow these steps to copy your roster:"),
+          React.createElement("div",{style:{background:T.bgInput,borderRadius:12,padding:"14px 16px",marginBottom:14}},
+            React.createElement("ol",{style:{color:T.text,margin:0,padding:"0 0 0 18px",lineHeight:2.2,fontSize:12}},
+              React.createElement("li",null,"Open ",React.createElement("b",null,"Yahoo Fantasy")," → tap your league"),
+              React.createElement("li",null,"Go to ",React.createElement("b",null,"My Team")),
+              React.createElement("li",null,"Copy each player name from your roster"),
+              React.createElement("li",null,"Paste into the text box below — one player per line"),
+              React.createElement("li",null,'Click ',React.createElement("b",null,"Import Roster"))
+            )
+          ),
+          React.createElement("div",{style:{fontSize:11,color:T.textSub,marginBottom:8,fontWeight:600}},"PASTE YOUR YAHOO ROSTER"),
+          React.createElement("textarea",{value:manRaw,onChange:function(e){setManRaw(e.target.value);},placeholder:"Patrick Mahomes\nJa'Marr Chase\nSaquon Barkley\n...",rows:8,style:{background:T.bgInput,color:T.text,border:"1px solid "+T.border,borderRadius:10,padding:"12px 14px",fontSize:12,outline:"none",width:"100%",boxSizing:"border-box" as any,resize:"vertical" as any,fontFamily:"monospace",lineHeight:1.6,marginBottom:10}}),
+          React.createElement("button",{onClick:function(){
+            var names=manRaw.split("\n").map(function(n){return n.trim();}).filter(Boolean);
+            var matched=names.map(function(n){return PLAYERS.find(function(p){return p.name.toLowerCase()===n.toLowerCase();});}).filter(Boolean);
+            if(matched.length>0){setImpRoster(matched as any[]);setImpStatus("success");setImpData({username:"Yahoo",leagueName:"My Yahoo League",totalTeams:12,scoringFormat:"PPR"});}
+            else{setImpStatus("error");setImpErr("No players matched. Check spelling and try again.");}
+          },style:{width:"100%",padding:"11px",borderRadius:12,border:"none",background:"#6001D2",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}},"Import Yahoo Roster"),
+          impStatus==="error"&&React.createElement("div",{style:{padding:"10px 14px",background:T.red+"15",borderRadius:10,color:T.red,fontSize:12,marginTop:8}},impErr),
+          impStatus==="success"&&impData&&React.createElement("div",{style:{marginTop:12}},
+            React.createElement("div",{style:{background:T.bgInput,borderRadius:10,padding:"12px 14px",marginBottom:12}},
+              React.createElement("div",{style:{fontWeight:700,fontSize:14}},"Yahoo Roster Imported ✓"),
+              React.createElement("div",{style:{fontSize:11,color:T.textSub,marginTop:2}},impRoster.length+" players matched")
+            ),
+            impRoster.slice(0,20).map(function(p){
+              return React.createElement("div",{key:p.name,style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:10,padding:"10px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:10}},
+                React.createElement(Avatar,{name:p.name,pos:p.pos,size:28}),
+                React.createElement(PBadge,{pos:p.pos}),
+                React.createElement("div",{style:{flex:1}},
+                  React.createElement("div",{style:{fontWeight:700,fontSize:12}},p.name),
+                  React.createElement("div",{style:{fontSize:10,color:T.textSub}},p.team||"—")
+                ),
+                React.createElement("span",{style:{fontWeight:700,fontSize:12,color:T.purpleLight}},(p.tradeVal||0).toLocaleString())
+              );
+            })
+          )
+        )
+      ),
+      (impTab==="espn"||impTab==="mfl")&&React.createElement("div",null,
         React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:16,padding:20}},
           React.createElement("div",{style:{fontWeight:800,fontSize:16,marginBottom:4}},"Import from "+impTab.toUpperCase()),
           React.createElement("div",{style:{fontSize:12,color:T.textSub,marginBottom:16}},"Enter your league ID to connect"),
