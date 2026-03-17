@@ -1883,6 +1883,12 @@ export default function App(){
   var validTabs=["trade","rankings","news","watchlist","import","admin"];
   var [tab,setTabRaw]=useState(function(){var h=window.location.hash.replace("#","");return validTabs.includes(h)?h:"trade";});
   function setTab(t:string){setTabRaw(t);window.location.hash=t;}
+  var [isDesktop,setIsDesktop]=useState(function(){return window.innerWidth>=1024;});
+  useEffect(function(){
+    function onResize(){setIsDesktop(window.innerWidth>=1024);}
+    window.addEventListener("resize",onResize);
+    return function(){window.removeEventListener("resize",onResize);};
+  },[]);
   var [leagueType,setLeagueType]=useState("Dynasty");
   var [format,setFormat]=useState("PPR");
   var [teams,setTeams]=useState(12);
@@ -2538,7 +2544,7 @@ export default function App(){
   var activeTeams=powerRankingTeams||LEAGUE_TEAMS;
   var leagueTeamNames=activeTeams.map(function(t){return t.name;});
 
-  return React.createElement("div",{style:{background:T.bg,minHeight:"100vh",color:T.text,fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif",maxWidth:480,margin:"0 auto",paddingBottom:70}},
+  return React.createElement("div",{style:{background:T.bg,minHeight:"100vh",color:T.text,fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif",maxWidth:isDesktop?"100%":480,margin:"0 auto",paddingBottom:isDesktop?0:70,display:isDesktop?"flex":"block"}},
 
     showAuth&&React.createElement(AuthModal,{mode:authMode,onClose:function(){setShowAuth(false);},onAuth:function(u){saveAndSetUser(u);setShowAuth(false);},T:T}),
 
@@ -2637,8 +2643,8 @@ export default function App(){
       )
     ),
 
-    // NAV
-    React.createElement("div",{style:{position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,paddingBottom:10}},
+    // NAV (mobile only)
+    !isDesktop&&React.createElement("div",{style:{position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,paddingBottom:10}},
       React.createElement("div",{style:{display:"flex",justifyContent:"center",paddingTop:12}},
         React.createElement("img",{src:appLogoSrc,alt:"Fantasy DraftPros",style:{height:72,width:"auto",maxWidth:280}})
       ),
@@ -2652,8 +2658,39 @@ export default function App(){
       )
     ),
 
-    // BOTTOM TABS
-    React.createElement("div",{style:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:T.bgCard,borderTop:"1px solid "+T.border,display:"flex",zIndex:100}},
+    // DESKTOP SIDEBAR NAV
+    isDesktop&&React.createElement("div",{style:{width:220,flexShrink:0,position:"sticky",top:0,height:"100vh",background:T.bgCard,borderRight:"1px solid "+T.border,display:"flex",flexDirection:"column",padding:"20px 0",zIndex:100}},
+      React.createElement("div",{style:{padding:"0 16px 20px",borderBottom:"1px solid "+T.border,marginBottom:12}},
+        React.createElement("div",{style:{display:"flex",alignItems:"center",gap:10}},
+          LogoSvg,
+          React.createElement("div",null,
+            React.createElement("div",{style:{fontWeight:900,fontSize:14,color:T.text,lineHeight:1.2}},"Fantasy Draft Pros"),
+            React.createElement("div",{style:{fontSize:10,color:T.textSub}},"Dynasty Trade Analyzer")
+          )
+        )
+      ),
+      [["trade","Trade Analyzer","⚖️"],["league","My League","🏈"],["rankings","Rankings","📊"],["reports","Reports","📈"]].concat(user&&user.isAdmin?[["admin","Admin","🔐"]]:[]).map(function(item){
+        var active=tab===item[0];
+        return React.createElement("button",{key:item[0],onClick:function(){
+          if((item[0]==="league"||item[0]==="reports")&&!isPro){setAuthMode("signup");setShowAuth(true);return;}
+          if(item[0]==="admin"){if(!user||!user.isAdmin){return;}setTab("admin");trackEvent("tab_change",{tab:"admin"});return;}
+          setTab(item[0]);trackEvent("tab_change",{tab:item[0]});
+        },style:{display:"flex",alignItems:"center",gap:12,padding:"11px 16px",margin:"2px 8px",borderRadius:10,border:"none",background:active?T.purple:"transparent",color:active?"#fff":T.textSub,fontWeight:700,fontSize:13,cursor:"pointer",textAlign:"left",width:"calc(100% - 16px)"}},
+          React.createElement("span",{style:{fontSize:16}},item[2]),
+          React.createElement("span",{style:{flex:1}},item[1]),
+          (item[0]==="league"||item[0]==="reports")&&!isPro&&React.createElement("span",{style:{background:T.gold,color:"#000",fontSize:8,fontWeight:800,borderRadius:4,padding:"1px 5px"}},"PRO")
+        );
+      }),
+      React.createElement("div",{style:{marginTop:"auto",padding:"12px 16px",borderTop:"1px solid "+T.border}},
+        !user?React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+          React.createElement("button",{onClick:function(){setAuthMode("signup");setShowAuth(true);},style:{padding:"10px",borderRadius:10,border:"none",background:"linear-gradient(135deg,"+T.purple+",#5b21b6)",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}},"Sign Up Free"),
+          React.createElement("button",{onClick:function(){setAuthMode("signin");setShowAuth(true);},style:{padding:"10px",borderRadius:10,border:"1px solid "+T.border,background:"transparent",color:T.text,fontWeight:700,fontSize:12,cursor:"pointer"}},"Sign In")
+        ):React.createElement(UserMenu,{user:user,T:T,onSignOut:function(){saveAndSetUser(null);setShowAdmin(false);},onUpgrade:function(){setAuthMode("signup");setShowAuth(true);},onAdmin:function(){setTab("admin");}})
+      )
+    ),
+
+    // MOBILE BOTTOM TABS
+    !isDesktop&&React.createElement("div",{style:{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:T.bgCard,borderTop:"1px solid "+T.border,display:"flex",zIndex:100}},
       [["trade","Trade","⚖️"],["league","League","🏈"],["rankings","Ranks","📊"],["reports","Reports","📈"]].concat(user&&user.isAdmin?[["admin","Admin","🔐"]]:[]).map(function(item){
         var active=tab===item[0];
         return React.createElement("button",{key:item[0],onClick:function(){
@@ -2667,6 +2704,9 @@ export default function App(){
         );
       })
     ),
+
+    // MAIN CONTENT WRAPPER (flex:1 on desktop for sidebar layout)
+    React.createElement("div",{style:{flex:isDesktop?1:undefined,minWidth:0,overflowY:isDesktop?"auto":undefined,maxWidth:isDesktop?900:undefined,width:isDesktop?"100%":undefined,paddingBottom:isDesktop?40:undefined}},
 
     // ════ TRADE TAB ════
     tab==="trade"&&React.createElement("div",{style:{padding:"16px 16px 0"}},
@@ -5520,7 +5560,10 @@ export default function App(){
       )
     ),
 
+    // END MAIN CONTENT WRAPPER
+    ),
+
     // FLOATING CHAT BUTTON
-    React.createElement("button",{style:{position:"fixed",bottom:72,right:20,width:52,height:52,borderRadius:"50%",background:"#3b82f6",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(59,130,246,0.5)",zIndex:200,fontSize:22,color:"#fff"}},"\uD83D\uDCAC")
+    React.createElement("button",{style:{position:"fixed",bottom:isDesktop?20:72,right:20,width:52,height:52,borderRadius:"50%",background:"#3b82f6",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 16px rgba(59,130,246,0.5)",zIndex:200,fontSize:22,color:"#fff"}},"\uD83D\uDCAC")
   );
 }
