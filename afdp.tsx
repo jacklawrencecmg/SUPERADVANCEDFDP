@@ -2376,8 +2376,8 @@ export default function App(){
   function verdict(){
     var diff=tvA-tvB,pct=tvB>0?Math.abs(diff/tvB)*100:0;
     if(pct<8) return {txt:"Fair Trade",sub:"Both sides get equal value",c:T.green,pct:50};
-    if(diff>0) return {txt:"Team B Overpays",sub:"Team A wins by "+pct.toFixed(0)+"%",c:T.gold,pct:Math.min(85,50+pct/2)};
-    return {txt:"Team A Overpays",sub:"Team B wins by "+pct.toFixed(0)+"%",c:T.red,pct:Math.max(15,50-pct/2)};
+    if(diff>0) return {txt:"Team A Overpays",sub:"Team B wins by "+pct.toFixed(0)+"%",c:T.red,pct:Math.max(15,50-pct/2)};
+    return {txt:"Team B Overpays",sub:"Team A wins by "+pct.toFixed(0)+"%",c:T.gold,pct:Math.min(85,50+pct/2)};
   }
   function srchRes(q,excl){if(!q)return[];return tradePool.filter(function(p){return p.name.toLowerCase().includes(q.toLowerCase())&&!excl.find(function(x){return x.name===p.name;});}).slice(0,8);}
 
@@ -2397,8 +2397,8 @@ export default function App(){
     var bPicks=sB.filter(function(p){return p.pos==="PICK";});
     var lines=[];
     if(pct<8){lines.push("This is a fair trade — both sides exchange roughly equal value within the standard 8% threshold.");}
-    else if(diff>0){lines.push("Team A wins this trade by "+pct.toFixed(0)+"%. Team B is overpaying for what they receive.");}
-    else{lines.push("Team B wins this trade by "+pct.toFixed(0)+"%. Team A is giving up too much value.");}
+    else if(diff>0){lines.push("Team B wins this trade by "+pct.toFixed(0)+"%. Team A is overpaying for what they receive.");}
+    else{lines.push("Team A wins this trade by "+pct.toFixed(0)+"%. Team B is giving up too much value.");}
     if(aPlrs.length>0&&bPlrs.length>0){
       var aAge=+(aPlrs.reduce(function(s,p){return s+(p.age||25);},0)/aPlrs.length).toFixed(0);
       var bAge=+(bPlrs.reduce(function(s,p){return s+(p.age||25);},0)/bPlrs.length).toFixed(0);
