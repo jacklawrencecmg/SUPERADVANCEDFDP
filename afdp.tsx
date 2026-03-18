@@ -1105,7 +1105,7 @@ const PLAYERS=[
   {name:"Jihaad Campbell",pos:"LB",age:22,team:"PHI",proj:{PPR:98,Half:98,Standard:98},adp:21.5,note:"2025 1st round: 95 tackles 3 sacks elite coverage"},
   {name:"Harold Perkins Jr.",pos:"LB",age:21,team:"FA",proj:{PPR:95,Half:95,Standard:95},adp:23.0,note:"2025 pick: elite athleticism 90 tackles 4 sacks"},
   {name:"Payton Wilson",pos:"LB",age:24,team:"PIT",proj:{PPR:92,Half:92,Standard:92},adp:24.5,note:"2025: speed LB 88 tackles 3 sacks"},
-  {name:"Carson Schwesinger",pos:"LB",age:23,team:"CLE",proj:{PPR:128,Half:128,Standard:128},adp:11.0,note:"2025 1st round pick #10: elite IDP LB upside 130+ tackles"},
+  {name:"Carson Schwesinger",pos:"LB",age:23,team:"CLE",proj:{PPR:162,Half:162,Standard:162},adp:7.2,ktcVal:4250,note:"2025 Rookie DPOY · #10 pick · 160+ tackles elite IDP LB1"},
   {name:"Nick Jackson",pos:"LB",age:23,team:"ATL",proj:{PPR:80,Half:80,Standard:80},adp:32.5,note:"2025: ILB 75 tackles 2 sacks"},
   {name:"Danny Striggow",pos:"LB",age:24,team:"DEN",proj:{PPR:72,Half:72,Standard:72},adp:38.5,note:"2025 depth LB: 65 tackles 2 sacks"},
   // IDP DL additions Wave 17
