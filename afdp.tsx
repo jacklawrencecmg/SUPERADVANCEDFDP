@@ -1988,6 +1988,23 @@ export default function App(){
     window.addEventListener("resize",onResize);
     return function(){window.removeEventListener("resize",onResize);};
   },[]);
+  // Load shared trade from URL param
+  useEffect(function(){
+    try{
+      var p=new URLSearchParams(window.location.search);
+      var t=p.get("trade");
+      if(!t)return;
+      var d=JSON.parse(atob(t));
+      if(d.a&&Array.isArray(d.a)){var pa=d.a.map(function(n:string){return PLAYERS.find(function(p){return p.name===n;});}).filter(Boolean);if(pa.length)setTradeA(pa as any[]);}
+      if(d.b&&Array.isArray(d.b)){var pb=d.b.map(function(n:string){return PLAYERS.find(function(p){return p.name===n;});}).filter(Boolean);if(pb.length)setTradeB(pb as any[]);}
+      if(d.s)setScoring(d.s);
+      if(d.fa)setFaabA(d.fa);
+      if(d.fb)setFaabB(d.fb);
+      setTab("trade");
+      // Clean URL without reload
+      window.history.replaceState({},"",window.location.pathname+"#trade");
+    }catch(e){}
+  },[]);// eslint-disable-line react-hooks/exhaustive-deps
   var leagueTabsRef=React.useRef<HTMLDivElement>(null);
   var rankingTabsRef=React.useRef<HTMLDivElement>(null);
   var reportsTabsRef=React.useRef<HTMLDivElement>(null);
@@ -2124,6 +2141,8 @@ export default function App(){
   var [tradeHistory,setTradeHistory]=useState(function(){try{var s=localStorage.getItem('fdp_th_v1');return s?JSON.parse(s):[];}catch(e){return [];}});
   var [tradeSaved,setTradeSaved]=useState(false);
   var [aiAnalysis,setAiAnalysis]=useState("");
+  var [showShareModal,setShowShareModal]=useState(false);
+  var [shareCopied,setShareCopied]=useState(false);
   var [sleeperTrending,setSleeperTrending]=useState(null);
   var [sleeperRawDb,setSleeperRawDb]=useState(function(){try{var c=localStorage.getItem('fdp_sp_v1');return c?JSON.parse(c):{};}catch(e){return{};}});
   var [leagueTrades,setLeagueTrades]=useState(null);
@@ -2746,6 +2765,44 @@ export default function App(){
       )
     ),
 
+    // SHARE TRADE MODAL
+    showShareModal&&(function(){
+      var buildShareUrl=function(){
+        var data={a:tradeA.map(function(x:any){return x.name;}),b:tradeB.map(function(x:any){return x.name;}),s:scoring,fa:faabA,fb:faabB};
+        return window.location.origin+window.location.pathname+"?trade="+btoa(JSON.stringify(data))+"#trade";
+      };
+      var shareUrl=buildShareUrl();
+      var v=verdict();
+      var summaryText="Trade Analysis via Fantasy Draft Pros\n\nTeam A gives: "+tradeA.map(function(x:any){return x.name;}).join(", ")+"\nTeam B gives: "+tradeB.map(function(x:any){return x.name;}).join(", ")+"\n\nVerdict: "+(v?v.txt:"Even Trade")+"\n\n"+shareUrl;
+      return React.createElement("div",{style:{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center"},onClick:function(){setShowShareModal(false);}},
+        React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.borderPurple,borderRadius:"20px 20px 0 0",padding:"20px 16px 32px",width:"100%",maxWidth:480},onClick:function(e:any){e.stopPropagation();}},
+          React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}},
+            React.createElement("div",{style:{fontWeight:900,fontSize:18,color:T.text}},"Share Trade"),
+            React.createElement("button",{onClick:function(){setShowShareModal(false);},style:{background:"none",border:"none",color:T.textDim,cursor:"pointer",fontSize:24,lineHeight:1}},"×")
+          ),
+          React.createElement("div",{style:{background:T.bgInput,borderRadius:10,padding:"10px 12px",marginBottom:14,fontSize:11,color:T.textSub,wordBreak:"break-all",lineHeight:1.4}},shareUrl),
+          React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+            React.createElement("button",{onClick:function(){
+              navigator.clipboard.writeText(shareUrl).then(function(){setShareCopied(true);setTimeout(function(){setShareCopied(false);},2000);}).catch(function(){});
+            },style:{padding:"13px",borderRadius:12,border:"1px solid "+T.purple,background:shareCopied?"#16a34a":T.purpleDim,color:shareCopied?"#fff":T.purpleLight,fontWeight:700,fontSize:14,cursor:"pointer",transition:"background 0.2s"}},shareCopied?"✓ Copied!":"📋 Copy Link"),
+            React.createElement("button",{onClick:function(){
+              window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent("Check out this dynasty trade analysis on @FantasyDraftPros!\n\n"+shareUrl),"_blank","noopener");
+            },style:{padding:"13px",borderRadius:12,border:"1px solid #1d9bf044",background:"#1d9bf011",color:"#1d9bf0",fontWeight:700,fontSize:14,cursor:"pointer"}},"𝕏  Share on X / Twitter"),
+            React.createElement("button",{onClick:function(){
+              window.open("https://wa.me/?text="+encodeURIComponent("Check out this dynasty trade analysis: "+shareUrl),"_blank","noopener");
+            },style:{padding:"13px",borderRadius:12,border:"1px solid #25d36644",background:"#25d36611",color:"#25d366",fontWeight:700,fontSize:14,cursor:"pointer"}},"💬 Share on WhatsApp"),
+            typeof navigator.share==="function"&&React.createElement("button",{onClick:function(){
+              navigator.share({title:"Fantasy Draft Pros Trade Analysis",text:"Check out this dynasty trade analysis!",url:shareUrl}).catch(function(){});
+            },style:{padding:"13px",borderRadius:12,border:"1px solid "+T.border,background:T.bgInput,color:T.text,fontWeight:700,fontSize:14,cursor:"pointer"}},"📱 Share via Device"),
+            React.createElement("button",{onClick:function(){
+              navigator.clipboard.writeText(summaryText).catch(function(){});
+              setShareCopied(true);setTimeout(function(){setShareCopied(false);},2000);
+            },style:{padding:"13px",borderRadius:12,border:"1px solid "+T.border,background:T.bgInput,color:T.textSub,fontWeight:700,fontSize:14,cursor:"pointer"}},"📄 Copy Trade Summary Text")
+          )
+        )
+      );
+    })(),
+
     // NAV (mobile only)
     !isDesktop&&React.createElement("div",{style:{position:"sticky",top:0,background:T.bg,zIndex:100,borderBottom:"1px solid "+T.border,paddingBottom:10}},
       React.createElement("div",{style:{display:"flex",justifyContent:"center",paddingTop:12}},
@@ -2942,7 +2999,8 @@ export default function App(){
             ),
             React.createElement("div",{style:{display:"flex",gap:8,marginTop:12}},
               React.createElement("button",{onClick:saveTrade,disabled:tradeSaved,style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+(tradeSaved?T.green:T.border),cursor:tradeSaved?"default":"pointer",fontWeight:700,fontSize:12,background:tradeSaved?T.green:T.bgInput,color:tradeSaved?"#fff":T.textSub}},tradeSaved?"Saved ✓":"Save Trade"),
-              React.createElement("button",{onClick:function(){setAiAnalysis(null);setTimeout(function(){setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));},50);},style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+T.borderPurple,cursor:"pointer",fontWeight:700,fontSize:12,background:T.purpleDim,color:T.purpleLight}},"Refresh Analysis")
+              React.createElement("button",{onClick:function(){setShowShareModal(true);},style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+T.purple,cursor:"pointer",fontWeight:700,fontSize:12,background:T.purpleDim,color:T.purpleLight}},"🔗 Share"),
+              React.createElement("button",{onClick:function(){setAiAnalysis(null);setTimeout(function(){setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));},50);},style:{flex:1,padding:"10px",borderRadius:10,border:"1px solid "+T.borderPurple,cursor:"pointer",fontWeight:700,fontSize:12,background:T.bgInput,color:T.textSub}},"↻")
             ),
             !user&&React.createElement("div",{style:{marginTop:12,background:T.purpleDim,border:"1px solid "+T.purple+"44",borderRadius:12,padding:"12px 14px"}},
               React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.purpleLight,marginBottom:4}},"Want AI Trade Suggestions?"),
