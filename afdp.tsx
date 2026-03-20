@@ -232,7 +232,7 @@ const PLAYERS=[
   // Additional QBs
   {name:"Justin Herbert",pos:"QB",age:28,team:"LAC",proj:{PPR:348,Half:348,Standard:348},adp:7.2,ktcVal:6826,note:"4,200 yds 30 TD"},
   {name:"Trevor Lawrence",pos:"QB",age:27,team:"JAX",proj:{PPR:355,Half:355,Standard:355},adp:6.5,ktcVal:6343,note:"4,100 yds 30 TD"},
-  {name:"Tua Tagovailoa",pos:"QB",age:28,team:"MIA",proj:{PPR:342,Half:342,Standard:342},adp:8.1,ktcVal:2645,note:"3,900 yds 28 TD"},
+  {name:"Tua Tagovailoa",pos:"QB",age:28,team:"ATL",proj:{PPR:342,Half:342,Standard:342},adp:8.1,ktcVal:2645,note:"3,900 yds 28 TD · signed ATL 2026"},
   {name:"J.J. McCarthy",pos:"QB",age:23,team:"MIN",proj:{PPR:315,Half:315,Standard:315},adp:10.5,ktcVal:2900,note:"2026 Year 2: 3,600 yds 27 TD post-injury"},
   {name:"Brock Purdy",pos:"QB",age:27,team:"SF",proj:{PPR:338,Half:338,Standard:338},adp:8.6,ktcVal:6016,note:"4,000 yds 27 TD"},
   {name:"Matthew Stafford",pos:"QB",age:38,team:"LAR",proj:{PPR:316,Half:316,Standard:316},adp:13.8,ktcVal:3747,note:"3,600 yds 24 TD aging"},
@@ -295,7 +295,7 @@ const PLAYERS=[
   // Additional TEs
   {name:"Dallas Goedert",pos:"TE",age:30,team:"PHI",proj:{PPR:182,Half:167,Standard:152},adp:11.8,ktcVal:2627,note:"72 rec 820 yds 7 TD"},
   {name:"T.J. Hockenson",pos:"TE",age:28,team:"MIN",proj:{PPR:175,Half:160,Standard:145},adp:12.5,ktcVal:2708,note:"70 rec 740 yds"},
-  {name:"David Njoku",pos:"TE",age:29,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:13.8,ktcVal:2729,note:"65 rec 680 yds 6 TD"},
+  {name:"David Njoku",pos:"TE",age:29,team:"FA",proj:{PPR:168,Half:154,Standard:140},adp:13.8,ktcVal:2729,note:"65 rec 680 yds 6 TD · FA 2026"},
   {name:"Jake Ferguson",pos:"TE",age:26,team:"DAL",proj:{PPR:162,Half:148,Standard:134},adp:15.0,ktcVal:3392,note:"68 rec 700 yds 6 TD"},
   {name:"Harold Fannin Jr.",pos:"TE",age:23,team:"CLE",proj:{PPR:168,Half:154,Standard:140},adp:8.5,ktcVal:4892,note:"Year 2: 66 rec 700 yds 6 TD elite dynasty TE asset"},
   {name:"Cade Otton",pos:"TE",age:26,team:"TB",proj:{PPR:148,Half:135,Standard:122},adp:17.8,ktcVal:1800,note:"55 rec 570 yds"},
@@ -705,7 +705,7 @@ const PLAYERS=[
   // TE wave 3
   {name:"Dalton Schultz",pos:"TE",age:29,team:"HOU",proj:{PPR:112,Half:103,Standard:94},adp:26.8,ktcVal:2311,note:"Veteran: 46 rec 470 yds 4 TD"},
   {name:"Tyler Higbee",pos:"TE",age:31,team:"LAR",proj:{PPR:102,Half:93,Standard:84},adp:30.8,ktcVal:1200,note:"42 rec 430 yds 4 TD"},
-  {name:"Jonnu Smith",pos:"TE",age:30,team:"MIA",proj:{PPR:108,Half:99,Standard:90},adp:28.8,ktcVal:1200,note:"42 rec 440 yds 5 TD"},
+  {name:"Jonnu Smith",pos:"TE",age:30,team:"FA",proj:{PPR:108,Half:99,Standard:90},adp:28.8,ktcVal:1200,note:"42 rec 440 yds 5 TD · released PIT 2026"},
   {name:"Mo Alie-Cox",pos:"TE",age:31,team:"IND",proj:{PPR:88,Half:81,Standard:74},adp:36.8,note:"Blocking/red zone depth"},
   {name:"Marcedes Lewis",pos:"TE",age:40,team:"GB",proj:{PPR:75,Half:69,Standard:63},adp:42.0,note:"Veteran blocker"},
   {name:"CJ Uzomah",pos:"TE",age:33,team:"NYJ",proj:{PPR:82,Half:75,Standard:68},adp:38.5,note:"Veteran blocking TE"},
@@ -738,7 +738,7 @@ const PLAYERS=[
   {name:"Colston Loveland",pos:"TE",age:23,team:"CHI",proj:{PPR:195,Half:179,Standard:163},adp:7.0,ktcVal:6070,note:"2026 Year 2 breakout: 78 rec 820 yds 7 TD elite receiving TE"},
   {name:"Mason Taylor",pos:"TE",age:23,team:"NYJ",proj:{PPR:158,Half:145,Standard:132},adp:16.5,ktcVal:2807,note:"2026 Year 2: 65 rec 680 yds 5 TD elite receiving prospect"},
   // Veterans still missing
-  {name:"Amari Cooper",pos:"WR",age:31,team:"BUF",proj:{PPR:172,Half:158,Standard:144},adp:25.5,ktcVal:1600,note:"Veteran: 70 rec 820 yds 6 TD"},
+  {name:"Amari Cooper",pos:"WR",age:31,team:"FA",proj:{PPR:172,Half:158,Standard:144},adp:25.5,ktcVal:400,note:"Retired after brief LV stint 2025"},
   {name:"JuJu Smith-Schuster",pos:"WR",age:29,team:"KC",proj:{PPR:148,Half:136,Standard:124},adp:30.0,note:"Slot veteran: 58 rec 620 yds"},
   {name:"Van Jefferson",pos:"WR",age:29,team:"TEN",proj:{PPR:128,Half:118,Standard:108},adp:34.2,note:"Deep threat depth: 48 rec 580 yds"},
   {name:"Greg Dortch",pos:"WR",age:27,team:"ARI",proj:{PPR:132,Half:121,Standard:110},adp:33.2,note:"Slot depth: 52 rec 560 yds"},
