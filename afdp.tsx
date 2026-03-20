@@ -1001,6 +1001,13 @@ const PLAYERS=[
   {name:"Taron Johnson",pos:"DB",age:29,team:"BUF",proj:{PPR:95,Half:95,Standard:95},adp:21.5,ktcVal:1500,note:"BUF CB: 3 INT 75 tackles slot cover"},
   {name:"Tykee Smith",pos:"DB",age:25,team:"PHI",proj:{PPR:88,Half:88,Standard:88},adp:25.0,ktcVal:1800,note:"PHI S: 82 tackles 2 INT versatile"},
   {name:"Alohi Gilman",pos:"DB",age:28,team:"LAC",proj:{PPR:88,Half:88,Standard:88},adp:26.0,ktcVal:1000,note:"LAC S: 80 tackles 2 INT solid starter"},
+  // Wave 27 — additional missing players
+  {name:"Nathan Carter",pos:"RB",age:23,team:"LV",proj:{PPR:165,Half:151,Standard:137},adp:22.5,ktcVal:2600,note:"LV RB: speed back 800 rush 50 rec 5 TD"},
+  {name:"Sione Vaki",pos:"RB",age:23,team:"ATL",proj:{PPR:148,Half:135,Standard:122},adp:27.0,ktcVal:2200,note:"ATL RB: versatile 600 rush 55 rec 4 TD"},
+  {name:"Chris Brooks",pos:"RB",age:27,team:"GB",proj:{PPR:132,Half:121,Standard:110},adp:32.0,ktcVal:1000,note:"GB RB: committee 550 rush 40 rec 4 TD"},
+  {name:"Malik Davis",pos:"RB",age:26,team:"DAL",proj:{PPR:118,Half:108,Standard:98},adp:36.0,ktcVal:800,note:"DAL RB: depth 450 rush 35 rec 3 TD"},
+  {name:"Frank Gore",pos:"RB",age:24,team:"BUF",proj:{PPR:138,Half:126,Standard:114},adp:29.5,ktcVal:1600,note:"BUF RB: powerful runner 650 rush 40 rec"},
+  {name:"Zavier Scott",pos:"WR",age:23,team:"LAC",proj:{PPR:145,Half:133,Standard:121},adp:30.0,ktcVal:1900,note:"LAC WR: 52 rec 640 yds 5 TD speed"},
   // Wave 24 — missing starters + IDP depth sweep
   // Missing starters
   {name:"DeAndre Hopkins",pos:"WR",age:33,team:"BAL",proj:{PPR:188,Half:173,Standard:158},adp:22.5,note:"Veteran: 72 rec 840 yds 7 TD jump-ball"},
