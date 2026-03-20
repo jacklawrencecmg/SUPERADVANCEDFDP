@@ -54,7 +54,7 @@ async function loadAnalyticsData() {
   try {
     const now = new Date();
     const day14ago = new Date(now.getTime() - 14 * 86400000).toISOString();
-    const [r1, r2, r3, r4, r5, r6, r7] = await Promise.all([
+    const [r1, r2, r3, r4, r5, r6, r7, r8] = await Promise.all([
       rc.from("analytics_events").select("visitor_id, created_at").eq("event_type","page_view").gte("created_at",day14ago),
       rc.from("analytics_events").select("event_data").eq("event_type","tab_change").gte("created_at",day14ago),
       rc.from("analytics_events").select("id",{count:"exact",head:true}).eq("event_type","trade_analyzed"),
@@ -63,10 +63,12 @@ async function loadAnalyticsData() {
       rc.from("analytics_events").select("id",{count:"exact",head:true}),
       // All events where user_email is present — dedicated signed-in user feed
       rc.from("analytics_events").select("visitor_id, event_type, event_data, created_at").not("event_data->>user_email","is","null").order("created_at",{ascending:false}).limit(200),
+      // All trade_analyzed events with full data for admin trade feed
+      rc.from("analytics_events").select("visitor_id, event_data, created_at").eq("event_type","trade_analyzed").order("created_at",{ascending:false}).limit(200),
     ]);
     const firstError = r1.error||r2.error||r3.error||r4.error;
-    if (firstError) return { daily:[], features:[], trades:0, recent:[], userEvents:[], totalVisitors:0, totalEvents:0, error: firstError.message };
-    return { daily: r1.data||[], features: r2.data||[], trades: r3.count||0, recent: r4.data||[], userEvents: r7.data||[], totalVisitors: r5.count||0, totalEvents: r6.count||0, error: null };
+    if (firstError) return { daily:[], features:[], trades:0, recent:[], userEvents:[], platformTrades:[], totalVisitors:0, totalEvents:0, error: firstError.message };
+    return { daily: r1.data||[], features: r2.data||[], trades: r3.count||0, recent: r4.data||[], userEvents: r7.data||[], platformTrades: r8.data||[], totalVisitors: r5.count||0, totalEvents: r6.count||0, error: null };
   } catch(e:any) {
     return { daily:[], features:[], trades:0, recent:[], error: e?.message||"Unknown error" };
   }
@@ -1906,6 +1908,52 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
           userEmail&&React.createElement("div",{style:{fontSize:10,color:T.purple,marginTop:2}},userEmail)
         );
       })
+    ),
+
+    // Platform Trades Feed
+    React.createElement("div",{style:{background:T.bgCard,border:"1px solid "+T.border,borderRadius:14,padding:"14px 12px",marginBottom:16}},
+      React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
+        React.createElement("div",null,
+          React.createElement("div",{style:{fontWeight:700,fontSize:13,color:T.text}},"⚖️ All Platform Trades"),
+          React.createElement("div",{style:{fontSize:10,color:T.textSub,marginTop:2}},"Every trade analyzed across the platform")
+        ),
+        React.createElement("div",{style:{background:T.purple+"22",border:"1px solid "+T.purple+"44",borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:700,color:T.purple}},(data.platformTrades||[]).length+" trades")
+      ),
+      (data.platformTrades||[]).length===0
+        ? React.createElement("div",{style:{textAlign:"center",padding:"20px 0",fontSize:12,color:T.textSub}},"No trades logged yet.")
+        : (data.platformTrades||[]).map(function(e:any,i:number){
+            var d=e.event_data||{};
+            var sideA:string[]=(d.sideA||[]);
+            var sideB:string[]=(d.sideB||[]);
+            var when=new Date(e.created_at);
+            var email=d.user_email||null;
+            return React.createElement("div",{key:i,style:{padding:"10px 0",borderBottom:i<(data.platformTrades.length-1)?"1px solid "+T.border:"none"}},
+              React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},
+                React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},
+                  email
+                    ? React.createElement("div",{style:{fontSize:11,fontWeight:700,color:T.purple}},email)
+                    : React.createElement("div",{style:{fontSize:11,color:T.textDim}},"Anonymous"),
+                  d.scoring&&React.createElement("div",{style:{fontSize:9,background:T.bgInput,borderRadius:4,padding:"1px 5px",color:T.textSub,fontWeight:600}},d.scoring)
+                ),
+                React.createElement("div",{style:{fontSize:10,color:T.textDim}},when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
+              ),
+              React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:6,alignItems:"center"}},
+                React.createElement("div",{style:{background:T.bgInput,borderRadius:8,padding:"6px 8px"}},
+                  React.createElement("div",{style:{fontSize:9,color:T.textSub,fontWeight:700,marginBottom:3}},"TEAM A GIVES"),
+                  sideA.length>0
+                    ? sideA.map(function(name:string,j:number){return React.createElement("div",{key:j,style:{fontSize:11,color:T.text,fontWeight:600,marginBottom:1}},name);})
+                    : React.createElement("div",{style:{fontSize:10,color:T.textDim}},"—")
+                ),
+                React.createElement("div",{style:{fontSize:12,color:T.textDim,fontWeight:700}},"⇄"),
+                React.createElement("div",{style:{background:T.bgInput,borderRadius:8,padding:"6px 8px"}},
+                  React.createElement("div",{style:{fontSize:9,color:T.textSub,fontWeight:700,marginBottom:3}},"TEAM B GIVES"),
+                  sideB.length>0
+                    ? sideB.map(function(name:string,j:number){return React.createElement("div",{key:j,style:{fontSize:11,color:T.text,fontWeight:600,marginBottom:1}},name);})
+                    : React.createElement("div",{style:{fontSize:10,color:T.textDim}},"—")
+                )
+              )
+            );
+          })
     ),
 
     // Refresh button
