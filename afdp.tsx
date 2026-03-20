@@ -414,7 +414,7 @@ const PLAYERS=[
   {name:"Vonn Bell",pos:"DB",age:31,team:"CIN",proj:{PPR:92,Half:92,Standard:92},adp:19.8,note:"CIN S: 88 tackles 2 INT"},
   {name:"Marcus Peters",pos:"DB",age:33,team:"FA",proj:{PPR:90,Half:90,Standard:90},adp:20.5,note:"Veteran CB: high INT upside"},
   {name:"Chamarri Conner",pos:"DB",age:25,team:"WAS",proj:{PPR:98,Half:98,Standard:98},adp:18.0,note:"WAS S: 100 tackles 3 INT upside"},
-  {name:"Kamren Curl",pos:"DB",age:27,team:"WAS",proj:{PPR:100,Half:100,Standard:100},adp:17.5,ktcVal:2200,note:"WAS S: 98 tackles 3 INT"},
+  {name:"Kamren Curl",pos:"DB",age:27,team:"WAS",proj:{PPR:100,Half:100,Standard:100},adp:17.5,ktcVal:3800,note:"WAS S: 98 tackles 3 INT"},
   {name:"Jevon Holland",pos:"DB",age:26,team:"MIA",proj:{PPR:105,Half:105,Standard:105},adp:16.2,note:"MIA S: 95 tackles 4 INT"},
   {name:"Marcus Williams",pos:"DB",age:30,team:"BAL",proj:{PPR:98,Half:98,Standard:98},adp:17.8,note:"BAL S: 90 tackles 3 INT"},
   {name:"Xavier McKinney",pos:"DB",age:26,team:"NYG",proj:{PPR:108,Half:108,Standard:108},adp:15.8,note:"NYG S: 95 tackles 5 INT"},
@@ -503,7 +503,7 @@ const PLAYERS=[
   {name:"Junior Colson",pos:"LB",age:23,team:"IND",proj:{PPR:108,Half:108,Standard:108},adp:15.5,ktcVal:3000,note:"IND LB Year 2: 120 tackles 3 sacks"},
   {name:"Edefuan Ulofoshio",pos:"LB",age:26,team:"SEA",proj:{PPR:105,Half:105,Standard:105},adp:16.2,ktcVal:2200,note:"SEA LB: 115 tackles starter"},
   {name:"Tanner Koziol",pos:"LB",age:25,team:"BUF",proj:{PPR:98,Half:98,Standard:98},adp:17.5,ktcVal:1800,note:"BUF LB developing"},
-  {name:"Nikolas Bonitto",pos:"LB",age:25,team:"DEN",proj:{PPR:100,Half:100,Standard:100},adp:17.0,ktcVal:2500,note:"DEN LB: 8 sacks pass rush upside"},
+  {name:"Nikolas Bonitto",pos:"LB",age:25,team:"DEN",proj:{PPR:105,Half:105,Standard:105},adp:16.0,ktcVal:3500,note:"DEN LB: 8 sacks pass rush upside"},
   {name:"Omar Speights",pos:"LB",age:24,team:"LAR",proj:{PPR:95,Half:95,Standard:95},adp:18.2,ktcVal:2000,note:"LAR LB: 108 tackles ascending"},
   {name:"Isaiah Foskey",pos:"DL",age:24,team:"NO",proj:{PPR:92,Half:92,Standard:92},adp:18.8,ktcVal:2800,note:"NO edge Year 2: 8 sacks upside"},
   // DB Wave 4 — 2024 rookies & ascending CBs/Ss
@@ -886,7 +886,7 @@ const PLAYERS=[
   {name:"Mykal Walker",pos:"LB",age:29,team:"ATL",proj:{PPR:82,Half:82,Standard:82},adp:31.5,note:"Coverage: 72 tackles 2 INT"},
   // QB Wave 7
   {name:"Trey Lance",pos:"QB",age:26,team:"LAC",proj:{PPR:235,Half:235,Standard:235},adp:25.5,ktcVal:1200,note:"Mobile backup: upside arm"},
-  {name:"Marcus Mariota",pos:"QB",age:32,team:"FA",proj:{PPR:218,Half:218,Standard:218},adp:29.5,ktcVal:200,note:"Veteran FA: dual-threat"},
+  {name:"Marcus Mariota",pos:"QB",age:32,team:"FA",proj:{PPR:218,Half:218,Standard:218},adp:29.5,ktcVal:500,note:"Veteran FA: dual-threat"},
   {name:"Carson Wentz",pos:"QB",age:34,team:"FA",proj:{PPR:225,Half:225,Standard:225},adp:28.0,ktcVal:150,note:"Veteran FA: 3,000 yds 22 TD"},
   // WR Wave 7
   {name:"Robbie Anderson",pos:"WR",age:31,team:"FA",proj:{PPR:88,Half:81,Standard:74},adp:44.5,note:"Veteran deep threat"},
@@ -970,7 +970,7 @@ const PLAYERS=[
   {name:"Ben Sinnott",pos:"TE",age:23,team:"WAS",proj:{PPR:128,Half:117,Standard:106},adp:23.0,ktcVal:2500,note:"WAS TE: 46 rec 510 yds 4 TD"},
   {name:"Jake Tonges",pos:"TE",age:24,team:"BAL",proj:{PPR:118,Half:108,Standard:98},adp:27.0,ktcVal:1600,note:"BAL TE: 42 rec 460 yds 3 TD"},
   {name:"Erick All",pos:"TE",age:24,team:"CIN",proj:{PPR:122,Half:112,Standard:102},adp:25.5,ktcVal:1700,note:"CIN TE: 45 rec 490 yds 4 TD"},
-  {name:"Brock Wright",pos:"TE",age:26,team:"DET",proj:{PPR:108,Half:99,Standard:90},adp:31.0,ktcVal:900,note:"DET TE2: 38 rec 400 yds 3 TD"},
+  {name:"Brock Wright",pos:"TE",age:26,team:"DET",proj:{PPR:118,Half:108,Standard:98},adp:25.0,ktcVal:1800,note:"DET TE: 45 rec 480 yds 4 TD"},
   {name:"Darren Waller",pos:"TE",age:32,team:"NYG",proj:{PPR:112,Half:103,Standard:94},adp:32.0,ktcVal:700,note:"Veteran: 40 rec 440 yds 3 TD injury risk"},
   // QBs
   {name:"Riley Leonard",pos:"QB",age:23,team:"NO",proj:{PPR:265,Half:265,Standard:265},adp:22.5,ktcVal:2200,note:"NO QB: mobile 3,200 yds 22 TD dual-threat"},
@@ -1001,6 +1001,8 @@ const PLAYERS=[
   {name:"Taron Johnson",pos:"DB",age:29,team:"BUF",proj:{PPR:95,Half:95,Standard:95},adp:21.5,ktcVal:1500,note:"BUF CB: 3 INT 75 tackles slot cover"},
   {name:"Tykee Smith",pos:"DB",age:25,team:"PHI",proj:{PPR:88,Half:88,Standard:88},adp:25.0,ktcVal:1800,note:"PHI S: 82 tackles 2 INT versatile"},
   {name:"Alohi Gilman",pos:"DB",age:28,team:"LAC",proj:{PPR:88,Half:88,Standard:88},adp:26.0,ktcVal:1000,note:"LAC S: 80 tackles 2 INT solid starter"},
+  // Wave 28 — additional missing + value corrections
+  {name:"KeAndre Lambert-Smith",pos:"WR",age:24,team:"PHI",proj:{PPR:158,Half:145,Standard:132},adp:25.0,ktcVal:2800,note:"PHI WR: 58 rec 720 yds 5 TD speed"},
   // Wave 27 — additional missing players
   {name:"Nathan Carter",pos:"RB",age:23,team:"LV",proj:{PPR:165,Half:151,Standard:137},adp:22.5,ktcVal:2600,note:"LV RB: speed back 800 rush 50 rec 5 TD"},
   {name:"Sione Vaki",pos:"RB",age:23,team:"ATL",proj:{PPR:148,Half:135,Standard:122},adp:27.0,ktcVal:2200,note:"ATL RB: versatile 600 rush 55 rec 4 TD"},
