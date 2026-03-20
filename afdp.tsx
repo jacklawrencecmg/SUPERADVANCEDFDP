@@ -1929,11 +1929,13 @@ function AnalyticsDashboard({T,data,loading,onLoad}:{T:any,data:any,loading:bool
             var email=d.user_email||null;
             return React.createElement("div",{key:i,style:{padding:"10px 0",borderBottom:i<(data.platformTrades.length-1)?"1px solid "+T.border:"none"}},
               React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},
-                React.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},
+                React.createElement("div",{style:{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap" as any}},
                   email
                     ? React.createElement("div",{style:{fontSize:11,fontWeight:700,color:T.purple}},email)
                     : React.createElement("div",{style:{fontSize:11,color:T.textDim}},"Anonymous"),
-                  d.scoring&&React.createElement("div",{style:{fontSize:9,background:T.bgInput,borderRadius:4,padding:"1px 5px",color:T.textSub,fontWeight:600}},d.scoring)
+                  d.scoring&&React.createElement("div",{style:{fontSize:9,background:T.bgInput,borderRadius:4,padding:"1px 5px",color:T.textSub,fontWeight:600}},d.scoring),
+                  d.platform&&React.createElement("div",{style:{fontSize:9,background:d.platform==="iOS"?"#1d4ed8"+"22":d.platform==="Android"?"#15803d"+"22":T.bgInput,borderRadius:4,padding:"1px 5px",color:d.platform==="iOS"?"#60a5fa":d.platform==="Android"?"#4ade80":T.textSub,fontWeight:600}},d.platform==="iOS"?"📱 iOS":d.platform==="Android"?"🤖 Android":"🖥️ Web"),
+                  d.device&&React.createElement("div",{style:{fontSize:9,background:T.bgInput,borderRadius:4,padding:"1px 5px",color:T.textSub,fontWeight:600}},d.device)
                 ),
                 React.createElement("div",{style:{fontSize:10,color:T.textDim}},when.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))
               ),
@@ -2899,7 +2901,7 @@ export default function App(){
           if(tradeA.length===0&&tradeB.length===0)return;
           if(!isPro&&tradeCount>=FREE_TRADE_LIMIT){setAuthMode("signup");setShowAuth(true);return;}
           setAnalyzed(true);setAiAnalysis(genAiAnalysis(tradeA,tradeB,tvA,tvB));setTradeSaved(false);if(!isPro)setTradeCount(function(c){return c+1;});
-          trackEvent("trade_analyzed",{scoring,sideA:tradeA.map(function(x){return x.name;}),sideB:tradeB.map(function(x){return x.name;})});
+          trackEvent("trade_analyzed",{scoring,sideA:tradeA.map(function(x){return x.name;}),sideB:tradeB.map(function(x){return x.name;}),origin:window.location.hash||"#trade",device:window.innerWidth>=1024?"desktop":"mobile",platform:navigator.userAgent.toLowerCase().includes("iphone")||navigator.userAgent.toLowerCase().includes("ipad")?"iOS":navigator.userAgent.toLowerCase().includes("android")?"Android":"Web"});
         },style:{width:"100%",padding:"15px",borderRadius:14,border:"none",cursor:"pointer",fontWeight:800,fontSize:15,
           background:(tradeA.length>0||tradeB.length>0)?(!isPro&&tradeCount>=FREE_TRADE_LIMIT?"linear-gradient(135deg,"+T.gold+",#92400e)":"linear-gradient(135deg,"+T.purple+",#5b21b6)"):T.purpleDim,
           color:(tradeA.length>0||tradeB.length>0)?"#fff":T.textDim}},
